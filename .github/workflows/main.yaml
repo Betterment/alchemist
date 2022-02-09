@@ -42,4 +42,4 @@ jobs:
           flutter pub global activate pana
 
       - name: Verify Pub Score
-        run: ./tool/verify_pub_score.sh
+        run: ./tool/verify_pub_score.sh 110
