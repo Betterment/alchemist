@@ -126,12 +126,6 @@ Then, simply run Flutter test and pass the `--update-goldens` flag to generate t
 flutter test --update-goldens
 ```
 
-On macOS, this code generates the following golden files:
-
-| `goldens/macos/list_tile.png`                                               | `goldens/ci/list_tile.png`                                               |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| ![ListTile golden test file for macOS](https://via.placeholder.com/350x150) | ![ListTile golden test file for CI](https://via.placeholder.com/350x150) |
-
 #### Recommended Setup Guide
 
 For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide](./RECOMMENDED_SETUP_GUIDE.md).
@@ -143,7 +137,7 @@ While the `goldenTest` function can take in and performs tests on any arbitrary 
 Alongside the `children` parameter, `GoldenTestGroup` contains two additional properties that can be used to customize the resulting table view:
 
 | Field                                    | Default | Description                                                                                                                                                |
-| ---------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `int? columns`                           | `null`  | The amount of columns in the grid. If left unset, this will be determined based on the amount of children.                                                 |
 | `ColumnWidthBuilder? columnWidthBuilder` | `null`  | A function that returns the width for each column. If left unset, the width of each column is determined by the width of the widest widget in that column. |
 
@@ -206,7 +200,7 @@ All tests make use of the `AlchemistConfig` class. This configuration object con
 A default `AlchemistConfig` is provided for you, and contains the following settings:
 
 | Field                                         | Default                         | Description                                                                                        |
-| --------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------- |
+|-----------------------------------------------|---------------------------------|----------------------------------------------------------------------------------------------------|
 | `bool forceUpdateGoldenFiles`                 | `false`                         | If `true`, the golden files will always be regenerated, regardless of the `--update-goldens` flag. |
 | `ThemeData? theme`                            | `null`                          | The theme to use for all tests. If `null`, the default `ThemeData.light()` will be used.           |
 | `PlatformGoldensConfig platformGoldensConfig` | `const PlatformGoldensConfig()` | The configuration to use when running readable golden tests on a non-CI host.                      |
@@ -215,7 +209,7 @@ A default `AlchemistConfig` is provided for you, and contains the following sett
 Both the `PlatformGoldensConfig` and `CiGoldensConfig` classes contain a number of settings that can be used to customize the behavior of the tests. These are the settings both of these objects allow you to customize:
 
 | Field                                      | Default                      | Description                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|--------------------------------------------|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `bool enabled`                             | `true`                       | Indicates if this type of test should run. If set to `false`, this type of test is never allowed to run. Defaults to `true`.                                                                                                                                                                                                                                  |
 | `TestComparisonPredicate comparePredicate` | `<_defaultComparePredicate>` | A predicate that determines whether a golden test should compare its output to the reference golden file. By default, CI tests are always compared, whereas platform tests never compared.                                                                                                                                                                    |
 | `FilePathResolver filePathResolver`        | `<_defaultFilePathResolver>` | A function that resolves the path to the golden file, relative to the test that generates it. By default, CI golden test files are placed in `goldens/ci/`, and readable golden test files are placed in `goldens/`.                                                                                                                                          |
@@ -224,7 +218,7 @@ Both the `PlatformGoldensConfig` and `CiGoldensConfig` classes contain a number 
 Alongside these arguments, the `PlatformGoldensConfig` contains an additional setting:
 
 | Field                         | Default       | Description                                                                                                                                                                                                       |
-| ----------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Set<HostPlatform> platforms` | All platforms | The platforms that platform golden tests should run on. By default, this is set to all platforms, meaning that a golden file will be generated if the current platform matches any platforms in the provided set. |
 
 #### Using a custom config
