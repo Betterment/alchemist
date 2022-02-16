@@ -1,6 +1,31 @@
+import 'dart:ui' as ui;
+
 import 'package:alchemist/src/blocked_text_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+class _TextCustomPainter extends CustomPainter {
+  const _TextCustomPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paragraphBuilder = ui.ParagraphBuilder(ui.ParagraphStyle())
+      ..pushStyle(ui.TextStyle(color: const Color(0xFF0000FF)))
+      ..addText('blue text');
+    final paragraph = paragraphBuilder.build()
+      ..layout(
+        ui.ParagraphConstraints(
+          width: size.width,
+        ),
+      );
+    canvas.drawParagraph(paragraph, Offset.zero);
+  }
+
+  @override
+  bool shouldRepaint(covariant _TextCustomPainter oldDelegate) {
+    return true;
+  }
+}
 
 void main() {
   group('BlockedTextPaintingContext', () {
@@ -39,6 +64,11 @@ void main() {
                 Text(
                   'red text',
                   style: TextStyle(color: Color(0xFFFF0000)),
+                ),
+                SizedBox(height: 3),
+                CustomPaint(
+                  painter: _TextCustomPainter(),
+                  size: Size(250, 20),
                 ),
               ],
             ),
