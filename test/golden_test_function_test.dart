@@ -620,6 +620,7 @@ void main() {
               name: 'scenario_button',
               child: ElevatedButton(
                 onPressed: () {},
+                onLongPress: () {},
                 child: const Text('button'),
               ),
             ),
@@ -636,7 +637,14 @@ void main() {
       goldenTest(
         'succeeds while pressed',
         fileName: 'smoke_test_pressed',
-        whilePressing: find.byType(ElevatedButton),
+        whilePerforming: press(find.byType(ElevatedButton)),
+        widget: buildSmokeTestGroup(),
+      );
+
+      goldenTest(
+        'succeeds while long pressed',
+        fileName: 'smoke_test_long_pressed',
+        whilePerforming: longPress(find.byType(ElevatedButton)),
         widget: buildSmokeTestGroup(),
       );
     });

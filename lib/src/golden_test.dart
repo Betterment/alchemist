@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/utilities.dart';
-import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -133,20 +133,20 @@ Future<T> _withForceUpdateGoldenFiles<T>(
 /// `tester.tap(finder)`, after which the tester can be pumped and settled.
 /// See [pumpOnce], [pumpNTimes] and [onlyPumpAndSettle] for more details.
 ///
-/// The [whilePressing] finder, if provided, will be used to press all widgets
-/// that match the finder during the generation and assertion phase of the test.
-/// This is useful for tests that require a widget to be pressed before it can
-/// be properly tested, such as when in tests that check if a button has the
-/// right color or animation while being pressed. See
-/// [GoldenTestWidgetTesterExtensions.pressAll] for more details.
+/// The [whilePerforming] interaction, if provided, will be called with the
+/// [WidgetTester] to perform a desired interaction during the golden test.
+/// Built-in actions, such as [press] and [longPress] are available, which
+/// press and long press the appropriate buttons, respectively. Each
+/// built-in interaction receives a finder indicating all of the widgets
+/// that should be interacted with.
 ///
-/// **Note**: If a [whilePressing] finder is provided, the widget tree is
-/// **always** pumped and settled before the assertion phase of the test.
+/// **Note**: If a built-in [whilePerforming] interaction is provided, the
+/// widget tree is **always** pumped at least once before the assertion phase
+/// of the test.
 ///
-/// **Note:** if more than one widget needs to be pressed at the same time,
-/// the given finder may match multiple widgets. However, if any matched
-/// widget does not respond to the press, all other gestures will fail,
-/// rendering the use of this argument useless.
+/// **Note:** If any matched widget does not respond to a press or long
+/// press interaction, all other gestures will fail, rendering the
+/// [whilePerforming] argument useless.
 @isTest
 void goldenTest(
   String description, {
@@ -156,7 +156,7 @@ void goldenTest(
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
-  Finder? whilePressing,
+  Interaction? whilePerforming,
   required Widget widget,
 }) {
   assert(
@@ -183,7 +183,7 @@ This logic should be handled in the [filePathResolver] function of the
       textScaleFactor: textScaleFactor,
       constraints: constraints,
       pumpBeforeTest: pumpBeforeTest,
-      whilePressing: whilePressing,
+      whilePerforming: whilePerforming,
       widget: widget,
     ),
     skip: skip,
@@ -205,8 +205,7 @@ Future<void> runGoldenTest({
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
-  Finder? whilePressing,
-  Finder? whileLongPressing,
+  Interaction? whilePerforming,
   required Widget widget,
 }) async {
   final defaultTheme = config.theme ?? ThemeData.light();
@@ -238,8 +237,7 @@ Future<void> runGoldenTest({
         constraints: constraints,
         theme: theme,
         pumpBeforeTest: pumpBeforeTest,
-        whilePressing: whilePressing,
-        whileLongPressing: whileLongPressing,
+        whilePerforming: whilePerforming,
         widget: widget,
       );
     } on TestFailure catch (e) {
@@ -274,8 +272,7 @@ Future<void> runGoldenTest({
         constraints: constraints,
         theme: theme,
         pumpBeforeTest: pumpBeforeTest,
-        whilePressing: whilePressing,
-        whileLongPressing: whileLongPressing,
+        whilePerforming: whilePerforming,
         widget: widget,
       );
     } on TestFailure catch (e) {
@@ -317,15 +314,9 @@ Future<void> _generateAndCompare({
   required BoxConstraints constraints,
   required ThemeData theme,
   required PumpAction pumpBeforeTest,
-  required Finder? whilePressing,
-  required Finder? whileLongPressing,
+  required Interaction? whilePerforming,
   required Widget widget,
 }) async {
-  assert(
-    whilePressing == null || whileLongPressing == null,
-    'Cannot provide both whilePressing and whileLongPressing.',
-  );
-
   const rootKey = Key('golden-test-root');
 
   await tester.pumpGoldenTest(
@@ -336,17 +327,12 @@ Future<void> _generateAndCompare({
     widget: widget,
   );
 
-  if (whilePressing != null) {
-    final gestures = await tester.pressAll(whilePressing);
-    await tester.pumpAndSettle();
-    addTearDown(gestures.releaseAll);
-  } else if (whileLongPressing != null) {
-    final gestures = await tester.pressAll(whileLongPressing);
-    await tester.pump(kLongPressTimeout + kPressTimeout);
-    addTearDown(gestures.releaseAll);
-  }
-
   await pumpBeforeTest(tester);
+
+  AsyncCallback? cleanup;
+  if (whilePerforming != null) {
+    cleanup = await whilePerforming(tester);
+  }
 
   final root = find.byKey(rootKey);
   final toMatch = !obscureText ? root : tester.getBlockedTextImage(root);
@@ -356,6 +342,7 @@ Future<void> _generateAndCompare({
       forceUpdate,
       () => expectLater(toMatch, matchesGoldenFile(goldenKey)),
     );
+    await cleanup?.call();
   } on TestFailure {
     if (shouldCompare) {
       rethrow;
