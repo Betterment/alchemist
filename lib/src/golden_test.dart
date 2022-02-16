@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/utilities.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -205,6 +206,7 @@ Future<void> runGoldenTest({
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   Finder? whilePressing,
+  Finder? whileLongPressing,
   required Widget widget,
 }) async {
   final defaultTheme = config.theme ?? ThemeData.light();
@@ -237,6 +239,7 @@ Future<void> runGoldenTest({
         theme: theme,
         pumpBeforeTest: pumpBeforeTest,
         whilePressing: whilePressing,
+        whileLongPressing: whileLongPressing,
         widget: widget,
       );
     } on TestFailure catch (e) {
@@ -272,6 +275,7 @@ Future<void> runGoldenTest({
         theme: theme,
         pumpBeforeTest: pumpBeforeTest,
         whilePressing: whilePressing,
+        whileLongPressing: whileLongPressing,
         widget: widget,
       );
     } on TestFailure catch (e) {
@@ -314,8 +318,14 @@ Future<void> _generateAndCompare({
   required ThemeData theme,
   required PumpAction pumpBeforeTest,
   required Finder? whilePressing,
+  required Finder? whileLongPressing,
   required Widget widget,
 }) async {
+  assert(
+    whilePressing == null || whileLongPressing == null,
+    'Cannot provide both whilePressing and whileLongPressing.',
+  );
+
   const rootKey = Key('golden-test-root');
 
   await tester.pumpGoldenTest(
@@ -329,6 +339,10 @@ Future<void> _generateAndCompare({
   if (whilePressing != null) {
     final gestures = await tester.pressAll(whilePressing);
     await tester.pumpAndSettle();
+    addTearDown(gestures.releaseAll);
+  } else if (whileLongPressing != null) {
+    final gestures = await tester.pressAll(whileLongPressing);
+    await tester.pump(kLongPressTimeout + kPressTimeout);
     addTearDown(gestures.releaseAll);
   }
 
