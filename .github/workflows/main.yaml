@@ -17,16 +17,19 @@ jobs:
       - name: Format
         run: flutter format --set-exit-if-changed .
 
-      - name: Analyze
-        run: flutter analyze lib test example
+      - name: Analyze project source
+        uses: invertase/github-action-dart-analyzer@v1
 
       - name: Run tests
-        run: flutter test --no-pub --coverage --test-randomize-ordering-seed random
+        run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
 
-      - name: Check Code Coverage
-        uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+      - name: Report code coverage
+        uses: zgosalvez/github-actions-report-lcov@v1.4.0
         with:
-          path: coverage/lcov.info
+          coverage-files: coverage/lcov.info
+          minimum-coverage: 100
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          artifact-name: code-coverage-report
 
   pana:
     runs-on: ubuntu-latest
