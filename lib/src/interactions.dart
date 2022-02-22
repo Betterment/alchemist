@@ -9,10 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 typedef Interaction = Future<AsyncCallback?> Function(WidgetTester);
 
 /// Presses all widgets matching [finder].
-Interaction press(Finder finder) => (
-      WidgetTester tester, {
-      Duration? holdFor = const Duration(milliseconds: 300),
-    }) async {
+Interaction press(
+  Finder finder, {
+  Duration? holdFor = const Duration(milliseconds: 300),
+}) =>
+    (WidgetTester tester) async {
       final gestures = await tester.pressAll(finder);
       await tester.pump(kPressTimeout);
       await tester.pump(holdFor);
