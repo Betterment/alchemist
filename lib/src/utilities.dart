@@ -56,7 +56,13 @@ to avoid unnecessary overhead.''',
 
     return [
       for (var i = 0; i < elementAmount; i++)
-        await startGesture(getCenter(finder.at(i)))
+        await startGesture(
+          getCenter(
+            finder.at(i),
+            warnIfMissed: true,
+            callee: 'pressAll',
+          ),
+        ),
     ];
   }
 

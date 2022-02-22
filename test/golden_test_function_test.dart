@@ -99,9 +99,12 @@ void main() {
       );
     }
 
-    Future<T> withUpdateGoldenFilesEnabled<T>(FutureOr<T> Function() fn) async {
+    Future<T> withUpdateGoldens<T>(
+      FutureOr<T> Function() fn, {
+      required bool updateGoldens,
+    }) async {
       final originalValue = autoUpdateGoldenFiles;
-      autoUpdateGoldenFiles = true;
+      autoUpdateGoldenFiles = updateGoldens;
       try {
         return await fn();
       } finally {
@@ -133,16 +136,19 @@ void main() {
         widget: buildGroup(),
       );
 
-      await withUpdateGoldenFilesEnabled(() async {
-        try {
-          await expectLater(
-            find.byKey(rootKey),
-            matchesGoldenFile(platformMasterReferenceFilePath),
-          );
-        } catch (e) {
-          fail('Failed to generate platform master reference file.\n$e');
-        }
-      });
+      await withUpdateGoldens(
+        () async {
+          try {
+            await expectLater(
+              find.byKey(rootKey),
+              matchesGoldenFile(platformMasterReferenceFilePath),
+            );
+          } catch (e) {
+            fail('Failed to generate platform master reference file.\n$e');
+          }
+        },
+        updateGoldens: true,
+      );
 
       await tester.cleanPump();
 
@@ -158,16 +164,19 @@ void main() {
         widget: buildGroup(),
       );
 
-      await withUpdateGoldenFilesEnabled(() async {
-        try {
-          await expectLater(
-            tester.getBlockedTextImage(find.byKey(rootKey)),
-            matchesGoldenFile(ciMasterReferenceFilePath),
-          );
-        } catch (e) {
-          fail('Failed to generate CI master reference file.\n$e');
-        }
-      });
+      await withUpdateGoldens(
+        () async {
+          try {
+            await expectLater(
+              tester.getBlockedTextImage(find.byKey(rootKey)),
+              matchesGoldenFile(ciMasterReferenceFilePath),
+            );
+          } catch (e) {
+            fail('Failed to generate CI master reference file.\n$e');
+          }
+        },
+        updateGoldens: true,
+      );
     }
 
     testWidgets(
@@ -186,14 +195,17 @@ void main() {
         final masterReferenceFile = ciMasterReferenceFile;
         final generatedFile = expectedCiGeneratedFile..deleteIfExists();
 
-        await withUpdateGoldenFilesEnabled(() async {
-          await runGoldenTest(
-            tester: tester,
-            config: AlchemistConfig.current(),
-            fileName: goldenTestFileName,
-            widget: buildGroup(),
-          );
-        });
+        await withUpdateGoldens(
+          () async {
+            await runGoldenTest(
+              tester: tester,
+              config: AlchemistConfig.current(),
+              fileName: goldenTestFileName,
+              widget: buildGroup(),
+            );
+          },
+          updateGoldens: true,
+        );
 
         await expectLater(
           tester.runAsync(generatedFile.waitUntilExists),
@@ -215,17 +227,22 @@ void main() {
 
       // Should fail.
       try {
-        await runGoldenTest(
-          tester: tester,
-          config: AlchemistConfig(
-            ciGoldensConfig: CiGoldensConfig(
-              enabled: true,
-              comparePredicate: (_) => true,
+        await withUpdateGoldens(
+          () => runGoldenTest(
+            tester: tester,
+            config: AlchemistConfig(
+              ciGoldensConfig: CiGoldensConfig(
+                enabled: true,
+                comparePredicate: (_) => true,
+              ),
+              platformGoldensConfig: const PlatformGoldensConfig(
+                enabled: false,
+              ),
             ),
-            platformGoldensConfig: const PlatformGoldensConfig(enabled: false),
+            fileName: goldenTestFileName,
+            widget: buildGroup(),
           ),
-          fileName: goldenTestFileName,
-          widget: buildGroup(),
+          updateGoldens: false,
         );
         fail('Expected test to fail.');
       } catch (e) {
@@ -255,20 +272,23 @@ void main() {
 
         // Should fail.
         try {
-          await runGoldenTest(
-            tester: tester,
-            config: AlchemistConfig(
-              ciGoldensConfig: CiGoldensConfig(
-                enabled: true,
-                comparePredicate: (_) => true,
+          await withUpdateGoldens(
+            () => runGoldenTest(
+              tester: tester,
+              config: AlchemistConfig(
+                ciGoldensConfig: CiGoldensConfig(
+                  enabled: true,
+                  comparePredicate: (_) => true,
+                ),
+                platformGoldensConfig: PlatformGoldensConfig(
+                  enabled: true,
+                  comparePredicate: (_) => true,
+                ),
               ),
-              platformGoldensConfig: PlatformGoldensConfig(
-                enabled: true,
-                comparePredicate: (_) => true,
-              ),
+              fileName: goldenTestFileName,
+              widget: buildGroup(),
             ),
-            fileName: goldenTestFileName,
-            widget: buildGroup(),
+            updateGoldens: false,
           );
           fail('Expected test to fail.');
         } catch (e) {
@@ -311,14 +331,17 @@ void main() {
             },
           ),
         ),
-        run: () => withUpdateGoldenFilesEnabled(() async {
-          await runGoldenTest(
-            tester: tester,
-            config: AlchemistConfig.current(),
-            fileName: goldenTestFileName,
-            widget: buildGroup(),
-          );
-        }),
+        run: () => withUpdateGoldens(
+          () async {
+            await runGoldenTest(
+              tester: tester,
+              config: AlchemistConfig.current(),
+              fileName: goldenTestFileName,
+              widget: buildGroup(),
+            );
+          },
+          updateGoldens: true,
+        ),
       );
 
       expectedCiGeneratedFile.deleteIfExists();
@@ -372,24 +395,27 @@ void main() {
         config: AlchemistConfig(
           theme: theme,
         ),
-        run: () => withUpdateGoldenFilesEnabled(() async {
-          await runGoldenTest(
-            tester: tester,
-            config: AlchemistConfig.current(),
-            fileName: goldenTestFileName,
-            widget: GoldenTestGroup(
-              children: [
-                GoldenTestScenario.builder(
-                  name: 'scenario',
-                  builder: (context) {
-                    providedPrimaryColor = Theme.of(context).primaryColor;
-                    return const Text('text');
-                  },
-                ),
-              ],
-            ),
-          );
-        }),
+        run: () => withUpdateGoldens(
+          () async {
+            await runGoldenTest(
+              tester: tester,
+              config: AlchemistConfig.current(),
+              fileName: goldenTestFileName,
+              widget: GoldenTestGroup(
+                children: [
+                  GoldenTestScenario.builder(
+                    name: 'scenario',
+                    builder: (context) {
+                      providedPrimaryColor = Theme.of(context).primaryColor;
+                      return const Text('text');
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+          updateGoldens: true,
+        ),
       );
 
       expectedCiGeneratedFile.deleteIfExists();
@@ -409,14 +435,17 @@ void main() {
               ciGoldensConfig: CiGoldensConfig(enabled: false),
               platformGoldensConfig: PlatformGoldensConfig(enabled: true),
             ),
-            run: () => withUpdateGoldenFilesEnabled(() async {
-              await runGoldenTest(
-                tester: tester,
-                config: AlchemistConfig.current(),
-                fileName: goldenTestFileName,
-                widget: buildGroup(),
-              );
-            }),
+            run: () => withUpdateGoldens(
+              () async {
+                await runGoldenTest(
+                  tester: tester,
+                  config: AlchemistConfig.current(),
+                  fileName: goldenTestFileName,
+                  widget: buildGroup(),
+                );
+              },
+              updateGoldens: true,
+            ),
           );
 
           await expectLater(
@@ -437,14 +466,17 @@ void main() {
               ciGoldensConfig: CiGoldensConfig(enabled: false),
               platformGoldensConfig: PlatformGoldensConfig(enabled: false),
             ),
-            run: () => withUpdateGoldenFilesEnabled(() async {
-              await runGoldenTest(
-                tester: tester,
-                config: AlchemistConfig.current(),
-                fileName: goldenTestFileName,
-                widget: buildGroup(),
-              );
-            }),
+            run: () => withUpdateGoldens(
+              () async {
+                await runGoldenTest(
+                  tester: tester,
+                  config: AlchemistConfig.current(),
+                  fileName: goldenTestFileName,
+                  widget: buildGroup(),
+                );
+              },
+              updateGoldens: true,
+            ),
           );
 
           await expectLater(
@@ -466,14 +498,17 @@ void main() {
                 comparePredicate: (_) => true,
               ),
             ),
-            run: () => withUpdateGoldenFilesEnabled(() async {
-              await runGoldenTest(
-                tester: tester,
-                config: AlchemistConfig.current(),
-                fileName: goldenTestFileName,
-                widget: buildGroup(),
-              );
-            }),
+            run: () => withUpdateGoldens(
+              () async {
+                await runGoldenTest(
+                  tester: tester,
+                  config: AlchemistConfig.current(),
+                  fileName: goldenTestFileName,
+                  widget: buildGroup(),
+                );
+              },
+              updateGoldens: true,
+            ),
           );
         },
       );
@@ -492,14 +527,17 @@ void main() {
               filePathResolver: (_) => generatedFilePath,
             ),
           ),
-          run: () => withUpdateGoldenFilesEnabled(() async {
-            await runGoldenTest(
-              tester: tester,
-              config: AlchemistConfig.current(),
-              fileName: goldenTestFileName,
-              widget: buildGroup(),
-            );
-          }),
+          run: () => withUpdateGoldens(
+            () async {
+              await runGoldenTest(
+                tester: tester,
+                config: AlchemistConfig.current(),
+                fileName: goldenTestFileName,
+                widget: buildGroup(),
+              );
+            },
+            updateGoldens: true,
+          ),
         );
 
         await expectLater(
@@ -521,14 +559,17 @@ void main() {
               platformGoldensConfig: PlatformGoldensConfig(enabled: false),
               ciGoldensConfig: CiGoldensConfig(enabled: true),
             ),
-            run: () => withUpdateGoldenFilesEnabled(() async {
-              await runGoldenTest(
-                tester: tester,
-                config: AlchemistConfig.current(),
-                fileName: goldenTestFileName,
-                widget: buildGroup(),
-              );
-            }),
+            run: () => withUpdateGoldens(
+              () async {
+                await runGoldenTest(
+                  tester: tester,
+                  config: AlchemistConfig.current(),
+                  fileName: goldenTestFileName,
+                  widget: buildGroup(),
+                );
+              },
+              updateGoldens: true,
+            ),
           );
 
           await expectLater(
@@ -549,14 +590,17 @@ void main() {
               platformGoldensConfig: PlatformGoldensConfig(enabled: false),
               ciGoldensConfig: CiGoldensConfig(enabled: false),
             ),
-            run: () => withUpdateGoldenFilesEnabled(() async {
-              await runGoldenTest(
-                tester: tester,
-                config: AlchemistConfig.current(),
-                fileName: goldenTestFileName,
-                widget: buildGroup(),
-              );
-            }),
+            run: () => withUpdateGoldens(
+              () async {
+                await runGoldenTest(
+                  tester: tester,
+                  config: AlchemistConfig.current(),
+                  fileName: goldenTestFileName,
+                  widget: buildGroup(),
+                );
+              },
+              updateGoldens: true,
+            ),
           );
 
           await expectLater(
@@ -580,14 +624,17 @@ void main() {
               filePathResolver: (_) => generatedFilePath,
             ),
           ),
-          run: () => withUpdateGoldenFilesEnabled(() async {
-            await runGoldenTest(
-              tester: tester,
-              config: AlchemistConfig.current(),
-              fileName: goldenTestFileName,
-              widget: buildGroup(),
-            );
-          }),
+          run: () => withUpdateGoldens(
+            () async {
+              await runGoldenTest(
+                tester: tester,
+                config: AlchemistConfig.current(),
+                fileName: goldenTestFileName,
+                widget: buildGroup(),
+              );
+            },
+            updateGoldens: true,
+          ),
         );
 
         await expectLater(
@@ -620,6 +667,7 @@ void main() {
               name: 'scenario_button',
               child: ElevatedButton(
                 onPressed: () {},
+                onLongPress: () {},
                 child: const Text('button'),
               ),
             ),
@@ -636,7 +684,14 @@ void main() {
       goldenTest(
         'succeeds while pressed',
         fileName: 'smoke_test_pressed',
-        whilePressing: find.byType(ElevatedButton),
+        whilePerforming: press(find.byType(ElevatedButton)),
+        widget: buildSmokeTestGroup(),
+      );
+
+      goldenTest(
+        'succeeds while long pressed',
+        fileName: 'smoke_test_long_pressed',
+        whilePerforming: longPress(find.byType(ElevatedButton)),
         widget: buildSmokeTestGroup(),
       );
     });
