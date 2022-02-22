@@ -439,6 +439,7 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 [ci_link]: https://github.com/Betterment/alchemist/actions
 [coverage_badge]: https://raw.githubusercontent.com/Betterment/alchemist/main/coverage_badge.svg
 [pub_badge]: https://img.shields.io/pub/v/alchemist.svg
+[pub_link]: https://pub.dev/packages/alchemist
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
 [golden_toolkit_pub]: https://pub.dev/packages/golden_toolkit
