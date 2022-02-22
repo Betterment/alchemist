@@ -4,7 +4,7 @@ import 'package:alchemist/alchemist.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockHostPlaform extends Mock implements HostPlatform {}
+class MockHostPlatform extends Mock implements HostPlatform {}
 
 void main() {
   group('HostPlatform', () {
@@ -33,7 +33,7 @@ void main() {
       );
 
       test('returns test value when set', () {
-        final testValue = MockHostPlaform();
+        final testValue = MockHostPlatform();
 
         HostPlatform.overrideTestValue = testValue;
         addTearDown(HostPlatform.clearOverrideTestValue);
@@ -43,7 +43,7 @@ void main() {
     });
 
     test('clearOverrideTestValue reset value to current platform', () {
-      final testValue = MockHostPlaform();
+      final testValue = MockHostPlatform();
 
       HostPlatform.overrideTestValue = testValue;
       HostPlatform.clearOverrideTestValue();
