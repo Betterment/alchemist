@@ -2,7 +2,7 @@
 
 ## Recommended Setup Guide
 
-For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide](./RECOMMENDED_SETUP_GUIDE.md).
+For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide](/RECOMMENDED_SETUP_GUIDE.md).
 
 ## Basic usage
 
