@@ -2,7 +2,7 @@
 
 ## Recommended Setup Guide
 
-For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide](./RECOMMENDED_SETUP_GUIDE.md).
+For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide][setup-guide].
 
 ## Basic usage
 
@@ -60,3 +60,5 @@ Then, simply run Flutter test and pass the `--update-goldens` flag to generate t
 ```shell
 flutter test --update-goldens
 ```
+
+[setup-guide]: https://github.com/Betterment/alchemist/blob/main/RECOMMENDED_SETUP_GUIDE.md
