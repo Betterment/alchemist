@@ -9,61 +9,42 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
-@visibleForTesting
-
-/// The different types of golden tests
-enum AlchemistVariant {
-  /// A platform-agnostic golden test
-  ci,
-
-  /// A platform-specific golden test
-  platform,
-}
-
 /// {@template alchemist_test_variant}
 /// A [TestVariant] used to run both CI and platform golden tests with one
 /// [testWidgets] function
 /// {@endtemplate}
 @visibleForTesting
-class AlchemistTestVariant extends TestVariant<AlchemistVariant> {
+class AlchemistTestVariant extends TestVariant<GoldensConfig> {
   /// {@macro alchemist_test_variant}
   AlchemistTestVariant({
     required AlchemistConfig config,
     required HostPlatform currentPlatform,
-    required String fileName,
   })  : _config = config,
-        _currentPlatform = currentPlatform,
-        _fileName = fileName;
+        _currentPlatform = currentPlatform;
 
   final AlchemistConfig _config;
   final HostPlatform _currentPlatform;
-  final String _fileName;
 
-  late AlchemistVariant _currentVariant;
-
-  @override
-  String describeValue(AlchemistVariant value) {
-    switch (value) {
-      case AlchemistVariant.ci:
-        return 'CI';
-      case AlchemistVariant.platform:
-        return _currentPlatform.operatingSystem;
-    }
-  }
+  /// The [GoldensConfig] to use for the current variant
+  GoldensConfig get currentConfig => _currentConfig;
+  late GoldensConfig _currentConfig;
 
   @override
-  Future<void> setUp(AlchemistVariant value) async {
-    _currentVariant = value;
+  String describeValue(GoldensConfig value) => value.environmentName;
+
+  @override
+  Future<void> setUp(GoldensConfig value) async {
+    _currentConfig = value;
   }
 
   @override
   Future<void> tearDown(
-    AlchemistVariant value,
+    GoldensConfig value,
     covariant AlchemistTestVariant? memento,
   ) async {}
 
   @override
-  Iterable<AlchemistVariant> get values {
+  Iterable<GoldensConfig> get values {
     final platformConfig = _config.platformGoldensConfig;
     final runPlatformTest = platformConfig.enabled &&
         platformConfig.platforms.contains(_currentPlatform);
@@ -72,52 +53,9 @@ class AlchemistTestVariant extends TestVariant<AlchemistVariant> {
     final runCiTest = ciConfig.enabled;
 
     return {
-      if (runPlatformTest) AlchemistVariant.platform,
-      if (runCiTest) AlchemistVariant.ci,
+      if (runPlatformTest) platformConfig,
+      if (runCiTest) ciConfig,
     };
-  }
-
-  /// The theme to use while running this variant
-  ThemeData get theme {
-    final defaultTheme = _config.theme ?? ThemeData.light();
-    switch (_currentVariant) {
-      case AlchemistVariant.ci:
-        return _config.ciGoldensConfig.theme ?? defaultTheme;
-      case AlchemistVariant.platform:
-        return _config.platformGoldensConfig.theme ?? defaultTheme;
-    }
-  }
-
-  /// Whether or not this variant should be compared under the current config
-  bool get shouldCompare {
-    switch (_currentVariant) {
-      case AlchemistVariant.ci:
-        return _config.ciGoldensConfig.comparePredicate(_fileName);
-
-      case AlchemistVariant.platform:
-        return _config.platformGoldensConfig.comparePredicate(_fileName);
-    }
-  }
-
-  /// The path and filename for the golden file generated in this test variant
-  String get goldenKey {
-    switch (_currentVariant) {
-      case AlchemistVariant.ci:
-        return _config.ciGoldensConfig.filePathResolver(_fileName);
-
-      case AlchemistVariant.platform:
-        return _config.platformGoldensConfig.filePathResolver(_fileName);
-    }
-  }
-
-  /// Whether the text rendering should be obscured in this variant
-  bool get obscureText {
-    switch (_currentVariant) {
-      case AlchemistVariant.ci:
-        return true;
-      case AlchemistVariant.platform:
-        return false;
-    }
   }
 }
 
@@ -289,13 +227,14 @@ This logic should be handled in the [filePathResolver] function of the
   final variant = AlchemistTestVariant(
     config: config,
     currentPlatform: currentPlatform,
-    fileName: fileName,
   );
 
   testWidgets(
     description,
     (tester) => runGoldenTest(
-      variant: variant,
+      goldensConfig: variant.currentConfig,
+      alchemistConfig: config,
+      fileName: fileName,
       tester: tester,
       forceUpdateGoldenFiles: config.forceUpdateGoldenFiles,
       textScaleFactor: textScaleFactor,
@@ -320,7 +259,9 @@ This logic should be handled in the [filePathResolver] function of the
 Future<void> runGoldenTest({
   required WidgetTester tester,
   required bool forceUpdateGoldenFiles,
-  required AlchemistTestVariant variant,
+  required GoldensConfig goldensConfig,
+  required AlchemistConfig alchemistConfig,
+  required String fileName,
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
@@ -330,12 +271,12 @@ Future<void> runGoldenTest({
   await _generateAndCompare(
     tester: tester,
     forceUpdate: forceUpdateGoldenFiles,
-    shouldCompare: variant.shouldCompare,
-    obscureText: variant.obscureText,
-    goldenKey: variant.goldenKey,
+    shouldCompare: goldensConfig.comparePredicate(fileName),
+    obscureText: goldensConfig.obscureText,
+    goldenKey: goldensConfig.filePathResolver(fileName),
     textScaleFactor: textScaleFactor,
     constraints: constraints,
-    theme: variant.theme,
+    theme: goldensConfig.theme ?? alchemistConfig.theme ?? ThemeData.light(),
     pumpBeforeTest: pumpBeforeTest,
     whilePerforming: whilePerforming,
     widget: widget,

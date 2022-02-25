@@ -81,29 +81,29 @@ class HostPlatform {
   /// Returns all values [HostPlatform] can represent.
   static const values = {macOS, linux, windows};
 
-  /// The Apple macOS platform (`"macos"`).
+  /// The Apple macOS platform (`"macOS"`).
   ///
   /// See [HostPlatform] for more information.
-  static const macOS = HostPlatform._('macos');
+  static const macOS = HostPlatform._('macOS');
 
-  /// The Linux platform (`"linux"`).
+  /// The Linux platform (`"Linux"`).
   ///
   /// See [HostPlatform] for more information.
-  static const linux = HostPlatform._('linux');
+  static const linux = HostPlatform._('Linux');
 
-  /// The Microsoft Windows platform (`"windows"`).
+  /// The Microsoft Windows platform (`"Windows"`).
   ///
   /// See [HostPlatform] for more information.
-  static const windows = HostPlatform._('windows');
+  static const windows = HostPlatform._('Windows');
 
   /// The name of the current platform.
   ///
   /// This will return the name of this [HostPlatform].
   ///
   /// ```dart
-  /// HostPlatform.macOS.operatingSystem; // "macos"
-  /// HostPlatform.linux.operatingSystem; // "linux"
-  /// HostPlatform.windows.operatingSystem; // "windows"
+  /// HostPlatform.macOS.operatingSystem; // "macOS"
+  /// HostPlatform.linux.operatingSystem; // "Linux"
+  /// HostPlatform.windows.operatingSystem; // "Windows"
   /// ```
   String get operatingSystem => _value;
 
