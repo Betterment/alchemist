@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 /// A function that returns the path of a golden test file for a given test's
 /// [fileName]. This function's return value should include the `.png`
 /// extension.
-typedef FilePathResolver = String Function(String fileName);
+typedef FilePathResolver = FutureOr<String> Function(String fileName);
 
 /// A function that returns boolean indicating whether or not a
 /// golden file with the given [fileName] should be compared.
-typedef TestComparisonPredicate = bool Function(String fileName);
+typedef TestComparisonPredicate = FutureOr<bool> Function(String fileName);
 
 /// {@template alchemist_config}
 /// A configuration object that contains settings used by Alchemist for
@@ -310,12 +310,12 @@ abstract class GoldensConfig extends Equatable {
   /// test.
   ///
   /// See [comparePredicate] for more details.
-  bool _defaultComparePredicate(String _);
+  FutureOr<bool> _defaultComparePredicate(String _);
 
   /// The default [FilePathResolver] for the [filePathResolver] field.
   ///
   /// See [filePathResolver] for more details.
-  String _defaultFilePathResolver(String fileName) {
+  FutureOr<String> _defaultFilePathResolver(String fileName) {
     return 'goldens/${environmentName.toLowerCase()}/$fileName.png';
   }
 
@@ -419,7 +419,7 @@ class PlatformGoldensConfig extends GoldensConfig {
   static const _defaultPlatforms = HostPlatform.values;
 
   @override
-  bool _defaultComparePredicate(String _) => false;
+  FutureOr<bool> _defaultComparePredicate(String _) => false;
 
   /// The set of [HostPlatform]s that platform golden tests will run on.
   ///
@@ -506,7 +506,7 @@ class CiGoldensConfig extends GoldensConfig {
   String get environmentName => 'CI';
 
   @override
-  bool _defaultComparePredicate(String _) => true;
+  FutureOr<bool> _defaultComparePredicate(String _) => true;
 
   @override
   CiGoldensConfig copyWith({

@@ -271,9 +271,9 @@ Future<void> runGoldenTest({
   await _generateAndCompare(
     tester: tester,
     forceUpdate: forceUpdateGoldenFiles,
-    shouldCompare: goldensConfig.comparePredicate(fileName),
+    shouldCompare: await goldensConfig.comparePredicate(fileName),
     obscureText: goldensConfig.obscureText,
-    goldenKey: goldensConfig.filePathResolver(fileName),
+    goldenKey: await goldensConfig.filePathResolver(fileName),
     textScaleFactor: textScaleFactor,
     constraints: constraints,
     theme: goldensConfig.theme ?? alchemistConfig.theme ?? ThemeData.light(),

@@ -170,12 +170,8 @@ void main() {
         expect(
           AlchemistConfig(
             forceUpdateGoldenFiles: true,
-            platformGoldensConfig: PlatformGoldensConfig(
-              enabled: originalEnabled,
-            ),
-            ciGoldensConfig: CiGoldensConfig(
-              enabled: originalEnabled,
-            ),
+            platformGoldensConfig: PlatformGoldensConfig(),
+            ciGoldensConfig: CiGoldensConfig(),
           ).merge(
             AlchemistConfig(
               platformGoldensConfig: PlatformGoldensConfig(
@@ -222,7 +218,7 @@ void main() {
         PlatformGoldensConfig(),
         isNot(
           PlatformGoldensConfig(
-            filePathResolver: (_) => 'foo',
+            filePathResolver: (_) async => 'foo',
           ),
         ),
       );
@@ -321,9 +317,7 @@ void main() {
         const appliedEnabled = false;
 
         expect(
-          PlatformGoldensConfig(
-            enabled: initialEnabled,
-          ).merge(
+          PlatformGoldensConfig().merge(
             PlatformGoldensConfig(
               enabled: appliedEnabled,
             ),
@@ -346,7 +340,7 @@ void main() {
         CiGoldensConfig(),
         isNot(
           CiGoldensConfig(
-            filePathResolver: (_) => 'foo',
+            filePathResolver: (_) async => 'foo',
           ),
         ),
       );
@@ -414,9 +408,7 @@ void main() {
         const appliedEnabled = false;
 
         expect(
-          CiGoldensConfig(
-            enabled: initialEnabled,
-          ).merge(
+          CiGoldensConfig().merge(
             CiGoldensConfig(
               enabled: appliedEnabled,
             ),
