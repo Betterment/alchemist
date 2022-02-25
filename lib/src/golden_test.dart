@@ -9,6 +9,123 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
+@visibleForTesting
+
+/// The different types of golden tests
+enum AlchemistVariant {
+  /// A platform-agnostic golden test
+  ci,
+
+  /// A platform-specific golden test
+  platform,
+}
+
+/// {@template alchemist_test_variant}
+/// A [TestVariant] used to run both CI and platform golden tests with one
+/// [testWidgets] function
+/// {@endtemplate}
+@visibleForTesting
+class AlchemistTestVariant extends TestVariant<AlchemistVariant> {
+  /// {@macro alchemist_test_variant}
+  AlchemistTestVariant({
+    required AlchemistConfig config,
+    required HostPlatform currentPlatform,
+    required String fileName,
+  })  : _config = config,
+        _currentPlatform = currentPlatform,
+        _fileName = fileName;
+
+  final AlchemistConfig _config;
+  final HostPlatform _currentPlatform;
+  final String _fileName;
+
+  late AlchemistVariant _currentVariant;
+
+  @override
+  String describeValue(AlchemistVariant value) {
+    switch (value) {
+      case AlchemistVariant.ci:
+        return 'CI';
+      case AlchemistVariant.platform:
+        return _currentPlatform.operatingSystem;
+    }
+  }
+
+  @override
+  Future<void> setUp(AlchemistVariant value) async {
+    _currentVariant = value;
+  }
+
+  @override
+  Future<void> tearDown(
+    AlchemistVariant value,
+    covariant AlchemistTestVariant? memento,
+  ) async {}
+
+  @override
+  Iterable<AlchemistVariant> get values {
+    final platformConfig = _config.platformGoldensConfig;
+    final runPlatformTest = platformConfig.enabled &&
+        platformConfig.platforms.contains(_currentPlatform);
+
+    final ciConfig = _config.ciGoldensConfig;
+    final runCiTest = ciConfig.enabled;
+
+    return {
+      if (runPlatformTest) AlchemistVariant.platform,
+      if (runCiTest) AlchemistVariant.ci,
+    };
+  }
+
+  /// The theme to use while running this variant
+  ThemeData get theme {
+    final defaultTheme = _config.theme ?? ThemeData.light();
+    switch (_currentVariant) {
+      case AlchemistVariant.ci:
+        final baseTheme = _config.ciGoldensConfig.theme ?? defaultTheme;
+        return baseTheme.copyWith(
+          textTheme: baseTheme.textTheme.apply(
+            fontFamily: 'Ahem',
+          ),
+        );
+      case AlchemistVariant.platform:
+        return _config.platformGoldensConfig.theme ?? defaultTheme;
+    }
+  }
+
+  /// Whether or not this variant should be compared under the current config
+  bool get shouldCompare {
+    switch (_currentVariant) {
+      case AlchemistVariant.ci:
+        return _config.ciGoldensConfig.comparePredicate(_fileName);
+
+      case AlchemistVariant.platform:
+        return _config.platformGoldensConfig.comparePredicate(_fileName);
+    }
+  }
+
+  /// The path and filename for the golden file generated in this test variant
+  String get goldenKey {
+    switch (_currentVariant) {
+      case AlchemistVariant.ci:
+        return _config.ciGoldensConfig.filePathResolver(_fileName);
+
+      case AlchemistVariant.platform:
+        return _config.platformGoldensConfig.filePathResolver(_fileName);
+    }
+  }
+
+  /// Whether the text rendering should be obscured in this variant
+  bool get obscureText {
+    switch (_currentVariant) {
+      case AlchemistVariant.ci:
+        return true;
+      case AlchemistVariant.platform:
+        return false;
+    }
+  }
+}
+
 /// When set to `true`, the [goldenTest] method will skip setup.
 ///
 /// Only used internally for testing.
@@ -173,13 +290,19 @@ This logic should be handled in the [filePathResolver] function of the
   }
 
   final config = AlchemistConfig.current();
+  final currentPlatform = HostPlatform.current();
+  final variant = AlchemistTestVariant(
+    config: config,
+    currentPlatform: currentPlatform,
+    fileName: fileName,
+  );
 
   testWidgets(
     description,
     (tester) => runGoldenTest(
+      variant: variant,
       tester: tester,
-      config: config,
-      fileName: fileName,
+      forceUpdateGoldenFiles: config.forceUpdateGoldenFiles,
       textScaleFactor: textScaleFactor,
       constraints: constraints,
       pumpBeforeTest: pumpBeforeTest,
@@ -188,6 +311,7 @@ This logic should be handled in the [filePathResolver] function of the
     ),
     skip: skip,
     tags: tags,
+    variant: variant,
   );
 }
 
@@ -200,105 +324,27 @@ This logic should be handled in the [filePathResolver] function of the
 @visibleForTesting
 Future<void> runGoldenTest({
   required WidgetTester tester,
-  required AlchemistConfig config,
-  required String fileName,
+  required bool forceUpdateGoldenFiles,
+  required AlchemistTestVariant variant,
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   Interaction? whilePerforming,
   required Widget widget,
 }) async {
-  final defaultTheme = config.theme ?? ThemeData.light();
-
-  final currentPlatform = HostPlatform.current();
-
-  final platformConfig = config.platformGoldensConfig;
-  final runPlatformTest = platformConfig.enabled &&
-      platformConfig.platforms.contains(currentPlatform);
-
-  final ciConfig = config.ciGoldensConfig;
-  final runCiTest = ciConfig.enabled;
-
-  final failures = <TestFailure>[];
-
-  if (runPlatformTest) {
-    final shouldCompare = platformConfig.comparePredicate(fileName);
-    final theme = config.platformGoldensConfig.theme ?? defaultTheme;
-    final goldenKey = config.platformGoldensConfig.filePathResolver(fileName);
-
-    try {
-      await _generateAndCompare(
-        tester: tester,
-        forceUpdate: config.forceUpdateGoldenFiles,
-        shouldCompare: shouldCompare,
-        obscureText: false,
-        goldenKey: goldenKey,
-        textScaleFactor: textScaleFactor,
-        constraints: constraints,
-        theme: theme,
-        pumpBeforeTest: pumpBeforeTest,
-        whilePerforming: whilePerforming,
-        widget: widget,
-      );
-    } on TestFailure catch (e) {
-      failures.add(e);
-    }
-  }
-
-  if (runPlatformTest && runCiTest) {
-    await tester.cleanPump();
-  }
-
-  if (runCiTest) {
-    final shouldCompare = ciConfig.comparePredicate(fileName);
-
-    final baseTheme = config.ciGoldensConfig.theme ?? defaultTheme;
-    final theme = baseTheme.copyWith(
-      textTheme: baseTheme.textTheme.apply(
-        fontFamily: 'Ahem',
-      ),
-    );
-
-    final goldenKey = config.ciGoldensConfig.filePathResolver(fileName);
-
-    try {
-      await _generateAndCompare(
-        tester: tester,
-        forceUpdate: config.forceUpdateGoldenFiles,
-        shouldCompare: shouldCompare,
-        obscureText: true,
-        goldenKey: goldenKey,
-        textScaleFactor: textScaleFactor,
-        constraints: constraints,
-        theme: theme,
-        pumpBeforeTest: pumpBeforeTest,
-        whilePerforming: whilePerforming,
-        widget: widget,
-      );
-    } on TestFailure catch (e) {
-      failures.add(e);
-    }
-  }
-
-  if (failures.length == 1) {
-    // ignore: only_throw_errors
-    throw failures.first;
-  } else if (failures.isNotEmpty) {
-    const messagePrefix =
-        'Multiple test failures occurred while running golden tests.';
-
-    final indentedFailureMessages = <String>[];
-    for (final failure in failures) {
-      final indentedMessage = failure.message
-          ?.splitMapJoin('\n', onNonMatch: (match) => '  $match');
-      indentedFailureMessages.add(indentedMessage ?? '<No message given>');
-    }
-
-    final message = '$messagePrefix\n\n${indentedFailureMessages.join('\n\n')}';
-
-    // ignore: only_throw_errors
-    throw TestFailure(message);
-  }
+  await _generateAndCompare(
+    tester: tester,
+    forceUpdate: forceUpdateGoldenFiles,
+    shouldCompare: variant.shouldCompare,
+    obscureText: variant.obscureText,
+    goldenKey: variant.goldenKey,
+    textScaleFactor: textScaleFactor,
+    constraints: constraints,
+    theme: variant.theme,
+    pumpBeforeTest: pumpBeforeTest,
+    whilePerforming: whilePerforming,
+    widget: widget,
+  );
 }
 
 /// Runs a single golden test expectation.
