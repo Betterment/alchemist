@@ -82,12 +82,7 @@ class AlchemistTestVariant extends TestVariant<AlchemistVariant> {
     final defaultTheme = _config.theme ?? ThemeData.light();
     switch (_currentVariant) {
       case AlchemistVariant.ci:
-        final baseTheme = _config.ciGoldensConfig.theme ?? defaultTheme;
-        return baseTheme.copyWith(
-          textTheme: baseTheme.textTheme.apply(
-            fontFamily: 'Ahem',
-          ),
-        );
+        return _config.ciGoldensConfig.theme ?? defaultTheme;
       case AlchemistVariant.platform:
         return _config.platformGoldensConfig.theme ?? defaultTheme;
     }
@@ -369,7 +364,13 @@ Future<void> _generateAndCompare({
     rootKey: rootKey,
     textScaleFactor: textScaleFactor,
     constraints: constraints,
-    theme: theme,
+    theme: theme.copyWith(
+      textTheme: obscureText
+          ? theme.textTheme.apply(
+              fontFamily: 'Ahem',
+            )
+          : theme.textTheme,
+    ),
     widget: widget,
   );
 
