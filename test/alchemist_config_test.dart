@@ -164,7 +164,6 @@ void main() {
       });
 
       test('merges nested (deep) fields', () {
-        const originalEnabled = true;
         final appliedTheme = ThemeData.dark();
 
         expect(
@@ -313,7 +312,6 @@ void main() {
       });
 
       test('merges fields', () {
-        const initialEnabled = true;
         const appliedEnabled = false;
 
         expect(
@@ -404,7 +402,6 @@ void main() {
       });
 
       test('merges fields', () {
-        const initialEnabled = true;
         const appliedEnabled = false;
 
         expect(
