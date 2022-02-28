@@ -194,12 +194,15 @@ void main() {
 
         final masterReferenceFile = ciMasterReferenceFile;
         final generatedFile = expectedCiGeneratedFile..deleteIfExists();
+        final config = AlchemistConfig.current();
 
         await withUpdateGoldens(
           () async {
             await runGoldenTest(
               tester: tester,
-              config: AlchemistConfig.current(),
+              forceUpdateGoldenFiles: config.forceUpdateGoldenFiles,
+              goldensConfig: config.ciGoldensConfig,
+              alchemistConfig: config,
               fileName: goldenTestFileName,
               widget: buildGroup(),
             );
@@ -225,26 +228,40 @@ void main() {
 
       Object? error;
 
+      final config = AlchemistConfig(
+        ciGoldensConfig: CiGoldensConfig(
+          comparePredicate: (_) => true,
+        ),
+        platformGoldensConfig: const PlatformGoldensConfig(
+          enabled: false,
+        ),
+      );
+
       // Should fail.
       try {
         await withUpdateGoldens(
           () => runGoldenTest(
             tester: tester,
-            config: AlchemistConfig(
-              ciGoldensConfig: CiGoldensConfig(
-                enabled: true,
-                comparePredicate: (_) => true,
-              ),
-              platformGoldensConfig: const PlatformGoldensConfig(
-                enabled: false,
-              ),
-            ),
+            alchemistConfig: config,
             fileName: goldenTestFileName,
             widget: buildGroup(),
+            forceUpdateGoldenFiles: config.forceUpdateGoldenFiles,
+            goldensConfig: config.ciGoldensConfig,
           ),
           updateGoldens: false,
         );
-        fail('Expected test to fail.');
+        await withUpdateGoldens(
+          () => runGoldenTest(
+            tester: tester,
+            alchemistConfig: config,
+            fileName: goldenTestFileName,
+            widget: buildGroup(),
+            forceUpdateGoldenFiles: config.forceUpdateGoldenFiles,
+            goldensConfig: config.platformGoldensConfig,
+          ),
+          updateGoldens: false,
+        );
+        fail('Expected a test to fail.');
       } catch (e) {
         error = e;
       }
@@ -269,22 +286,33 @@ void main() {
         expectedPlatformGeneratedFile.deleteIfExists();
 
         Object? error;
-
+        final config = AlchemistConfig(
+          ciGoldensConfig: CiGoldensConfig(
+            comparePredicate: (_) => true,
+          ),
+          platformGoldensConfig: PlatformGoldensConfig(
+            comparePredicate: (_) => true,
+          ),
+        );
         // Should fail.
         try {
           await withUpdateGoldens(
             () => runGoldenTest(
               tester: tester,
-              config: AlchemistConfig(
-                ciGoldensConfig: CiGoldensConfig(
-                  enabled: true,
-                  comparePredicate: (_) => true,
-                ),
-                platformGoldensConfig: PlatformGoldensConfig(
-                  enabled: true,
-                  comparePredicate: (_) => true,
-                ),
-              ),
+              alchemistConfig: config,
+              goldensConfig: config.ciGoldensConfig,
+              forceUpdateGoldenFiles: config.forceUpdateGoldenFiles,
+              fileName: goldenTestFileName,
+              widget: buildGroup(),
+            ),
+            updateGoldens: false,
+          );
+          await withUpdateGoldens(
+            () => runGoldenTest(
+              tester: tester,
+              alchemistConfig: config,
+              goldensConfig: config.platformGoldensConfig,
+              forceUpdateGoldenFiles: config.forceUpdateGoldenFiles,
               fileName: goldenTestFileName,
               widget: buildGroup(),
             ),
@@ -335,7 +363,10 @@ void main() {
           () async {
             await runGoldenTest(
               tester: tester,
-              config: AlchemistConfig.current(),
+              alchemistConfig: AlchemistConfig.current(),
+              goldensConfig: AlchemistConfig.current().platformGoldensConfig,
+              forceUpdateGoldenFiles:
+                  AlchemistConfig.current().forceUpdateGoldenFiles,
               fileName: goldenTestFileName,
               widget: buildGroup(),
             );
@@ -359,12 +390,15 @@ void main() {
         await AlchemistConfig.runWithConfig(
           config: const AlchemistConfig(
             forceUpdateGoldenFiles: true,
-            ciGoldensConfig: CiGoldensConfig(enabled: true),
-            platformGoldensConfig: PlatformGoldensConfig(enabled: true),
+            ciGoldensConfig: CiGoldensConfig(),
+            platformGoldensConfig: PlatformGoldensConfig(),
           ),
           run: () => runGoldenTest(
             tester: tester,
-            config: AlchemistConfig.current(),
+            alchemistConfig: AlchemistConfig.current(),
+            goldensConfig: AlchemistConfig.current().platformGoldensConfig,
+            forceUpdateGoldenFiles:
+                AlchemistConfig.current().forceUpdateGoldenFiles,
             fileName: goldenTestFileName,
             widget: buildGroup(),
           ),
@@ -399,7 +433,10 @@ void main() {
           () async {
             await runGoldenTest(
               tester: tester,
-              config: AlchemistConfig.current(),
+              alchemistConfig: AlchemistConfig.current(),
+              goldensConfig: AlchemistConfig.current().platformGoldensConfig,
+              forceUpdateGoldenFiles:
+                  AlchemistConfig.current().forceUpdateGoldenFiles,
               fileName: goldenTestFileName,
               widget: GoldenTestGroup(
                 children: [
@@ -433,13 +470,17 @@ void main() {
           await AlchemistConfig.runWithConfig(
             config: const AlchemistConfig(
               ciGoldensConfig: CiGoldensConfig(enabled: false),
-              platformGoldensConfig: PlatformGoldensConfig(enabled: true),
+              platformGoldensConfig: PlatformGoldensConfig(),
             ),
             run: () => withUpdateGoldens(
               () async {
                 await runGoldenTest(
                   tester: tester,
-                  config: AlchemistConfig.current(),
+                  alchemistConfig: AlchemistConfig.current(),
+                  goldensConfig:
+                      AlchemistConfig.current().platformGoldensConfig,
+                  forceUpdateGoldenFiles:
+                      AlchemistConfig.current().forceUpdateGoldenFiles,
                   fileName: goldenTestFileName,
                   widget: buildGroup(),
                 );
@@ -470,7 +511,11 @@ void main() {
               () async {
                 await runGoldenTest(
                   tester: tester,
-                  config: AlchemistConfig.current(),
+                  alchemistConfig: AlchemistConfig.current(),
+                  goldensConfig:
+                      AlchemistConfig.current().platformGoldensConfig,
+                  forceUpdateGoldenFiles:
+                      AlchemistConfig.current().forceUpdateGoldenFiles,
                   fileName: goldenTestFileName,
                   widget: buildGroup(),
                 );
@@ -494,7 +539,6 @@ void main() {
             config: AlchemistConfig(
               ciGoldensConfig: const CiGoldensConfig(enabled: false),
               platformGoldensConfig: PlatformGoldensConfig(
-                enabled: true,
                 comparePredicate: (_) => true,
               ),
             ),
@@ -502,7 +546,11 @@ void main() {
               () async {
                 await runGoldenTest(
                   tester: tester,
-                  config: AlchemistConfig.current(),
+                  alchemistConfig: AlchemistConfig.current(),
+                  goldensConfig:
+                      AlchemistConfig.current().platformGoldensConfig,
+                  forceUpdateGoldenFiles:
+                      AlchemistConfig.current().forceUpdateGoldenFiles,
                   fileName: goldenTestFileName,
                   widget: buildGroup(),
                 );
@@ -523,7 +571,6 @@ void main() {
           config: AlchemistConfig(
             ciGoldensConfig: const CiGoldensConfig(enabled: false),
             platformGoldensConfig: PlatformGoldensConfig(
-              enabled: true,
               filePathResolver: (_) => generatedFilePath,
             ),
           ),
@@ -531,7 +578,10 @@ void main() {
             () async {
               await runGoldenTest(
                 tester: tester,
-                config: AlchemistConfig.current(),
+                alchemistConfig: AlchemistConfig.current(),
+                goldensConfig: AlchemistConfig.current().platformGoldensConfig,
+                forceUpdateGoldenFiles:
+                    AlchemistConfig.current().forceUpdateGoldenFiles,
                 fileName: goldenTestFileName,
                 widget: buildGroup(),
               );
@@ -557,13 +607,17 @@ void main() {
           await AlchemistConfig.runWithConfig(
             config: const AlchemistConfig(
               platformGoldensConfig: PlatformGoldensConfig(enabled: false),
-              ciGoldensConfig: CiGoldensConfig(enabled: true),
+              ciGoldensConfig: CiGoldensConfig(),
             ),
             run: () => withUpdateGoldens(
               () async {
                 await runGoldenTest(
                   tester: tester,
-                  config: AlchemistConfig.current(),
+                  alchemistConfig: AlchemistConfig.current(),
+                  goldensConfig:
+                      AlchemistConfig.current().platformGoldensConfig,
+                  forceUpdateGoldenFiles:
+                      AlchemistConfig.current().forceUpdateGoldenFiles,
                   fileName: goldenTestFileName,
                   widget: buildGroup(),
                 );
@@ -594,7 +648,11 @@ void main() {
               () async {
                 await runGoldenTest(
                   tester: tester,
-                  config: AlchemistConfig.current(),
+                  alchemistConfig: AlchemistConfig.current(),
+                  goldensConfig:
+                      AlchemistConfig.current().platformGoldensConfig,
+                  forceUpdateGoldenFiles:
+                      AlchemistConfig.current().forceUpdateGoldenFiles,
                   fileName: goldenTestFileName,
                   widget: buildGroup(),
                 );
@@ -620,7 +678,6 @@ void main() {
           config: AlchemistConfig(
             platformGoldensConfig: const PlatformGoldensConfig(enabled: false),
             ciGoldensConfig: CiGoldensConfig(
-              enabled: true,
               filePathResolver: (_) => generatedFilePath,
             ),
           ),
@@ -628,7 +685,10 @@ void main() {
             () async {
               await runGoldenTest(
                 tester: tester,
-                config: AlchemistConfig.current(),
+                alchemistConfig: AlchemistConfig.current(),
+                goldensConfig: AlchemistConfig.current().platformGoldensConfig,
+                forceUpdateGoldenFiles:
+                    AlchemistConfig.current().forceUpdateGoldenFiles,
                 fileName: goldenTestFileName,
                 widget: buildGroup(),
               );
