@@ -1,70 +1,13 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:alchemist/alchemist.dart';
+import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-
-/// {@template alchemist_test_variant}
-/// A [TestVariant] used to run both CI and platform golden tests with one
-/// [testWidgets] function
-/// {@endtemplate}
-@visibleForTesting
-class AlchemistTestVariant extends TestVariant<GoldensConfig> {
-  /// {@macro alchemist_test_variant}
-  AlchemistTestVariant({
-    required AlchemistConfig config,
-    required HostPlatform currentPlatform,
-  })  : _config = config,
-        _currentPlatform = currentPlatform;
-
-  final AlchemistConfig _config;
-  final HostPlatform _currentPlatform;
-
-  /// The [GoldensConfig] to use for the current variant
-  GoldensConfig get currentConfig => _currentConfig;
-  late GoldensConfig _currentConfig;
-
-  @override
-  String describeValue(GoldensConfig value) => value.environmentName;
-
-  @override
-  Future<void> setUp(GoldensConfig value) async {
-    _currentConfig = value;
-  }
-
-  @override
-  Future<void> tearDown(
-    GoldensConfig value,
-    covariant AlchemistTestVariant? memento,
-  ) async {}
-
-  @override
-  Iterable<GoldensConfig> get values {
-    final platformConfig = _config.platformGoldensConfig;
-    final runPlatformTest = platformConfig.enabled &&
-        platformConfig.platforms.contains(_currentPlatform);
-
-    final ciConfig = _config.ciGoldensConfig;
-    final runCiTest = ciConfig.enabled;
-
-    return {
-      if (runPlatformTest) platformConfig,
-      if (runCiTest) ciConfig,
-    };
-  }
-}
-
-/// When set to `true`, the [goldenTest] method will skip setup.
-///
-/// Only used internally for testing.
-@protected
-@visibleForTesting
-bool debugSkipGoldenTestSetup = false;
 
 /// An internal function that executes all necessary setup steps required to run
 /// golden tests.
@@ -98,32 +41,6 @@ Future<void> loadFontsForTesting() async {
     }
 
     await loader.load();
-  }
-}
-
-/// An internal function that forces golden files to be regenerated while
-/// executing the given function [fn]. Afterwards, the flag is reset to its
-/// original value.
-///
-/// If [forceUpdate] is `true`, the golden files will be regenerated even if
-/// they already exist. Otherwise, the flag is ignored and the function is
-/// executed as usual.
-///
-/// Used by [goldenTest] to force golden files to be regenerated.
-Future<T> _withForceUpdateGoldenFiles<T>(
-  bool forceUpdate,
-  FutureOr<T> Function() fn,
-) async {
-  if (!forceUpdate) {
-    return await fn();
-  }
-
-  final originalValue = autoUpdateGoldenFiles;
-  autoUpdateGoldenFiles = true;
-  try {
-    return await fn();
-  } finally {
-    autoUpdateGoldenFiles = originalValue;
   }
 }
 
@@ -201,7 +118,7 @@ Future<T> _withForceUpdateGoldenFiles<T>(
 void goldenTest(
   String description, {
   required String fileName,
-  bool? skip,
+  bool skip = false,
   List<String> tags = const ['golden'],
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
@@ -218,27 +135,31 @@ This logic should be handled in the [filePathResolver] function of the
 [PlatformGoldensConfig] and [CiGoldensConfig] classes in [AlchemistConfig].''',
   );
 
-  if (!debugSkipGoldenTestSetup || (skip ?? false)) {
-    setUp(_setUpGoldenTests);
+  final config = AlchemistConfig.current();
+
+  if (!skip) {
+    config.adapter.setUp(_setUpGoldenTests);
   }
 
-  final config = AlchemistConfig.current();
   final currentPlatform = HostPlatform.current();
   final variant = AlchemistTestVariant(
     config: config,
     currentPlatform: currentPlatform,
   );
+  final goldensConfig = variant.currentConfig;
 
-  testWidgets(
+  testWidgetsFn(
     description,
-    (tester) => runGoldenTest(
-      goldensConfig: variant.currentConfig,
-      alchemistConfig: config,
-      fileName: fileName,
+    (tester) async => runGoldenTest(
       tester: tester,
-      forceUpdateGoldenFiles: config.forceUpdateGoldenFiles,
+      adapter: config.adapter,
+      forceUpdate: config.forceUpdateGoldenFiles,
+      shouldCompare: await goldensConfig.comparePredicate(fileName),
+      obscureText: goldensConfig.obscureText,
+      goldenKey: await goldensConfig.filePathResolver(fileName),
       textScaleFactor: textScaleFactor,
       constraints: constraints,
+      theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
       pumpBeforeTest: pumpBeforeTest,
       whilePerforming: whilePerforming,
       widget: widget,
@@ -249,68 +170,41 @@ This logic should be handled in the [filePathResolver] function of the
   );
 }
 
-/// Internal method that runs a golden test for each enabled test type (platform
-/// and CI).
-///
-/// Do not use this method directly. Instead, use [goldenTest] to run a golden
-/// test.
+/// Runs a single golden test expectation.
 @protected
 @visibleForTesting
 Future<void> runGoldenTest({
   required WidgetTester tester,
-  required bool forceUpdateGoldenFiles,
-  required GoldensConfig goldensConfig,
-  required AlchemistConfig alchemistConfig,
-  required String fileName,
+  required GoldenTestAdapter adapter,
+  required Object goldenKey,
+  required Widget widget,
+  bool forceUpdate = false,
+  bool shouldCompare = true,
+  bool obscureText = false,
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
+  ThemeData? theme,
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   Interaction? whilePerforming,
-  required Widget widget,
 }) async {
-  await _generateAndCompare(
-    tester: tester,
-    forceUpdate: forceUpdateGoldenFiles,
-    shouldCompare: await goldensConfig.comparePredicate(fileName),
-    obscureText: goldensConfig.obscureText,
-    goldenKey: await goldensConfig.filePathResolver(fileName),
-    textScaleFactor: textScaleFactor,
-    constraints: constraints,
-    theme: goldensConfig.theme ?? alchemistConfig.theme ?? ThemeData.light(),
-    pumpBeforeTest: pumpBeforeTest,
-    whilePerforming: whilePerforming,
-    widget: widget,
+  assert(
+    goldenKey is String || goldenKey is Uri,
+    'Golden key must be a String or Uri.',
   );
-}
 
-/// Runs a single golden test expectation.
-///
-/// Used internally by [runGoldenTest] for each type of golden test.
-Future<void> _generateAndCompare({
-  required WidgetTester tester,
-  required bool forceUpdate,
-  required bool shouldCompare,
-  required bool obscureText,
-  required Object goldenKey,
-  required double textScaleFactor,
-  required BoxConstraints constraints,
-  required ThemeData theme,
-  required PumpAction pumpBeforeTest,
-  required Interaction? whilePerforming,
-  required Widget widget,
-}) async {
+  final themeData = theme ?? ThemeData.light();
   const rootKey = Key('golden-test-root');
 
   await tester.pumpGoldenTest(
     rootKey: rootKey,
     textScaleFactor: textScaleFactor,
     constraints: constraints,
-    theme: theme.copyWith(
+    theme: themeData.copyWith(
       textTheme: obscureText
-          ? theme.textTheme.apply(
+          ? themeData.textTheme.apply(
               fontFamily: 'Ahem',
             )
-          : theme.textTheme,
+          : themeData.textTheme,
     ),
     widget: widget,
   );
@@ -326,9 +220,9 @@ Future<void> _generateAndCompare({
   final toMatch = !obscureText ? root : tester.getBlockedTextImage(root);
 
   try {
-    await _withForceUpdateGoldenFiles(
-      forceUpdate,
-      () => expectLater(toMatch, matchesGoldenFile(goldenKey)),
+    await adapter.withForceUpdateGoldenFiles(
+      forceUpdate: forceUpdate,
+      callback: adapter.goldenFileExpectation(toMatch, goldenKey),
     );
     await cleanup?.call();
   } on TestFailure {

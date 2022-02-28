@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
+import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -71,10 +72,12 @@ class AlchemistConfig extends Equatable {
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
+    GoldenTestAdapter? adapter,
   })  : _forceUpdateGoldenFiles = forceUpdateGoldenFiles,
         _theme = theme,
         _platformGoldensConfig = platformGoldensConfig,
-        _ciGoldensConfig = ciGoldensConfig;
+        _ciGoldensConfig = ciGoldensConfig,
+        adapter = adapter ?? const FlutterGoldenTestAdapter();
 
   /// The instance of the [AlchemistConfig] in the current zone used by the
   /// `alchemist` package.
@@ -182,7 +185,7 @@ class AlchemistConfig extends Equatable {
   ThemeData? get theme => _theme;
   final ThemeData? _theme;
 
-  /// The configuration for human readable golden tests running in non-CI
+  /// The configuration for human-readable golden tests running in non-CI
   /// environments.
   ///
   /// This contains various settings used by [goldenTest] to determine whether
@@ -199,18 +202,24 @@ class AlchemistConfig extends Equatable {
       _ciGoldensConfig ?? const CiGoldensConfig();
   final CiGoldensConfig? _ciGoldensConfig;
 
+  /// A [GoldenTestAdapter] which abstracts test-framework specific functions
+  /// to help in the creation and comparison of golden files.
+  final GoldenTestAdapter adapter;
+
   /// Creates a copy of this [AlchemistConfig] and replaces the given fields.
   AlchemistConfig copyWith({
     bool? forceUpdateGoldenFiles,
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
+    GoldenTestAdapter? adapter,
   }) {
     return AlchemistConfig(
       forceUpdateGoldenFiles: forceUpdateGoldenFiles ?? _forceUpdateGoldenFiles,
       theme: theme ?? _theme,
       platformGoldensConfig: platformGoldensConfig ?? _platformGoldensConfig,
       ciGoldensConfig: ciGoldensConfig ?? _ciGoldensConfig,
+      adapter: adapter ?? this.adapter,
     );
   }
 
@@ -228,6 +237,7 @@ class AlchemistConfig extends Equatable {
       platformGoldensConfig:
           platformGoldensConfig.merge(other?._platformGoldensConfig),
       ciGoldensConfig: ciGoldensConfig.merge(other?._ciGoldensConfig),
+      adapter: other?.adapter,
     );
   }
 
