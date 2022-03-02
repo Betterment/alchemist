@@ -217,52 +217,43 @@ void main() {
         PlatformGoldensConfig(),
         isNot(
           PlatformGoldensConfig(
-            filePathResolver: (_) async => 'foo',
+            filePathResolver: (_, __) async => 'foo',
           ),
         ),
       );
     });
 
-    group('has correct default value', () {
-      const defaultValue = PlatformGoldensConfig();
+    group('environmentName', () {
+      var currentHostPlatform = hostPlatform;
+      late final HostPlatform nextHostPlatform;
 
-      test('for comparisonPredicate', () {
+      setUpAll(() {
+        nextHostPlatform = currentHostPlatform == HostPlatform.linux
+            ? HostPlatform.macOS
+            : HostPlatform.linux;
+        hostPlatform = nextHostPlatform;
+      });
+
+      test('returns current operating system', () {
         expect(
-          defaultValue.comparePredicate('foo'),
-          isFalse,
+          PlatformGoldensConfig().environmentName,
+          nextHostPlatform.operatingSystem,
         );
       });
 
-      group('for filePathResolver', () {
-        void setTestPlatform(HostPlatform platform) {
-          HostPlatform.overrideTestValue = platform;
-          addTearDown(HostPlatform.clearOverrideTestValue);
-        }
+      tearDownAll(() {
+        currentHostPlatform = hostPlatform;
+      });
+    });
 
-        test('when platform is macOS', () {
-          setTestPlatform(HostPlatform.macOS);
+    group('has correct default value', () {
+      const defaultValue = PlatformGoldensConfig();
 
+      group('for default filePathResolver', () {
+        test('generates path correctly', () {
           expect(
-            defaultValue.filePathResolver('foo'),
-            equals('goldens/macos/foo.png'),
-          );
-        });
-
-        test('when platform is Linux', () {
-          setTestPlatform(HostPlatform.linux);
-
-          expect(
-            defaultValue.filePathResolver('foo'),
-            equals('goldens/linux/foo.png'),
-          );
-        });
-
-        test('when platform is Windows', () {
-          setTestPlatform(HostPlatform.windows);
-
-          expect(
-            defaultValue.filePathResolver('foo'),
-            equals('goldens/windows/foo.png'),
+            defaultValue.filePathResolver('foo', 'bar'),
+            equals('goldens/bar/foo.png'),
           );
         });
       });
@@ -338,7 +329,7 @@ void main() {
         CiGoldensConfig(),
         isNot(
           CiGoldensConfig(
-            filePathResolver: (_) async => 'foo',
+            filePathResolver: (_, __) async => 'foo',
           ),
         ),
       );
@@ -347,15 +338,15 @@ void main() {
     group('has correct default value', () {
       const defaultValue = CiGoldensConfig();
 
-      test('for comparisonPredicate', () {
-        expect(defaultValue.comparePredicate('foo'), isTrue);
-      });
-
       test('for filePathResolver', () {
         expect(
-          defaultValue.filePathResolver('foo'),
-          equals('goldens/ci/foo.png'),
+          defaultValue.filePathResolver('foo', 'bar'),
+          equals('goldens/bar/foo.png'),
         );
+      });
+
+      test('environmentName is CI', () {
+        expect(defaultValue.environmentName, 'CI');
       });
     });
 

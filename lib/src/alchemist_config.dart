@@ -1,18 +1,16 @@
 import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
-import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 /// A function that returns the path of a golden test file for a given test's
 /// [fileName]. This function's return value should include the `.png`
 /// extension.
-typedef FilePathResolver = FutureOr<String> Function(String fileName);
-
-/// A function that returns boolean indicating whether or not a
-/// golden file with the given [fileName] should be compared.
-typedef TestComparisonPredicate = FutureOr<bool> Function(String fileName);
+typedef FilePathResolver = FutureOr<String> Function(
+  String fileName,
+  String environmentName,
+);
 
 /// {@template alchemist_config}
 /// A configuration object that contains settings used by Alchemist for
@@ -72,12 +70,10 @@ class AlchemistConfig extends Equatable {
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
-    GoldenTestAdapter? adapter,
   })  : _forceUpdateGoldenFiles = forceUpdateGoldenFiles,
         _theme = theme,
         _platformGoldensConfig = platformGoldensConfig,
-        _ciGoldensConfig = ciGoldensConfig,
-        adapter = adapter ?? const FlutterGoldenTestAdapter();
+        _ciGoldensConfig = ciGoldensConfig;
 
   /// The instance of the [AlchemistConfig] in the current zone used by the
   /// `alchemist` package.
@@ -202,24 +198,18 @@ class AlchemistConfig extends Equatable {
       _ciGoldensConfig ?? const CiGoldensConfig();
   final CiGoldensConfig? _ciGoldensConfig;
 
-  /// A [GoldenTestAdapter] which abstracts test-framework specific functions
-  /// to help in the creation and comparison of golden files.
-  final GoldenTestAdapter adapter;
-
   /// Creates a copy of this [AlchemistConfig] and replaces the given fields.
   AlchemistConfig copyWith({
     bool? forceUpdateGoldenFiles,
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
-    GoldenTestAdapter? adapter,
   }) {
     return AlchemistConfig(
       forceUpdateGoldenFiles: forceUpdateGoldenFiles ?? _forceUpdateGoldenFiles,
       theme: theme ?? _theme,
       platformGoldensConfig: platformGoldensConfig ?? _platformGoldensConfig,
       ciGoldensConfig: ciGoldensConfig ?? _ciGoldensConfig,
-      adapter: adapter ?? this.adapter,
     );
   }
 
@@ -237,7 +227,6 @@ class AlchemistConfig extends Equatable {
       platformGoldensConfig:
           platformGoldensConfig.merge(other?._platformGoldensConfig),
       ciGoldensConfig: ciGoldensConfig.merge(other?._ciGoldensConfig),
-      adapter: other?.adapter,
     );
   }
 
@@ -262,12 +251,6 @@ class AlchemistConfig extends Equatable {
 /// Otherwise the tests will function as normal.
 /// {@endtemplate goldens_config_enabled}
 ///
-/// {@template goldens_config_compare_predicate}
-/// A [comparePredicate] can be provided to determine how a given test should
-/// should be run. If no function is provided, all golden files will be
-/// compared.
-/// {@endtemplate goldens_config_compare_predicate}
-///
 /// {@template goldens_config_file_path_resolver}
 /// The [filePathResolver] can be used to customize the name and of the golden
 /// file.
@@ -290,17 +273,12 @@ abstract class GoldensConfig extends Equatable {
   const GoldensConfig({
     required this.enabled,
     required this.obscureText,
-    TestComparisonPredicate? comparePredicate,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
-  })  : _comparePredicate = comparePredicate,
-        _filePathResolver = filePathResolver,
+  })  : _filePathResolver = filePathResolver,
         _theme = theme;
 
   /// Whether or not the golden tests should run.
-  ///
-  /// If this is set to `false`, the golden tests will never run and the output
-  /// of the [comparePredicate] is ignored.
   final bool enabled;
 
   /// Whether of not all text should be rendered as colored boxes
@@ -314,29 +292,15 @@ abstract class GoldensConfig extends Equatable {
   /// It is used for the folder name and gets output while tests are running
   String get environmentName;
 
-  /// The default value for the [comparePredicate] field.
-  ///
-  /// This always returns `true`, meaning golden files will be compared in any
-  /// test.
-  ///
-  /// See [comparePredicate] for more details.
-  FutureOr<bool> _defaultComparePredicate(String _);
-
   /// The default [FilePathResolver] for the [filePathResolver] field.
   ///
   /// See [filePathResolver] for more details.
-  FutureOr<String> _defaultFilePathResolver(String fileName) {
+  static FutureOr<String> _defaultFilePathResolver(
+    String fileName,
+    String environmentName,
+  ) {
     return 'goldens/${environmentName.toLowerCase()}/$fileName.png';
   }
-
-  /// A function that returns whether the given test should be run.
-  ///
-  /// This function is used by [goldenTest] to determine whether the given test
-  /// should be run. If no function is provided, all golden files will be
-  /// compared.
-  TestComparisonPredicate get comparePredicate =>
-      _comparePredicate ?? _defaultComparePredicate;
-  final TestComparisonPredicate? _comparePredicate;
 
   /// A function that returns the path of the golden file for a given test's
   /// file name. This function's return value should include the `.png`
@@ -364,7 +328,6 @@ abstract class GoldensConfig extends Equatable {
   /// Creates a copy of this [GoldensConfig] and replaces the given fields.
   GoldensConfig copyWith({
     bool? enabled,
-    TestComparisonPredicate? comparePredicate,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   });
@@ -375,8 +338,8 @@ abstract class GoldensConfig extends Equatable {
 
   @override
   List<Object?> get props => [
+        obscureText,
         enabled,
-        comparePredicate,
         filePathResolver,
         theme,
       ];
@@ -389,11 +352,6 @@ abstract class GoldensConfig extends Equatable {
 /// and how to run golden tests intended to be run locally.
 ///
 /// {@macro goldens_config_enabled}
-///
-/// {@macro goldens_config_compare_predicate}
-/// Note that this predicate is ignored if the test is being run on a platform
-/// not included in the set of [platforms] -- in these cases the test will never
-/// be generated or compared.
 ///
 /// {@macro goldens_config_file_path_resolver}
 /// By default, the golden file is located in the
@@ -408,14 +366,12 @@ class PlatformGoldensConfig extends GoldensConfig {
     Set<HostPlatform>? platforms,
     bool enabled = true,
     bool obscureText = false,
-    TestComparisonPredicate? comparePredicate,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   })  : _platforms = platforms,
         super(
           enabled: enabled,
           obscureText: obscureText,
-          comparePredicate: comparePredicate,
           filePathResolver: filePathResolver,
           theme: theme,
         );
@@ -426,10 +382,7 @@ class PlatformGoldensConfig extends GoldensConfig {
   /// The default set of [platforms] that golden tests will run on.
   ///
   /// See [platforms] for more details.
-  static const _defaultPlatforms = HostPlatform.values;
-
-  @override
-  FutureOr<bool> _defaultComparePredicate(String _) => false;
+  static final _defaultPlatforms = HostPlatform.values;
 
   /// The set of [HostPlatform]s that platform golden tests will run on.
   ///
@@ -448,14 +401,12 @@ class PlatformGoldensConfig extends GoldensConfig {
   PlatformGoldensConfig copyWith({
     Set<HostPlatform>? platforms,
     bool? enabled,
-    TestComparisonPredicate? comparePredicate,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   }) {
     return PlatformGoldensConfig(
       platforms: platforms ?? this.platforms,
       enabled: enabled ?? this.enabled,
-      comparePredicate: comparePredicate ?? this.comparePredicate,
       filePathResolver: filePathResolver ?? this.filePathResolver,
       theme: theme ?? this.theme,
     );
@@ -466,7 +417,6 @@ class PlatformGoldensConfig extends GoldensConfig {
     return copyWith(
       platforms: other?._platforms,
       enabled: other?.enabled,
-      comparePredicate: other?._comparePredicate,
       filePathResolver: other?._filePathResolver,
       theme: other?._theme,
     );
@@ -487,8 +437,6 @@ class PlatformGoldensConfig extends GoldensConfig {
 ///
 /// {@macro goldens_config_enabled}
 ///
-/// {@macro goldens_config_compare_predicate}
-///
 /// {@macro goldens_config_file_path_resolver}
 /// By default, the golden file is located in the
 /// `goldens/ci` directory relative to the test file.
@@ -501,13 +449,11 @@ class CiGoldensConfig extends GoldensConfig {
   const CiGoldensConfig({
     bool enabled = true,
     bool obscureText = true,
-    TestComparisonPredicate? comparePredicate,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   }) : super(
           enabled: enabled,
           obscureText: obscureText,
-          comparePredicate: comparePredicate,
           filePathResolver: filePathResolver,
           theme: theme,
         );
@@ -516,18 +462,13 @@ class CiGoldensConfig extends GoldensConfig {
   String get environmentName => 'CI';
 
   @override
-  FutureOr<bool> _defaultComparePredicate(String _) => true;
-
-  @override
   CiGoldensConfig copyWith({
     bool? enabled,
-    TestComparisonPredicate? comparePredicate,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   }) {
     return CiGoldensConfig(
       enabled: enabled ?? this.enabled,
-      comparePredicate: comparePredicate ?? this.comparePredicate,
       filePathResolver: filePathResolver ?? this.filePathResolver,
       theme: theme ?? this.theme,
     );
@@ -537,7 +478,6 @@ class CiGoldensConfig extends GoldensConfig {
   CiGoldensConfig merge(covariant CiGoldensConfig? other) {
     return copyWith(
       enabled: other?.enabled,
-      comparePredicate: other?._comparePredicate,
       filePathResolver: other?._filePathResolver,
       theme: other?._theme,
     );

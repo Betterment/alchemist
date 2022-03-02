@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
-import 'package:alchemist/src/alchemist_config.dart';
-import 'package:alchemist/src/host_platform.dart';
+import 'package:alchemist/src/blocked_text_image.dart';
+import 'package:alchemist/src/utilities.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:meta/meta.dart';
 
 /// The function signature of Flutter test's `testWidgets` function.
 typedef TestWidgetsFn = void Function(
@@ -17,6 +19,9 @@ typedef TestWidgetsFn = void Function(
   dynamic tags,
 });
 
+/// The signature of the `tearDown` and `setUp` test functions.
+typedef TestLifecycleFn = void Function(ValueGetter<dynamic>);
+
 /// Function used to invoke an AsyncMatcher and perform an assertion of its
 /// result. Typically, this involves an `expectLater` call that verifies
 /// an image matches another via the matcher `matchesGoldenFile`.
@@ -29,74 +34,69 @@ typedef GoldenFileExpectation = MatchesGoldenFileInvocation<void> Function(
   Object,
 );
 
+/// Default golden file expectation function.
 // ignore: prefer_function_declarations_over_variables
-GoldenFileExpectation _goldenFileExpectation =
+GoldenFileExpectation defaultGoldenFileExpectation =
     (Object a, Object b) => () => expectLater(a, matchesGoldenFile(b));
+GoldenFileExpectation _goldenFileExpectationFn = defaultGoldenFileExpectation;
 
 /// {@template golden_file_expectation}
 /// A function which performs a test expectation which invokes an asynchronous
 /// matcher (e.g. `matchesGoldenFile`).
 /// {@endtemplate}
-GoldenFileExpectation get goldenFileExpectation => _goldenFileExpectation;
-set goldenFileExpectation(GoldenFileExpectation value) =>
-    _goldenFileExpectation = value;
+GoldenFileExpectation get goldenFileExpectationFn => _goldenFileExpectationFn;
+set goldenFileExpectationFn(GoldenFileExpectation value) =>
+    _goldenFileExpectationFn = value;
 
-TestWidgetsFn _testWidgetsFn = testWidgets;
+/// Default testWidgets function that simply points to Flutter's [testWidgets].
+TestWidgetsFn defaultTestWidgetsFn = testWidgets;
+TestWidgetsFn _testWidgetsFn = defaultTestWidgetsFn;
 
 /// A function to be used in place of `flutter_test`'s `testWidgets` function.
 /// The ability to use a stub method here makes it easier to test Alchemist.
 TestWidgetsFn get testWidgetsFn => _testWidgetsFn;
 set testWidgetsFn(TestWidgetsFn value) => _testWidgetsFn = value;
 
-/// {@template alchemist_test_variant}
-/// A [TestVariant] used to run both CI and platform golden tests with one
-/// [testWidgets] function
-/// {@endtemplate}
-@visibleForTesting
-class AlchemistTestVariant extends TestVariant<GoldensConfig> {
-  /// {@macro alchemist_test_variant}
-  AlchemistTestVariant({
-    required AlchemistConfig config,
-    required HostPlatform currentPlatform,
-  })  : _config = config,
-        _currentPlatform = currentPlatform;
+/// Default setUp function which simply points to Flutter's [setUp].
+TestLifecycleFn defaultSetUpFn = setUp;
+TestLifecycleFn _setUpFn = defaultSetUpFn;
 
-  final AlchemistConfig _config;
-  final HostPlatform _currentPlatform;
+/// A function to be used in place of `flutter_test`'s `setUp` function.
+TestLifecycleFn get setUpFn => _setUpFn;
+set setUpFn(TestLifecycleFn value) => _setUpFn = value;
 
-  /// The [GoldensConfig] to use for the current variant
-  GoldensConfig get currentConfig => _currentConfig;
-  late GoldensConfig _currentConfig;
+/// Default setUp function which simply points to Flutter's [setUp].
+TestLifecycleFn defaultTearDownFn = tearDown;
+TestLifecycleFn _tearDownFn = defaultTearDownFn;
 
-  @override
-  String describeValue(GoldensConfig value) => value.environmentName;
+/// A function to be used in place of `flutter_test`'s `tearDown` function.
+TestLifecycleFn get tearDownFn => _tearDownFn;
+set tearDownFn(TestLifecycleFn value) => _tearDownFn = value;
 
-  @override
-  Future<void> setUp(GoldensConfig value) async {
-    _currentConfig = value;
-  }
+/// A builder function which returns a blocked text painting context, given the
+/// [OffsetLayer] layer and [Rect] bounds.
+typedef BlockedTextPaintingContextBuilder = BlockedTextPaintingContext Function(
+  OffsetLayer layer,
+  Rect bounds,
+);
 
-  @override
-  Future<void> tearDown(
-    GoldensConfig value,
-    covariant AlchemistTestVariant? memento,
-  ) async {}
+/// Default blocked text painting context builder which returns a real instance
+/// of [BlockedTextPaintingContext].
+// ignore: prefer_function_declarations_over_variables
+BlockedTextPaintingContextBuilder defaultPaintingContextBuilder = (
+  OffsetLayer layer,
+  Rect bounds,
+) =>
+    BlockedTextPaintingContext(containerLayer: layer, estimatedBounds: bounds);
+BlockedTextPaintingContextBuilder _paintingContextBuilder =
+    defaultPaintingContextBuilder;
 
-  @override
-  Iterable<GoldensConfig> get values {
-    final platformConfig = _config.platformGoldensConfig;
-    final runPlatformTest = platformConfig.enabled &&
-        platformConfig.platforms.contains(_currentPlatform);
-
-    final ciConfig = _config.ciGoldensConfig;
-    final runCiTest = ciConfig.enabled;
-
-    return {
-      if (runPlatformTest) platformConfig,
-      if (runCiTest) ciConfig,
-    };
-  }
-}
+/// A function to be used as the [BlockedTextPaintingContextBuilder] for drawing
+/// blocked text.
+BlockedTextPaintingContextBuilder get paintingContextBuilder =>
+    _paintingContextBuilder;
+set paintingContextBuilder(BlockedTextPaintingContextBuilder value) =>
+    _paintingContextBuilder = value;
 
 /// Golden test adapter interface. Alchemist uses a concrete implementation of
 /// this class to perform functions which are tightly coupled to Flutter's test
@@ -118,17 +118,59 @@ abstract class GoldenTestAdapter {
     required MatchesGoldenFileInvocation<T> callback,
   });
 
-  /// Adds a setup callback to the test framework.
-  void setUp(dynamic Function() body);
+  /// The function to use for `setUp` calls. By default, this is Flutter's
+  /// `tearDown` function.
+  TestLifecycleFn get setUp;
 
-  /// Adds a teardown callback to the test framework.
-  void tearDown(dynamic Function() body);
+  /// The function to use for `tearDown` calls. By default, this is Flutter's
+  /// `tearDown` function.
+  TestLifecycleFn get tearDown;
+
+  /// A function to use for `testWidgets` calls. By default, this is Flutter's
+  /// `testWidgets` function.
+  TestWidgetsFn get testWidgets;
 
   /// {@macro golden_file_expectation}
-  MatchesGoldenFileInvocation<void> goldenFileExpectation(
-    Object a,
-    Object b,
-  );
+  GoldenFileExpectation get goldenFileExpectation;
+
+  /// Pumps the given [widget] with the given [tester] for use in golden tests.
+  ///
+  /// The [rootKey], if provided, will be attached to the top-most [Widget] in
+  /// the tree.
+  ///
+  /// The [textScaleFactor], if provided, sets the text scale size (usually in
+  /// a range from 1 to 3).
+  ///
+  /// The [constraints] tell the builder how large the total surface of the
+  /// widget should be. Commonly set to
+  /// `BoxConstraints.loose(Size(maxWidth, maxHeight))` to limit the maximum
+  /// size of the widget, while allowing it to be smaller if the content allows
+  /// for it.
+  ///
+  /// The provided [theme] will be given to the [MaterialApp] at the top of the
+  /// widget tree.
+  ///
+  /// By default, no constraints are passed, but this can be
+  /// adjusted to allow for more precise rendering of golden files. If the
+  /// max width is unbounded, a default width value will be used as initial
+  /// surface size. The same applies to the max height.
+  Future<void> pumpGoldenTest({
+    Key? rootKey,
+    required WidgetTester tester,
+    required double textScaleFactor,
+    required BoxConstraints constraints,
+    required ThemeData theme,
+    required Widget widget,
+  });
+
+  /// Generates an image of the widget at the given [finder] with all text
+  /// represented as colored rectangles.
+  ///
+  /// See [BlockedTextPaintingContext] for more details.
+  Future<ui.Image> getBlockedTextImage({
+    required Finder finder,
+    required WidgetTester tester,
+  });
 }
 
 /// Default implementation of [GoldenTestAdapter] to allow Alchemist access
@@ -136,6 +178,12 @@ abstract class GoldenTestAdapter {
 class FlutterGoldenTestAdapter extends GoldenTestAdapter {
   /// Create a new [FlutterGoldenTestAdapter].
   const FlutterGoldenTestAdapter() : super();
+
+  /// Key for the root of the golden test.
+  static final rootKey = UniqueKey();
+
+  /// Key for the child container in the golden test.
+  static final childKey = UniqueKey();
 
   @override
   Future<T> withForceUpdateGoldenFiles<T>({
@@ -156,15 +204,93 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
   }
 
   @override
-  void setUp(dynamic Function() body) => setUp(body);
+  TestLifecycleFn get setUp => setUpFn;
+  @override
+  TestLifecycleFn get tearDown => tearDownFn;
+  @override
+  TestWidgetsFn get testWidgets => testWidgetsFn;
+  @override
+  GoldenFileExpectation get goldenFileExpectation => goldenFileExpectationFn;
 
   @override
-  void tearDown(dynamic Function() body) => tearDown(body);
+  Future<void> pumpGoldenTest({
+    Key? rootKey,
+    required WidgetTester tester,
+    required double textScaleFactor,
+    required BoxConstraints constraints,
+    required ThemeData theme,
+    required Widget widget,
+  }) async {
+    final initialSize = Size(
+      constraints.hasBoundedWidth ? constraints.maxWidth : 2000,
+      constraints.hasBoundedHeight ? constraints.maxHeight : 2000,
+    );
+    await tester.binding.setSurfaceSize(initialSize);
+    tester.binding.window.physicalSizeTestValue = initialSize;
+
+    tester.binding.window.devicePixelRatioTestValue = 1.0;
+    tester.binding.window.textScaleFactorTestValue = textScaleFactor;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        key: rootKey,
+        theme: theme.stripTextPackages(),
+        debugShowCheckedModeBanner: false,
+        supportedLocales: const [Locale('en')],
+        builder: (context, _) {
+          return DefaultAssetBundle(
+            bundle: TestAssetBundle(),
+            child: Material(
+              type: MaterialType.transparency,
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: ColoredBox(
+                  color: theme.colorScheme.background,
+                  child: Padding(
+                    key: childKey,
+                    padding: const EdgeInsets.all(8),
+                    child: widget,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+    final shouldTryResize = !constraints.isTight;
+
+    if (shouldTryResize) {
+      final childSize = tester.getSize(find.byKey(childKey));
+      final newSize = Size(
+        childSize.width.clamp(constraints.minWidth, constraints.maxWidth),
+        childSize.height.clamp(constraints.minHeight, constraints.maxHeight),
+      );
+      if (newSize != initialSize) {
+        await tester.binding.setSurfaceSize(newSize);
+        tester.binding.window.physicalSizeTestValue = newSize;
+      }
+    }
+
+    await tester.pump();
+  }
 
   @override
-  MatchesGoldenFileInvocation<void> goldenFileExpectation(
-    Object a,
-    Object b,
-  ) =>
-      () => expectLater(a, matchesGoldenFile(b));
+  Future<ui.Image> getBlockedTextImage({
+    required Finder finder,
+    required WidgetTester tester,
+  }) async {
+    var renderObject = tester.renderObject(finder);
+    while (!renderObject.isRepaintBoundary) {
+      renderObject = renderObject.parent! as RenderObject;
+    }
+    final layer = OffsetLayer();
+    paintingContextBuilder(
+      layer,
+      renderObject.paintBounds,
+    ).paintSingleChild(renderObject);
+
+    return layer.toImage(renderObject.paintBounds);
+  }
 }

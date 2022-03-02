@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:alchemist/src/blocked_text_image.dart';
+import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -87,7 +87,10 @@ void main() {
         ),
       );
 
-      final image = await tester.getBlockedTextImage(find.byKey(rootKey));
+      final image = await goldenTestAdapter.getBlockedTextImage(
+        finder: find.byKey(rootKey),
+        tester: tester,
+      );
 
       await expectLater(
         image,

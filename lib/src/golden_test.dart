@@ -1,13 +1,20 @@
 import 'dart:convert';
 
 import 'package:alchemist/alchemist.dart';
-import 'package:alchemist/src/golden_test_adapter.dart';
-import 'package:alchemist/src/utilities.dart';
-import 'package:flutter/foundation.dart';
+import 'package:alchemist/src/alchemist_test_variant.dart';
+import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
+
+/// Default golden test runner which uses the flutter test framework.
+const defaultGoldenTestRunner = FlutterGoldenTestRunner();
+GoldenTestRunner _goldenTestRunner = defaultGoldenTestRunner;
+
+/// Golden test runner. Overriding this makes it easier to unit-test Alchemist.
+GoldenTestRunner get goldenTestRunner => _goldenTestRunner;
+set goldenTestRunner(GoldenTestRunner value) => _goldenTestRunner = value;
 
 /// An internal function that executes all necessary setup steps required to run
 /// golden tests.
@@ -115,7 +122,7 @@ Future<void> loadFontsForTesting() async {
 /// press interaction, all other gestures will fail, rendering the
 /// [whilePerforming] argument useless.
 @isTest
-void goldenTest(
+Future<void> goldenTest(
   String description, {
   required String fileName,
   bool skip = false,
@@ -125,21 +132,18 @@ void goldenTest(
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   Interaction? whilePerforming,
   required Widget widget,
-}) {
+}) async {
+  if (skip) return;
+
   assert(
     !fileName.endsWith('.png'),
-    '''
-Golden tests file names should not include file type extension.
-
-This logic should be handled in the [filePathResolver] function of the
-[PlatformGoldensConfig] and [CiGoldensConfig] classes in [AlchemistConfig].''',
+    'Golden tests file names should not include file type extension.\n\n'
+    'This logic should be handled in the [filePathResolver] function of the '
+    '[PlatformGoldensConfig] and [CiGoldensConfig] classes in '
+    '[AlchemistConfig].',
   );
 
   final config = AlchemistConfig.current();
-
-  if (!skip) {
-    config.adapter.setUp(_setUpGoldenTests);
-  }
 
   final currentPlatform = HostPlatform.current();
   final variant = AlchemistTestVariant(
@@ -148,15 +152,18 @@ This logic should be handled in the [filePathResolver] function of the
   );
   final goldensConfig = variant.currentConfig;
 
-  testWidgetsFn(
+  goldenTestAdapter.setUp(_setUpGoldenTests);
+
+  goldenTestAdapter.testWidgets(
     description,
-    (tester) async => runGoldenTest(
+    (tester) async => goldenTestRunner.run(
       tester: tester,
-      adapter: config.adapter,
       forceUpdate: config.forceUpdateGoldenFiles,
-      shouldCompare: await goldensConfig.comparePredicate(fileName),
       obscureText: goldensConfig.obscureText,
-      goldenKey: await goldensConfig.filePathResolver(fileName),
+      goldenPath: await goldensConfig.filePathResolver(
+        fileName,
+        currentPlatform.operatingSystem,
+      ),
       textScaleFactor: textScaleFactor,
       constraints: constraints,
       theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
@@ -164,70 +171,7 @@ This logic should be handled in the [filePathResolver] function of the
       whilePerforming: whilePerforming,
       widget: widget,
     ),
-    skip: skip,
     tags: tags,
     variant: variant,
   );
-}
-
-/// Runs a single golden test expectation.
-@protected
-@visibleForTesting
-Future<void> runGoldenTest({
-  required WidgetTester tester,
-  required GoldenTestAdapter adapter,
-  required Object goldenKey,
-  required Widget widget,
-  bool forceUpdate = false,
-  bool shouldCompare = true,
-  bool obscureText = false,
-  double textScaleFactor = 1.0,
-  BoxConstraints constraints = const BoxConstraints(),
-  ThemeData? theme,
-  PumpAction pumpBeforeTest = onlyPumpAndSettle,
-  Interaction? whilePerforming,
-}) async {
-  assert(
-    goldenKey is String || goldenKey is Uri,
-    'Golden key must be a String or Uri.',
-  );
-
-  final themeData = theme ?? ThemeData.light();
-  const rootKey = Key('golden-test-root');
-
-  await tester.pumpGoldenTest(
-    rootKey: rootKey,
-    textScaleFactor: textScaleFactor,
-    constraints: constraints,
-    theme: themeData.copyWith(
-      textTheme: obscureText
-          ? themeData.textTheme.apply(
-              fontFamily: 'Ahem',
-            )
-          : themeData.textTheme,
-    ),
-    widget: widget,
-  );
-
-  await pumpBeforeTest(tester);
-
-  AsyncCallback? cleanup;
-  if (whilePerforming != null) {
-    cleanup = await whilePerforming(tester);
-  }
-
-  final root = find.byKey(rootKey);
-  final toMatch = !obscureText ? root : tester.getBlockedTextImage(root);
-
-  try {
-    await adapter.withForceUpdateGoldenFiles(
-      forceUpdate: forceUpdate,
-      callback: adapter.goldenFileExpectation(toMatch, goldenKey),
-    );
-    await cleanup?.call();
-  } on TestFailure {
-    if (shouldCompare) {
-      rethrow;
-    }
-  }
 }
