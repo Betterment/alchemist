@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
-HostPlatform _hostPlatform = HostPlatform._realPlatform();
+/// Default host platform (the current host machine platform).
+final defaultHostPlatform = HostPlatform._realPlatform();
+HostPlatform _hostPlatform = defaultHostPlatform;
 
 /// Indicates the current host platform used by Alchemist.
 /// Can be overridden for testing. This value is utilized by

@@ -8,7 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The function signature of Flutter test's `testWidgets` function.
-typedef TestWidgetsFn = void Function(
+typedef TestWidgetsFn = FutureOr<void> Function(
   String description,
   Future<void> Function(WidgetTester) callback, {
   bool? skip,

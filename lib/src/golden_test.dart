@@ -19,7 +19,7 @@ set goldenTestRunner(GoldenTestRunner value) => _goldenTestRunner = value;
 /// An internal function that executes all necessary setup steps required to run
 /// golden tests.
 Future<void> _setUpGoldenTests() async {
-  await loadFontsForTesting();
+  await loadFonts();
 }
 
 /// Loads a font for use in golden tests.
@@ -28,7 +28,7 @@ Future<void> _setUpGoldenTests() async {
 /// [goldenTest] method in its setup phase.
 @protected
 @visibleForTesting
-Future<void> loadFontsForTesting() async {
+Future<void> loadFonts() async {
   final bundle = rootBundle;
   final fontManifestString = await bundle.loadString('FontManifest.json');
   final fontManifest = (json.decode(fontManifestString) as List<dynamic>)
@@ -150,27 +150,29 @@ Future<void> goldenTest(
     config: config,
     currentPlatform: currentPlatform,
   );
-  final goldensConfig = variant.currentConfig;
 
   goldenTestAdapter.setUp(_setUpGoldenTests);
 
-  goldenTestAdapter.testWidgets(
+  await goldenTestAdapter.testWidgets(
     description,
-    (tester) async => goldenTestRunner.run(
-      tester: tester,
-      forceUpdate: config.forceUpdateGoldenFiles,
-      obscureText: goldensConfig.obscureText,
-      goldenPath: await goldensConfig.filePathResolver(
-        fileName,
-        currentPlatform.operatingSystem,
-      ),
-      textScaleFactor: textScaleFactor,
-      constraints: constraints,
-      theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
-      pumpBeforeTest: pumpBeforeTest,
-      whilePerforming: whilePerforming,
-      widget: widget,
-    ),
+    (tester) async {
+      final goldensConfig = variant.currentConfig;
+      await goldenTestRunner.run(
+        tester: tester,
+        goldenPath: await goldensConfig.filePathResolver(
+          fileName,
+          currentPlatform.operatingSystem,
+        ),
+        widget: widget,
+        forceUpdate: config.forceUpdateGoldenFiles,
+        obscureText: goldensConfig.obscureText,
+        textScaleFactor: textScaleFactor,
+        constraints: constraints,
+        theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
+        pumpBeforeTest: pumpBeforeTest,
+        whilePerforming: whilePerforming,
+      );
+    },
     tags: tags,
     variant: variant,
   );

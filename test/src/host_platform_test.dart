@@ -9,13 +9,12 @@ class MockHostPlatform extends Mock implements HostPlatform {}
 void main() {
   group('hostPlatform override', () {
     test('overrides and returns the given value', () {
-      final currentHostPlatform = hostPlatform;
-      final nextHostPlatform = currentHostPlatform == HostPlatform.linux
+      final nextHostPlatform = hostPlatform == HostPlatform.linux
           ? HostPlatform.macOS
           : HostPlatform.linux;
       hostPlatform = nextHostPlatform;
       expect(hostPlatform, nextHostPlatform);
-      hostPlatform = currentHostPlatform;
+      hostPlatform = defaultHostPlatform;
     });
   });
 
