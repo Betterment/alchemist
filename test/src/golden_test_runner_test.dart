@@ -24,9 +24,10 @@ void main() {
 
   group('Overrides', () {
     group('adapter', () {
-      final adapter = MockAdapter();
+      late MockAdapter adapter;
 
-      setUpAll(() {
+      setUp(() {
+        adapter = MockAdapter();
         goldenTestAdapter = adapter;
       });
 
@@ -42,7 +43,7 @@ void main() {
 
   group('GoldenTestRunner', () {
     const goldenTestRunner = FlutterGoldenTestRunner();
-    final adapter = MockAdapter();
+    late MockAdapter adapter;
     var pumpBeforeTestCalled = false;
     var cleanupCalled = false;
     var interactionCalled = false;
@@ -74,11 +75,10 @@ void main() {
       return matcherInvocation;
     }
 
-    setUpAll(() {
-      goldenTestAdapter = adapter;
-    });
-
     setUp(() {
+      adapter = MockAdapter();
+      goldenTestAdapter = adapter;
+
       pumpBeforeTestCalled = false;
       cleanupCalled = false;
       interactionCalled = false;
@@ -113,7 +113,7 @@ void main() {
         ),
       ).thenAnswer((invocation) async {
         // Invoke the given callback.
-        (invocation.namedArguments[#callback]
+        await (invocation.namedArguments[#callback]
                 as MatchesGoldenFileInvocation<void>)
             .call();
       });
@@ -160,7 +160,7 @@ void main() {
           theme: captureAny(named: 'theme'),
           widget: any(named: 'widget'),
         ),
-      ).captured.single as ThemeData;
+      ).captured.first as ThemeData;
 
       expect(
         capturedTheme,
@@ -241,6 +241,4 @@ void main() {
       goldenTestAdapter = defaultGoldenTestAdapter;
     });
   });
-
-  group('goldenTest', () {});
 }

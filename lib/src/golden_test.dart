@@ -161,7 +161,7 @@ Future<void> goldenTest(
         tester: tester,
         goldenPath: await goldensConfig.filePathResolver(
           fileName,
-          currentPlatform.operatingSystem,
+          goldensConfig.environmentName,
         ),
         widget: widget,
         forceUpdate: config.forceUpdateGoldenFiles,

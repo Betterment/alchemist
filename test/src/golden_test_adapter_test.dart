@@ -119,16 +119,17 @@ void main() {
       const adapter = FlutterGoldenTestAdapter();
       final originalAutoUpdateGoldenFiles = autoUpdateGoldenFiles;
 
-      test('only calls callback when false', () async {
+      test("doesn't change autoUpdateGoldenFiles when false", () async {
         var called = false;
+        autoUpdateGoldenFiles = false;
         await adapter.withForceUpdateGoldenFiles(
           callback: () {
-            expect(autoUpdateGoldenFiles, originalAutoUpdateGoldenFiles);
+            expect(autoUpdateGoldenFiles, false);
             called = true;
           },
         );
         expect(called, isTrue);
-        expect(autoUpdateGoldenFiles, originalAutoUpdateGoldenFiles);
+        expect(autoUpdateGoldenFiles, false);
       });
 
       test('calls callback with value when true', () async {
@@ -174,7 +175,7 @@ void main() {
       const adapter = FlutterGoldenTestAdapter();
       late final BlockedTextPaintingContext paintingContext;
 
-      setUpAll(() {
+      setUp(() {
         paintingContext = MockBlockedPaintingContext();
         when(
           () => paintingContext.paintSingleChild(

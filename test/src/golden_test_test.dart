@@ -22,8 +22,10 @@ class MockWidgetTester extends Mock implements WidgetTester {}
 
 class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
   @override
-  Future<ui.Image> getBlockedTextImage(
-      {required Finder finder, required WidgetTester tester}) {
+  Future<ui.Image> getBlockedTextImage({
+    required Finder finder,
+    required WidgetTester tester,
+  }) {
     return Future.value(MockImage());
   }
 
@@ -31,13 +33,14 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
   GoldenFileExpectation get goldenFileExpectation => throw UnimplementedError();
 
   @override
-  Future<void> pumpGoldenTest(
-      {Key? rootKey,
-      required WidgetTester tester,
-      required double textScaleFactor,
-      required BoxConstraints constraints,
-      required ThemeData theme,
-      required Widget widget}) {
+  Future<void> pumpGoldenTest({
+    Key? rootKey,
+    required WidgetTester tester,
+    required double textScaleFactor,
+    required BoxConstraints constraints,
+    required ThemeData theme,
+    required Widget widget,
+  }) {
     return Future.value();
   }
 
@@ -82,24 +85,15 @@ void main() {
 
   group('goldenTest', () {
     final adapter = FakeGoldenTestAdapter();
-    final runner = MockGoldenTestRunner();
+    late MockGoldenTestRunner runner;
 
-    setUpAll(() {
-      // Override Alchemist's testing infrastructure before setting up
-      // stubs to avoid breaking mocktail.
+    setUp(() {
+      runner = MockGoldenTestRunner();
+
       goldenTestAdapter = adapter;
       goldenTestRunner = runner;
       hostPlatform = HostPlatform.linux;
 
-      // Setup stubs
-      // when(() => adapter.setUp).thenReturn((_) {});
-      // when(() => adapter.testWidgets(any(), any()))
-      //     .thenAnswer((invocation) async {
-      //   await (invocation.positionalArguments[1] as Future<void> Function(
-      //     WidgetTester,
-      //   ))
-      //       .call(MockWidgetTester());
-      // });
       when(
         () => goldenTestRunner.run(
           tester: any(named: 'tester'),

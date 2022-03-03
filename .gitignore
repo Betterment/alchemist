@@ -76,9 +76,3 @@ config/
 !**/ios/**/default.mode2v3
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
-
-# Temporary golden testing files
-test/goldens/**/*.png
-!test/goldens/blocked_text_image_reference.png
-!test/goldens/smoke_test*.png
-!test/goldens/ci/smoke_test*.png

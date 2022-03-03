@@ -228,6 +228,8 @@ void main() {
       late final HostPlatform nextHostPlatform;
 
       setUpAll(() {
+        // Pick an environment that's different from the current one to ensure
+        // a proper test.
         nextHostPlatform = currentHostPlatform == HostPlatform.linux
             ? HostPlatform.macOS
             : HostPlatform.linux;
