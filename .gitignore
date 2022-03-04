@@ -76,3 +76,8 @@ config/
 !**/ios/**/default.mode2v3
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
+
+# Ignore platform-specific goldens
+**/goldens/macos
+**/goldens/linux
+**/goldens/windows
