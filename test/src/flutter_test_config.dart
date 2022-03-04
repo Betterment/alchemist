@@ -5,6 +5,8 @@ import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
+  print('My environment from CI');
+  print(Platform.environment);
   final enablePlatformTests =
       !Platform.environment.containsKey('GITHUB_ACTIONS');
 
