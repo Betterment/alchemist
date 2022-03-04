@@ -29,7 +29,7 @@ class _TextCustomPainter extends CustomPainter {
 
 void main() {
   group('BlockedTextPaintingContext', () {
-    const goldenFilePath = 'goldens/blocked_text_image_reference.png';
+    const goldenFilePath = 'blocked_text_image_reference.png';
 
     Future<void> setUpSurface(WidgetTester tester) async {
       final originalSize = tester.binding.window.physicalSize;
