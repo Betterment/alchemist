@@ -56,13 +56,17 @@ void main() {
 
       test('setUp sets current value', () async {
         final value = MockCiGoldensConfig();
-        const environmentName = 'TEST';
-        when(() => value.environmentName).thenReturn(environmentName);
         await expectLater(
           variant.setUp(value),
           completes,
         );
         expect(variant.currentConfig, value);
+      });
+
+      test('describeValue returns environment name', () async {
+        final value = MockCiGoldensConfig();
+        const environmentName = 'TEST';
+        when(() => value.environmentName).thenReturn(environmentName);
         expect(variant.describeValue(value), environmentName);
       });
     });

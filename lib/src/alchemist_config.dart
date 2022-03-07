@@ -281,7 +281,7 @@ abstract class GoldensConfig extends Equatable {
   /// Whether or not the golden tests should run.
   final bool enabled;
 
-  /// Whether of not all text should be rendered as colored boxes
+  /// Whether or not all text should be rendered as colored boxes
   ///
   /// This is useful for circumventing differences in font rendering
   /// between platforms.

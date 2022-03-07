@@ -27,17 +27,15 @@ void main() {
       MatchesGoldenFileInvocation<void> customExpectation(Object a, Object b) =>
           () => null;
 
-      setUpAll(() {
-        goldenFileExpectationFn = customExpectation;
-      });
-
       test('overrides value', () {
+        goldenFileExpectationFn = customExpectation;
         expect(goldenFileExpectationFn, customExpectation);
+        goldenFileExpectationFn = defaultGoldenFileExpectation;
       });
 
       test('original value invokes matchesGoldenFile', () async {
         try {
-          defaultGoldenFileExpectation(1, 2);
+          goldenFileExpectationFn(1, 2);
           fail('expected matchesGoldenFile to be invoked');
         } catch (e) {
           expect(
@@ -49,10 +47,6 @@ void main() {
             ),
           );
         }
-      });
-
-      tearDownAll(() {
-        goldenFileExpectationFn = defaultGoldenFileExpectation;
       });
     });
 
@@ -68,15 +62,9 @@ void main() {
         dynamic tags,
       }) {}
 
-      setUpAll(() {
-        testWidgetsFn = customTestWidgets;
-      });
-
       test('overrides value', () {
+        testWidgetsFn = customTestWidgets;
         expect(testWidgetsFn, customTestWidgets);
-      });
-
-      tearDownAll(() {
         testWidgetsFn = defaultTestWidgetsFn;
       });
     });
@@ -84,15 +72,9 @@ void main() {
     group('setUpFn', () {
       void customSetUp(dynamic Function() body) {}
 
-      setUpAll(() {
-        setUpFn = customSetUp;
-      });
-
       test('overrides value', () {
+        setUpFn = customSetUp;
         expect(setUpFn, customSetUp);
-      });
-
-      tearDownAll(() {
         setUpFn = defaultSetUpFn;
       });
     });
@@ -100,15 +82,9 @@ void main() {
     group('tearDownFn', () {
       void customTearDown(dynamic Function() body) {}
 
-      setUpAll(() {
-        tearDownFn = customTearDown;
-      });
-
       test('overrides value', () {
+        tearDownFn = customTearDown;
         expect(tearDownFn, customTearDown);
-      });
-
-      tearDownAll(() {
         tearDownFn = defaultTearDownFn;
       });
     });
@@ -204,7 +180,7 @@ void main() {
         expect(uiImage, isA<ui.Image>());
       });
 
-      tearDownAll(() {
+      tearDown(() {
         paintingContextBuilder = defaultPaintingContextBuilder;
       });
     });

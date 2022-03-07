@@ -230,9 +230,7 @@ void main() {
       setUpAll(() {
         // Pick an environment that's different from the current one to ensure
         // a proper test.
-        nextHostPlatform = currentHostPlatform == HostPlatform.linux
-            ? HostPlatform.macOS
-            : HostPlatform.linux;
+        nextHostPlatform = HostPlatform.values.firstWhere((platform) => currentHostPlatform != platform);
         hostPlatform = nextHostPlatform;
       });
 
@@ -244,7 +242,7 @@ void main() {
       });
 
       tearDownAll(() {
-        currentHostPlatform = hostPlatform;
+        hostPlatform = currentHostPlatform;
       });
     });
 

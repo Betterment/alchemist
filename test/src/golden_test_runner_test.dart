@@ -35,7 +35,7 @@ void main() {
         expect(goldenTestAdapter, adapter);
       });
 
-      tearDownAll(() {
+      tearDown(() {
         goldenTestAdapter = defaultGoldenTestAdapter;
       });
     });

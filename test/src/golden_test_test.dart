@@ -161,9 +161,9 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           whilePerforming: any(named: 'whilePerforming'),
         ),
-      );
+      ).called(1);
       // Verify [GoldenTestRunner.run] was not called for the platform config.
-      verify(
+      verifyNever(
         () => runner.run(
           tester: any(named: 'tester'),
           goldenPath: 'goldens/linux/test_golden_test.png',
