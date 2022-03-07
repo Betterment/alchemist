@@ -224,13 +224,15 @@ void main() {
     });
 
     group('environmentName', () {
-      var currentHostPlatform = hostPlatform;
+      final currentHostPlatform = hostPlatform;
       late final HostPlatform nextHostPlatform;
 
       setUpAll(() {
         // Pick an environment that's different from the current one to ensure
         // a proper test.
-        nextHostPlatform = HostPlatform.values.firstWhere((platform) => currentHostPlatform != platform);
+        nextHostPlatform = HostPlatform.values.firstWhere(
+          (platform) => currentHostPlatform != platform,
+        );
         hostPlatform = nextHostPlatform;
       });
 

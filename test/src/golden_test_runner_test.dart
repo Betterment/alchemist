@@ -116,6 +116,7 @@ void main() {
         await (invocation.namedArguments[#callback]
                 as MatchesGoldenFileInvocation<void>)
             .call();
+        return;
       });
     });
 

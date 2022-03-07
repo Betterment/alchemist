@@ -136,7 +136,7 @@ void main() {
             return 'myGoldenFile';
           },
         ),
-        platformGoldensConfig: const PlatformGoldensConfig(),
+        platformGoldensConfig: const PlatformGoldensConfig(enabled: false),
       );
       final widget = Container();
       await AlchemistConfig.runWithConfig(
