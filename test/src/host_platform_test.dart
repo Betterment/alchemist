@@ -7,6 +7,17 @@ import 'package:test/test.dart';
 class MockHostPlatform extends Mock implements HostPlatform {}
 
 void main() {
+  group('hostPlatform override', () {
+    test('overrides and returns the given value', () {
+      final nextHostPlatform = HostPlatform.values.firstWhere(
+        (platform) => platform != hostPlatform,
+      );
+      hostPlatform = nextHostPlatform;
+      expect(hostPlatform, nextHostPlatform);
+      hostPlatform = defaultHostPlatform;
+    });
+  });
+
   group('HostPlatform', () {
     group('.current', () {
       test(
@@ -31,30 +42,12 @@ void main() {
         },
         skip: !Platform.isMacOS && !Platform.isLinux && !Platform.isWindows,
       );
-
-      test('returns test value when set', () {
-        final testValue = MockHostPlatform();
-
-        HostPlatform.overrideTestValue = testValue;
-        addTearDown(HostPlatform.clearOverrideTestValue);
-
-        expect(HostPlatform.current(), same(testValue));
-      });
-    });
-
-    test('clearOverrideTestValue reset value to current platform', () {
-      final testValue = MockHostPlatform();
-
-      HostPlatform.overrideTestValue = testValue;
-      HostPlatform.clearOverrideTestValue();
-
-      expect(HostPlatform.current(), isNot(same(testValue)));
     });
 
     test('has correct string representation', () {
       expect(
         HostPlatform.macOS.toString(),
-        'HostPlatform(macos)',
+        'HostPlatform(macOS)',
       );
     });
 
@@ -67,7 +60,7 @@ void main() {
       });
 
       test('has correct operating system name', () {
-        expect(HostPlatform.macOS.operatingSystem, 'macos');
+        expect(HostPlatform.macOS.operatingSystem, 'macOS');
       });
     });
 
@@ -80,7 +73,7 @@ void main() {
       });
 
       test('has correct operating system name', () {
-        expect(HostPlatform.linux.operatingSystem, 'linux');
+        expect(HostPlatform.linux.operatingSystem, 'Linux');
       });
     });
 
@@ -93,7 +86,7 @@ void main() {
       });
 
       test('has correct operating system name', () {
-        expect(HostPlatform.windows.operatingSystem, 'windows');
+        expect(HostPlatform.windows.operatingSystem, 'Windows');
       });
     });
   });

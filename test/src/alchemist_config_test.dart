@@ -164,18 +164,13 @@ void main() {
       });
 
       test('merges nested (deep) fields', () {
-        const originalEnabled = true;
         final appliedTheme = ThemeData.dark();
 
         expect(
           AlchemistConfig(
             forceUpdateGoldenFiles: true,
-            platformGoldensConfig: PlatformGoldensConfig(
-              enabled: originalEnabled,
-            ),
-            ciGoldensConfig: CiGoldensConfig(
-              enabled: originalEnabled,
-            ),
+            platformGoldensConfig: PlatformGoldensConfig(),
+            ciGoldensConfig: CiGoldensConfig(),
           ).merge(
             AlchemistConfig(
               platformGoldensConfig: PlatformGoldensConfig(
@@ -222,52 +217,45 @@ void main() {
         PlatformGoldensConfig(),
         isNot(
           PlatformGoldensConfig(
-            filePathResolver: (_) => 'foo',
+            filePathResolver: (_, __) async => 'foo',
           ),
         ),
       );
     });
 
-    group('has correct default value', () {
-      const defaultValue = PlatformGoldensConfig();
+    group('environmentName', () {
+      final currentHostPlatform = hostPlatform;
+      late final HostPlatform nextHostPlatform;
 
-      test('for comparisonPredicate', () {
+      setUpAll(() {
+        // Pick an environment that's different from the current one to ensure
+        // a proper test.
+        nextHostPlatform = HostPlatform.values.firstWhere(
+          (platform) => currentHostPlatform != platform,
+        );
+        hostPlatform = nextHostPlatform;
+      });
+
+      test('returns current operating system', () {
         expect(
-          defaultValue.comparePredicate('foo'),
-          isFalse,
+          PlatformGoldensConfig().environmentName,
+          nextHostPlatform.operatingSystem,
         );
       });
 
-      group('for filePathResolver', () {
-        void setTestPlatform(HostPlatform platform) {
-          HostPlatform.overrideTestValue = platform;
-          addTearDown(HostPlatform.clearOverrideTestValue);
-        }
+      tearDownAll(() {
+        hostPlatform = currentHostPlatform;
+      });
+    });
 
-        test('when platform is macOS', () {
-          setTestPlatform(HostPlatform.macOS);
+    group('has correct default value', () {
+      const defaultValue = PlatformGoldensConfig();
 
+      group('for default filePathResolver', () {
+        test('generates path correctly', () {
           expect(
-            defaultValue.filePathResolver('foo'),
-            equals('goldens/macos/foo.png'),
-          );
-        });
-
-        test('when platform is Linux', () {
-          setTestPlatform(HostPlatform.linux);
-
-          expect(
-            defaultValue.filePathResolver('foo'),
-            equals('goldens/linux/foo.png'),
-          );
-        });
-
-        test('when platform is Windows', () {
-          setTestPlatform(HostPlatform.windows);
-
-          expect(
-            defaultValue.filePathResolver('foo'),
-            equals('goldens/windows/foo.png'),
+            defaultValue.filePathResolver('foo', 'bar'),
+            equals('goldens/bar/foo.png'),
           );
         });
       });
@@ -317,13 +305,10 @@ void main() {
       });
 
       test('merges fields', () {
-        const initialEnabled = true;
         const appliedEnabled = false;
 
         expect(
-          PlatformGoldensConfig(
-            enabled: initialEnabled,
-          ).merge(
+          PlatformGoldensConfig().merge(
             PlatformGoldensConfig(
               enabled: appliedEnabled,
             ),
@@ -346,7 +331,7 @@ void main() {
         CiGoldensConfig(),
         isNot(
           CiGoldensConfig(
-            filePathResolver: (_) => 'foo',
+            filePathResolver: (_, __) async => 'foo',
           ),
         ),
       );
@@ -355,15 +340,15 @@ void main() {
     group('has correct default value', () {
       const defaultValue = CiGoldensConfig();
 
-      test('for comparisonPredicate', () {
-        expect(defaultValue.comparePredicate('foo'), isTrue);
-      });
-
       test('for filePathResolver', () {
         expect(
-          defaultValue.filePathResolver('foo'),
-          equals('goldens/ci/foo.png'),
+          defaultValue.filePathResolver('foo', 'bar'),
+          equals('goldens/bar/foo.png'),
         );
+      });
+
+      test('environmentName is CI', () {
+        expect(defaultValue.environmentName, 'CI');
       });
     });
 
@@ -410,13 +395,10 @@ void main() {
       });
 
       test('merges fields', () {
-        const initialEnabled = true;
         const appliedEnabled = false;
 
         expect(
-          CiGoldensConfig(
-            enabled: initialEnabled,
-          ).merge(
+          CiGoldensConfig().merge(
             CiGoldensConfig(
               enabled: appliedEnabled,
             ),

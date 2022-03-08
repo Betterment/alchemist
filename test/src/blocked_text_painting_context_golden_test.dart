@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:alchemist/src/blocked_text_image.dart';
+import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -29,7 +29,7 @@ class _TextCustomPainter extends CustomPainter {
 
 void main() {
   group('BlockedTextPaintingContext', () {
-    const goldenFilePath = 'goldens/blocked_text_image_reference.png';
+    const goldenFilePath = 'blocked_text_image_reference.png';
 
     Future<void> setUpSurface(WidgetTester tester) async {
       final originalSize = tester.binding.window.physicalSize;
@@ -87,7 +87,10 @@ void main() {
         ),
       );
 
-      final image = await tester.getBlockedTextImage(find.byKey(rootKey));
+      final image = await goldenTestAdapter.getBlockedTextImage(
+        finder: find.byKey(rootKey),
+        tester: tester,
+      );
 
       await expectLater(
         image,

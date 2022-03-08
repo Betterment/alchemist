@@ -7,11 +7,10 @@ import 'package:flutter/material.dart';
 /// A function that returns the path of a golden test file for a given test's
 /// [fileName]. This function's return value should include the `.png`
 /// extension.
-typedef FilePathResolver = String Function(String fileName);
-
-/// A function that returns boolean indicating whether or not a
-/// golden file with the given [fileName] should be compared.
-typedef TestComparisonPredicate = bool Function(String fileName);
+typedef FilePathResolver = FutureOr<String> Function(
+  String fileName,
+  String environmentName,
+);
 
 /// {@template alchemist_config}
 /// A configuration object that contains settings used by Alchemist for
@@ -35,7 +34,8 @@ typedef TestComparisonPredicate = bool Function(String fileName);
 /// If a [theme] is provided, it will be assigned to the [MaterialApp] created
 /// by Alchemist that wraps the golden test groups and scenarios when a test is
 /// run. If no [theme] is provided, the default [ThemeData.light] will be used,
-/// unless [PlatformGoldensConfig.theme] or [CiGoldensConfig.theme] is provided.
+/// unless [platformGoldensConfig] or [ciGoldensConfig] provide their own
+/// themes.
 ///
 /// A [platformGoldensConfig] and [ciGoldensConfig] can be provided to configure
 /// the behavior of platform and CI golden tests respectively. Each of these
@@ -59,9 +59,9 @@ typedef TestComparisonPredicate = bool Function(String fileName);
 /// By default, CI tests will always be generated and compared, whereas platform
 /// tests will be generated but are never compared.
 ///
-/// Note that CI tests are always rendered in the "Ahem" font family to ensure
+/// Note that by default, CI tests are in the "Ahem" font family to ensure
 /// consistent results across platforms. In other words, the font family of the
-/// [theme] (and [CiGoldensConfig.theme]) will be ignored.
+/// [theme] (and [ciGoldensConfig] theme) will be ignored.
 /// {@endtemplate}
 class AlchemistConfig extends Equatable {
   /// {@macro alchemist_config}
@@ -181,7 +181,7 @@ class AlchemistConfig extends Equatable {
   ThemeData? get theme => _theme;
   final ThemeData? _theme;
 
-  /// The configuration for human readable golden tests running in non-CI
+  /// The configuration for human-readable golden tests running in non-CI
   /// environments.
   ///
   /// This contains various settings used by [goldenTest] to determine whether
@@ -239,76 +239,152 @@ class AlchemistConfig extends Equatable {
       ];
 }
 
-/// {@template readable_goldens_config}
-/// The configuration for human readable golden tests.
+/// {@template goldens_config}
+/// The configuration for golden tests.
 ///
 /// This contains various settings used by [goldenTest] to determine whether
-/// and how to run golden tests intended to be run locally.
+/// and how to run golden tests.
 ///
-/// The [enabled] flag determines whether or not platform golden tests are
+/// {@template goldens_config_enabled}
+/// The [enabled] flag determines whether or not these golden tests are
 /// enabled. If set to `false`, these tests will not be generated or compared.
 /// Otherwise the tests will function as normal.
+/// {@endtemplate goldens_config_enabled}
 ///
-/// A [comparePredicate] can be provided to indicate if the output of a
-/// golden test should be compared to its golden file. By default, this is set
-/// to `false`, meaning the golden file may be generated but will never be used
-/// in a comparison test.
-///
-/// Note that this predicate is ignored if the test is being run on a platform
-/// not included in the set of [platforms] -- in these cases the test will never
-/// be generated or compared.
-///
+/// {@template goldens_config_file_path_resolver}
 /// The [filePathResolver] can be used to customize the name and of the golden
-/// file. By default, the golden file is located in the
-/// `goldens/<platform_name>` directory relative to the test file.
+/// file.
+/// {@endtemplate goldens_config_file_path_resolver}
 ///
+/// {@template goldens_config_theme}
 /// If a [theme] is provided, it will be assigned to the [MaterialApp] created
 /// by Alchemist that wraps the golden test groups and scenarios when a test of
 /// this type is run. If no [theme] is provided, the enclosing
 /// [AlchemistConfig]'s theme will be used. If that is also `null`, the default
 /// [ThemeData.light] will be used.
-/// {@endtemplate}
-class PlatformGoldensConfig extends Equatable {
-  /// {@macro readable_goldens_config}
-  const PlatformGoldensConfig({
-    Set<HostPlatform>? platforms,
-    bool? enabled,
-    TestComparisonPredicate? comparePredicate,
+///
+/// **Note:** when [obscureText] is true, tests are always rendered
+/// in the "Ahem" font family to ensure consistent results across platforms.
+/// In other words, the font family of the [theme] will be ignored.
+/// {@endtemplate goldens_config_theme}
+/// {@endtemplate goldens_config}
+abstract class GoldensConfig extends Equatable {
+  /// {@macro goldens_config}
+  const GoldensConfig({
+    required this.enabled,
+    required this.obscureText,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
-  })  : _enabled = enabled,
-        _platforms = platforms,
-        _comparePredicate = comparePredicate,
-        _filePathResolver = filePathResolver,
+  })  : _filePathResolver = filePathResolver,
         _theme = theme;
 
-  /// The default set of [platforms] that golden tests will run on.
-  ///
-  /// See [platforms] for more details.
-  static const _defaultPlatforms = HostPlatform.values;
+  /// Whether or not the golden tests should run.
+  final bool enabled;
 
-  /// The default value for the [enabled] field.
+  /// Whether or not all text should be rendered as colored boxes
   ///
-  /// This is set to `true`, meaning golden tests will always run.
-  static const _defaultEnabled = true;
+  /// This is useful for circumventing differences in font rendering
+  /// between platforms.
+  final bool obscureText;
 
-  /// The default value for the [comparePredicate] field.
+  /// A name for the environment in which this test is run
   ///
-  /// This always returns `false`, meaning golden files will never be compared
-  /// in any test.
-  ///
-  /// See [comparePredicate] for more details.
-  static bool _defaultComparePredicate(String _) => false;
+  /// It is used for the folder name and gets output while tests are running
+  String get environmentName;
 
   /// The default [FilePathResolver] for the [filePathResolver] field.
   ///
   /// See [filePathResolver] for more details.
-  static String _defaultFilePathResolver(String fileName) {
-    final platform = HostPlatform.current().operatingSystem;
-    return 'goldens/$platform/$fileName.png';
+  static FutureOr<String> _defaultFilePathResolver(
+    String fileName,
+    String environmentName,
+  ) {
+    return 'goldens/${environmentName.toLowerCase()}/$fileName.png';
   }
 
-  /// The set of [HostPlatform]s that readable golden tests will run on.
+  /// A function that returns the path of the golden file for a given test's
+  /// file name. This function's return value should include the `.png`
+  /// extension.
+  ///
+  /// This function is used by [goldenTest] to determine where the golden file
+  /// should be located. By default, the golden file is located in the
+  /// `goldens/<environmentName>/` directory relative to the test file.
+  FilePathResolver get filePathResolver =>
+      _filePathResolver ?? _defaultFilePathResolver;
+  final FilePathResolver? _filePathResolver;
+
+  /// The [ThemeData] to use when generating golden tests.
+  ///
+  /// If no [ThemeData] is provided, the enclosing [AlchemistConfig]'s theme
+  /// will be used. If that is also `null`, the default [ThemeData.light] will
+  /// be used.
+  ///
+  /// **Note:** when [obscureText] is true, tests are always rendered
+  /// in the "Ahem" font family to ensure consistent results across platforms.
+  /// In other words, the font family of the [theme] will be ignored.
+  ThemeData? get theme => _theme;
+  final ThemeData? _theme;
+
+  /// Creates a copy of this [GoldensConfig] and replaces the given fields.
+  GoldensConfig copyWith({
+    bool? enabled,
+    FilePathResolver? filePathResolver,
+    ThemeData? theme,
+  });
+
+  /// Creates a copy and merges this [GoldensConfig] with the given config,
+  /// replacing all set fields of the copy with the given config's fields.
+  GoldensConfig merge(covariant GoldensConfig? other);
+
+  @override
+  List<Object?> get props => [
+        obscureText,
+        enabled,
+        filePathResolver,
+        theme,
+      ];
+}
+
+/// {@template platform_goldens_config}
+/// The configuration for human readable golden tests.
+///
+/// This contains various settings used by [goldenTest] to determine whether
+/// and how to run golden tests intended to be run locally.
+///
+/// {@macro goldens_config_enabled}
+///
+/// {@macro goldens_config_file_path_resolver}
+/// By default, the golden file is located in the
+/// `goldens/<platform_name>` directory relative to the test file.
+///
+/// {@macro goldens_config_theme}
+///
+/// {@endtemplate platform_goldens_config}
+class PlatformGoldensConfig extends GoldensConfig {
+  /// {@macro platform_goldens_config}
+  const PlatformGoldensConfig({
+    Set<HostPlatform>? platforms,
+    bool enabled = true,
+    bool obscureText = false,
+    FilePathResolver? filePathResolver,
+    ThemeData? theme,
+  })  : _platforms = platforms,
+        super(
+          enabled: enabled,
+          obscureText: obscureText,
+          filePathResolver: filePathResolver,
+          theme: theme,
+        );
+
+  @override
+  String get environmentName => HostPlatform.current().operatingSystem;
+
+  /// The default set of [platforms] that golden tests will run on.
+  ///
+  /// See [platforms] for more details.
+  static final _defaultPlatforms = HostPlatform.values;
+
+  /// The set of [HostPlatform]s that platform golden tests will run on.
   ///
   /// This set determines whether a golden test should run on a given platform.
   /// Platforms not included in this set will ensure that golden tests are never
@@ -321,71 +397,26 @@ class PlatformGoldensConfig extends Equatable {
   Set<HostPlatform> get platforms => _platforms ?? _defaultPlatforms;
   final Set<HostPlatform>? _platforms;
 
-  /// Whether or not platform golden tests should run.
-  ///
-  /// If this is set to `false`, platform golden tests will never run and the
-  /// output of the [comparePredicate] is ignored.
-  bool get enabled => _enabled ?? _defaultEnabled;
-  final bool? _enabled;
-
-  /// A function that returns whether the given test should be run.
-  ///
-  /// This function is used by [goldenTest] to determine how a given test should
-  /// be run. If no function is provided, no golden files will be compared for
-  /// platform tests.
-  ///
-  /// Note that this predicate is ignored if the test is being run on a platform
-  /// not included in the set of [platforms] -- in these cases the test will
-  /// never run.
-  TestComparisonPredicate get comparePredicate =>
-      _comparePredicate ?? _defaultComparePredicate;
-  final TestComparisonPredicate? _comparePredicate;
-
-  /// A function that returns the path of the golden file for a given test's
-  /// file name. This function's return value should include the `.png`
-  /// extension.
-  ///
-  /// This function is used by [goldenTest] to determine where the golden file
-  /// should be located. By default, the golden file is located in the
-  /// `goldens/<platform_name>` directory relative to the test file.
-  FilePathResolver get filePathResolver =>
-      _filePathResolver ?? _defaultFilePathResolver;
-  final FilePathResolver? _filePathResolver;
-
-  /// The [ThemeData] to use when generating golden tests.
-  ///
-  /// If no [ThemeData] is provided, the enclosing [AlchemistConfig]'s theme
-  /// will be used. If that is also `null`, the default [ThemeData.light] will
-  /// be used.
-  ThemeData? get theme => _theme;
-  final ThemeData? _theme;
-
-  /// Creates a copy of this [PlatformGoldensConfig] and replaces the given
-  /// fields.
+  @override
   PlatformGoldensConfig copyWith({
     Set<HostPlatform>? platforms,
     bool? enabled,
-    TestComparisonPredicate? comparePredicate,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   }) {
     return PlatformGoldensConfig(
-      platforms: platforms ?? _platforms,
-      enabled: enabled ?? _enabled,
-      comparePredicate: comparePredicate ?? _comparePredicate,
-      filePathResolver: filePathResolver ?? _filePathResolver,
-      theme: theme ?? _theme,
+      platforms: platforms ?? this.platforms,
+      enabled: enabled ?? this.enabled,
+      filePathResolver: filePathResolver ?? this.filePathResolver,
+      theme: theme ?? this.theme,
     );
   }
 
-  /// Creates a copy and merges this [PlatformGoldensConfig] with the given
-  /// config, replacing all set fields of the copy with the given config's
-  /// fields.
-  PlatformGoldensConfig merge(PlatformGoldensConfig? other) {
+  @override
+  PlatformGoldensConfig merge(covariant PlatformGoldensConfig? other) {
     return copyWith(
       platforms: other?._platforms,
-      enabled: other?._enabled,
-      comparePredicate: other?._comparePredicate,
+      enabled: other?.enabled,
       filePathResolver: other?._filePathResolver,
       theme: other?._theme,
     );
@@ -393,11 +424,8 @@ class PlatformGoldensConfig extends Equatable {
 
   @override
   List<Object?> get props => [
+        ...super.props,
         platforms,
-        enabled,
-        comparePredicate,
-        filePathResolver,
-        theme,
       ];
 }
 
@@ -407,130 +435,51 @@ class PlatformGoldensConfig extends Equatable {
 /// This contains various settings used by [goldenTest] to determine whether
 /// and how to run golden tests intended to be run in a CI environment.
 ///
-/// The [enabled] flag determines whether or not platform golden tests are
-/// enabled. If set to `false`, these tests will not be generated or compared.
-/// Otherwise the tests will function as normal.
+/// {@macro goldens_config_enabled}
 ///
-/// A [comparePredicate] can be provided to determine how a given test should
-/// should be run. If no function is provided, all golden files will be
-/// compared.
+/// {@macro goldens_config_file_path_resolver}
+/// By default, the golden file is located in the
+/// `goldens/ci` directory relative to the test file.
 ///
-/// The [filePathResolver] can be used to customize the name and of the golden
-/// file. By default, the golden file is located in the `goldens/ci/` directory
-/// relative to the test file.
+/// {@macro goldens_config_theme}
 ///
-/// If a [theme] is provided, it will be assigned to the [MaterialApp] created
-/// by Alchemist that wraps the golden test groups and scenarios when a test of
-/// this type is run. If no [theme] is provided, the enclosing
-/// [AlchemistConfig]'s theme will be used. If that is also `null`, the default
-/// [ThemeData.light] will be used.
-///
-/// **Note:** CI tests are always rendered in the "Ahem" font family to ensure
-/// consistent results across platforms. In other words, the font family of the
-/// [theme] will be ignored.
-/// {@endtemplate}
-class CiGoldensConfig extends Equatable {
+/// {@endtemplate ci_goldens_config}
+class CiGoldensConfig extends GoldensConfig {
   /// {@macro ci_goldens_config}
   const CiGoldensConfig({
-    bool? enabled,
-    TestComparisonPredicate? comparePredicate,
+    bool enabled = true,
+    bool obscureText = true,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
-  })  : _enabled = enabled,
-        _comparePredicate = comparePredicate,
-        _filePathResolver = filePathResolver,
-        _theme = theme;
+  }) : super(
+          enabled: enabled,
+          obscureText: obscureText,
+          filePathResolver: filePathResolver,
+          theme: theme,
+        );
 
-  /// The default value for the [enabled] field.
-  ///
-  /// This is `true` by default, meaning that CI golden tests will always run.
-  static const _defaultEnabled = true;
+  @override
+  String get environmentName => 'CI';
 
-  /// The default value for the [comparePredicate] field.
-  ///
-  /// This always returns `true`, meaning golden files will be compared in any
-  /// test.
-  ///
-  /// See [comparePredicate] for more details.
-  static bool _defaultComparePredicate(String _) => true;
-
-  /// The default [FilePathResolver] for the [filePathResolver] field.
-  ///
-  /// See [filePathResolver] for more details.
-  static String _defaultFilePathResolver(String fileName) {
-    return 'goldens/ci/$fileName.png';
-  }
-
-  /// Whether or not CI golden tests should run.
-  ///
-  /// If this is set to `false`, CI golden tests will never run and the output
-  /// of the [comparePredicate] is ignored.
-  bool get enabled => _enabled ?? _defaultEnabled;
-  final bool? _enabled;
-
-  /// A function that returns whether the given test should be run.
-  ///
-  /// This function is used by [goldenTest] to determine whether the given test
-  /// should be run. If no function is provided, all golden files will be
-  /// compared.
-  TestComparisonPredicate get comparePredicate =>
-      _comparePredicate ?? _defaultComparePredicate;
-  final TestComparisonPredicate? _comparePredicate;
-
-  /// A function that returns the path of the golden file for a given test's
-  /// file name. This function's return value should include the `.png`
-  /// extension.
-  ///
-  /// This function is used by [goldenTest] to determine where the golden file
-  /// should be located. By default, the golden file is located in the
-  /// `goldens/ci/` directory relative to the test file.
-  FilePathResolver get filePathResolver =>
-      _filePathResolver ?? _defaultFilePathResolver;
-  final FilePathResolver? _filePathResolver;
-
-  /// The [ThemeData] to use when generating golden tests.
-  ///
-  /// If no [ThemeData] is provided, the enclosing [AlchemistConfig]'s theme
-  /// will be used. If that is also `null`, the default [ThemeData.light] will
-  /// be used.
-  ///
-  /// **Note:** CI tests are always rendered in the "Ahem" font family to ensure
-  /// consistent results across platforms. In other words, the font family of
-  /// the [theme] will be ignored.
-  ThemeData? get theme => _theme;
-  final ThemeData? _theme;
-
-  /// Creates a copy of this [CiGoldensConfig] and replaces the given fields.
+  @override
   CiGoldensConfig copyWith({
     bool? enabled,
-    TestComparisonPredicate? comparePredicate,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   }) {
     return CiGoldensConfig(
-      enabled: enabled ?? _enabled,
-      comparePredicate: comparePredicate ?? _comparePredicate,
-      filePathResolver: filePathResolver ?? _filePathResolver,
-      theme: theme ?? _theme,
-    );
-  }
-
-  /// Creates a copy and merges this [CiGoldensConfig] with the given config,
-  /// replacing all set fields of the copy with the given config's fields.
-  CiGoldensConfig merge(CiGoldensConfig? other) {
-    return copyWith(
-      enabled: other?._enabled,
-      comparePredicate: other?._comparePredicate,
-      filePathResolver: other?._filePathResolver,
-      theme: other?._theme,
+      enabled: enabled ?? this.enabled,
+      filePathResolver: filePathResolver ?? this.filePathResolver,
+      theme: theme ?? this.theme,
     );
   }
 
   @override
-  List<Object?> get props => [
-        enabled,
-        comparePredicate,
-        filePathResolver,
-        theme,
-      ];
+  CiGoldensConfig merge(covariant CiGoldensConfig? other) {
+    return copyWith(
+      enabled: other?.enabled,
+      filePathResolver: other?._filePathResolver,
+      theme: other?._theme,
+    );
+  }
 }

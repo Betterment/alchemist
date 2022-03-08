@@ -25,6 +25,8 @@ Before creating a pull request please:
 8. Create the Pull Request with [semantic title](https://github.com/zeke/semantic-pull-requests).
 9. Verify that all status checks are passing.
 
+If you are fixing an issue in Alchemist, add a smoke test in `test/smoke_tests` that tests a widget which replicates the issue you are fixing to prevent future regressions.
+
 ## License
 
 This packages uses the [MIT license](https://github.com/Betterment/alchemist/blob/main/LICENSE)

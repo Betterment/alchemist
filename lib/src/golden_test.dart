@@ -1,25 +1,25 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:alchemist/alchemist.dart';
-import 'package:alchemist/src/utilities.dart';
-import 'package:flutter/foundation.dart';
+import 'package:alchemist/src/alchemist_test_variant.dart';
+import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
-/// When set to `true`, the [goldenTest] method will skip setup.
-///
-/// Only used internally for testing.
-@protected
-@visibleForTesting
-bool debugSkipGoldenTestSetup = false;
+/// Default golden test runner which uses the flutter test framework.
+const defaultGoldenTestRunner = FlutterGoldenTestRunner();
+GoldenTestRunner _goldenTestRunner = defaultGoldenTestRunner;
+
+/// Golden test runner. Overriding this makes it easier to unit-test Alchemist.
+GoldenTestRunner get goldenTestRunner => _goldenTestRunner;
+set goldenTestRunner(GoldenTestRunner value) => _goldenTestRunner = value;
 
 /// An internal function that executes all necessary setup steps required to run
 /// golden tests.
 Future<void> _setUpGoldenTests() async {
-  await loadFontsForTesting();
+  await loadFonts();
 }
 
 /// Loads a font for use in golden tests.
@@ -28,7 +28,7 @@ Future<void> _setUpGoldenTests() async {
 /// [goldenTest] method in its setup phase.
 @protected
 @visibleForTesting
-Future<void> loadFontsForTesting() async {
+Future<void> loadFonts() async {
   final bundle = rootBundle;
   final fontManifestString = await bundle.loadString('FontManifest.json');
   final fontManifest = (json.decode(fontManifestString) as List<dynamic>)
@@ -48,32 +48,6 @@ Future<void> loadFontsForTesting() async {
     }
 
     await loader.load();
-  }
-}
-
-/// An internal function that forces golden files to be regenerated while
-/// executing the given function [fn]. Afterwards, the flag is reset to its
-/// original value.
-///
-/// If [forceUpdate] is `true`, the golden files will be regenerated even if
-/// they already exist. Otherwise, the flag is ignored and the function is
-/// executed as usual.
-///
-/// Used by [goldenTest] to force golden files to be regenerated.
-Future<T> _withForceUpdateGoldenFiles<T>(
-  bool forceUpdate,
-  FutureOr<T> Function() fn,
-) async {
-  if (!forceUpdate) {
-    return await fn();
-  }
-
-  final originalValue = autoUpdateGoldenFiles;
-  autoUpdateGoldenFiles = true;
-  try {
-    return await fn();
-  } finally {
-    autoUpdateGoldenFiles = originalValue;
   }
 }
 
@@ -148,204 +122,58 @@ Future<T> _withForceUpdateGoldenFiles<T>(
 /// press interaction, all other gestures will fail, rendering the
 /// [whilePerforming] argument useless.
 @isTest
-void goldenTest(
+Future<void> goldenTest(
   String description, {
   required String fileName,
-  bool? skip,
+  bool skip = false,
   List<String> tags = const ['golden'],
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   Interaction? whilePerforming,
   required Widget widget,
-}) {
+}) async {
+  if (skip) return;
+
   assert(
     !fileName.endsWith('.png'),
-    '''
-Golden tests file names should not include file type extension.
-
-This logic should be handled in the [filePathResolver] function of the
-[PlatformGoldensConfig] and [CiGoldensConfig] classes in [AlchemistConfig].''',
+    'Golden tests file names should not include file type extension.\n\n'
+    'This logic should be handled in the [filePathResolver] function of the '
+    '[PlatformGoldensConfig] and [CiGoldensConfig] classes in '
+    '[AlchemistConfig].',
   );
-
-  if (!debugSkipGoldenTestSetup || (skip ?? false)) {
-    setUp(_setUpGoldenTests);
-  }
 
   final config = AlchemistConfig.current();
 
-  testWidgets(
-    description,
-    (tester) => runGoldenTest(
-      tester: tester,
-      config: config,
-      fileName: fileName,
-      textScaleFactor: textScaleFactor,
-      constraints: constraints,
-      pumpBeforeTest: pumpBeforeTest,
-      whilePerforming: whilePerforming,
-      widget: widget,
-    ),
-    skip: skip,
-    tags: tags,
-  );
-}
-
-/// Internal method that runs a golden test for each enabled test type (platform
-/// and CI).
-///
-/// Do not use this method directly. Instead, use [goldenTest] to run a golden
-/// test.
-@protected
-@visibleForTesting
-Future<void> runGoldenTest({
-  required WidgetTester tester,
-  required AlchemistConfig config,
-  required String fileName,
-  double textScaleFactor = 1.0,
-  BoxConstraints constraints = const BoxConstraints(),
-  PumpAction pumpBeforeTest = onlyPumpAndSettle,
-  Interaction? whilePerforming,
-  required Widget widget,
-}) async {
-  final defaultTheme = config.theme ?? ThemeData.light();
-
   final currentPlatform = HostPlatform.current();
-
-  final platformConfig = config.platformGoldensConfig;
-  final runPlatformTest = platformConfig.enabled &&
-      platformConfig.platforms.contains(currentPlatform);
-
-  final ciConfig = config.ciGoldensConfig;
-  final runCiTest = ciConfig.enabled;
-
-  final failures = <TestFailure>[];
-
-  if (runPlatformTest) {
-    final shouldCompare = platformConfig.comparePredicate(fileName);
-    final theme = config.platformGoldensConfig.theme ?? defaultTheme;
-    final goldenKey = config.platformGoldensConfig.filePathResolver(fileName);
-
-    try {
-      await _generateAndCompare(
-        tester: tester,
-        forceUpdate: config.forceUpdateGoldenFiles,
-        shouldCompare: shouldCompare,
-        obscureText: false,
-        goldenKey: goldenKey,
-        textScaleFactor: textScaleFactor,
-        constraints: constraints,
-        theme: theme,
-        pumpBeforeTest: pumpBeforeTest,
-        whilePerforming: whilePerforming,
-        widget: widget,
-      );
-    } on TestFailure catch (e) {
-      failures.add(e);
-    }
-  }
-
-  if (runPlatformTest && runCiTest) {
-    await tester.cleanPump();
-  }
-
-  if (runCiTest) {
-    final shouldCompare = ciConfig.comparePredicate(fileName);
-
-    final baseTheme = config.ciGoldensConfig.theme ?? defaultTheme;
-    final theme = baseTheme.copyWith(
-      textTheme: baseTheme.textTheme.apply(
-        fontFamily: 'Ahem',
-      ),
-    );
-
-    final goldenKey = config.ciGoldensConfig.filePathResolver(fileName);
-
-    try {
-      await _generateAndCompare(
-        tester: tester,
-        forceUpdate: config.forceUpdateGoldenFiles,
-        shouldCompare: shouldCompare,
-        obscureText: true,
-        goldenKey: goldenKey,
-        textScaleFactor: textScaleFactor,
-        constraints: constraints,
-        theme: theme,
-        pumpBeforeTest: pumpBeforeTest,
-        whilePerforming: whilePerforming,
-        widget: widget,
-      );
-    } on TestFailure catch (e) {
-      failures.add(e);
-    }
-  }
-
-  if (failures.length == 1) {
-    // ignore: only_throw_errors
-    throw failures.first;
-  } else if (failures.isNotEmpty) {
-    const messagePrefix =
-        'Multiple test failures occurred while running golden tests.';
-
-    final indentedFailureMessages = <String>[];
-    for (final failure in failures) {
-      final indentedMessage = failure.message
-          ?.splitMapJoin('\n', onNonMatch: (match) => '  $match');
-      indentedFailureMessages.add(indentedMessage ?? '<No message given>');
-    }
-
-    final message = '$messagePrefix\n\n${indentedFailureMessages.join('\n\n')}';
-
-    // ignore: only_throw_errors
-    throw TestFailure(message);
-  }
-}
-
-/// Runs a single golden test expectation.
-///
-/// Used internally by [runGoldenTest] for each type of golden test.
-Future<void> _generateAndCompare({
-  required WidgetTester tester,
-  required bool forceUpdate,
-  required bool shouldCompare,
-  required bool obscureText,
-  required Object goldenKey,
-  required double textScaleFactor,
-  required BoxConstraints constraints,
-  required ThemeData theme,
-  required PumpAction pumpBeforeTest,
-  required Interaction? whilePerforming,
-  required Widget widget,
-}) async {
-  const rootKey = Key('golden-test-root');
-
-  await tester.pumpGoldenTest(
-    rootKey: rootKey,
-    textScaleFactor: textScaleFactor,
-    constraints: constraints,
-    theme: theme,
-    widget: widget,
+  final variant = AlchemistTestVariant(
+    config: config,
+    currentPlatform: currentPlatform,
   );
 
-  await pumpBeforeTest(tester);
+  goldenTestAdapter.setUp(_setUpGoldenTests);
 
-  AsyncCallback? cleanup;
-  if (whilePerforming != null) {
-    cleanup = await whilePerforming(tester);
-  }
-
-  final root = find.byKey(rootKey);
-  final toMatch = !obscureText ? root : tester.getBlockedTextImage(root);
-
-  try {
-    await _withForceUpdateGoldenFiles(
-      forceUpdate,
-      () => expectLater(toMatch, matchesGoldenFile(goldenKey)),
-    );
-    await cleanup?.call();
-  } on TestFailure {
-    if (shouldCompare) {
-      rethrow;
-    }
-  }
+  await goldenTestAdapter.testWidgets(
+    description,
+    (tester) async {
+      final goldensConfig = variant.currentConfig;
+      await goldenTestRunner.run(
+        tester: tester,
+        goldenPath: await goldensConfig.filePathResolver(
+          fileName,
+          goldensConfig.environmentName,
+        ),
+        widget: widget,
+        forceUpdate: config.forceUpdateGoldenFiles,
+        obscureText: goldensConfig.obscureText,
+        textScaleFactor: textScaleFactor,
+        constraints: constraints,
+        theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
+        pumpBeforeTest: pumpBeforeTest,
+        whilePerforming: whilePerforming,
+      );
+    },
+    tags: tags,
+    variant: variant,
+  );
 }

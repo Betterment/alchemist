@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Update Goldens",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--update-goldens"
+      ],
+      "program": "${relativeFile}",
+      "flutterMode": "debug",
+      "console": "debugConsole",
+      "codeLens": {
+        "for": [
+          "debug-test",
+          "debug-test-file"
+        ]
+      }
+    },
+  ]
+}

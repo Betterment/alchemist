@@ -61,7 +61,11 @@ Alchemist can perform two kinds of golden tests.
 
 One is **platform tests**, which generate golden files with human readable text. These can be considered regular golden tests and are usually only run on a local machine.
 
+![Example platform golden test][platform_test_image]
+
 The other is **CI tests**, which look and function the same as platform tests, except that the text blocks are replaced with colored squares.
+
+![Example CI golden test][ci_test_image]
 
 The reason for this distinction is that the output of platform tests is dependent on the platform the test is running on. In particular, individual platforms are known to render text differently than others. This causes readable golden files generated on macOS, for example, to be ever so slightly off from the golden files generated on other platforms, such as Windows or Linux, causing CI systems to fail the test. CI tests, on the other hand, were made to circumvent this, and will always have the same output regardless of the platform.
 
@@ -446,3 +450,5 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 [alchemist_repo]: https://github.com/Betterment/mobile/tree/main/flutter/alchemist
 [alchemist_issues]: https://github.com/Betterment/mobile/issues
 [alchemist_pull_request]: https://github.com/Betterment/mobile/compare
+[platform_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/macos_list_tile_golden_file.png
+[ci_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/ci_list_tile_golden_file.png

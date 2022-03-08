@@ -1,11 +1,23 @@
 import 'dart:io';
 
+import 'package:equatable/equatable.dart';
+
+/// Default host platform (the current host machine platform).
+final defaultHostPlatform = HostPlatform._realPlatform();
+HostPlatform _hostPlatform = defaultHostPlatform;
+
+/// Indicates the current host platform used by Alchemist.
+/// Can be overridden for testing. This value is utilized by
+/// [HostPlatform.current].
+HostPlatform get hostPlatform => _hostPlatform;
+set hostPlatform(HostPlatform value) => _hostPlatform = value;
+
 /// A class that represents a host platform that can run golden tests.
 ///
 /// The current platform can be retrieved using [HostPlatform.current], and
 /// checks against this value are available using [isMacOS], [isLinux] and so
 /// on.
-class HostPlatform {
+class HostPlatform extends Equatable {
   const HostPlatform._(this._value);
 
   /// An internal factory used to retrieve a [HostPlatform] based on the current
@@ -21,56 +33,8 @@ class HostPlatform {
   }
 
   /// The current host platform.
-  ///
-  /// This value can be overridden in tests using [overrideTestValue].
   factory HostPlatform.current() {
-    return _overrideTestValue ?? HostPlatform._realPlatform();
-  }
-
-  /// {@macro host_platform.override_test_value}
-  static HostPlatform? _overrideTestValue;
-
-  /// {@template host_platform.override_test_value}
-  /// Provides an override for the current platform for use in testing.
-  ///
-  /// Can be cleared using [clearOverrideTestValue].
-  ///
-  /// If set to a non-null value, all platform checks will use this value. This
-  /// is useful for simulating a platform in tests that is not the same as the
-  /// actual platform the test is running on.
-  ///
-  /// This is intended for use in testing only. Do not set this in production
-  /// code.
-  ///
-  /// ```dart
-  /// test('isLinux function works properly', () {
-  ///   // Set the override value to simulate a platform.
-  ///   HostPlatform.overrideTestValue = HostPlatform.macOS;
-  ///   // Don't forget to reset the override value when done.
-  ///   addTearDown(HostPlatform.clearOverrideTestValue);
-  ///
-  ///   expect(HostPlatform.current().isLinux, isFalse); // ✅
-  ///
-  ///   HostPlatform.overrideTestValue = HostPlatform.linux;
-  ///
-  ///   expect(HostPlatform.current().isLinux, isTrue); // ✅
-  /// });
-  /// ```
-  ///
-  /// See also:
-  /// * [clearOverrideTestValue], which clears this value and returns it to
-  ///   the actual platform.
-  /// {@endtemplate}
-  // ignore: avoid_setters_without_getters
-  static set overrideTestValue(HostPlatform value) {
-    _overrideTestValue = value;
-  }
-
-  /// Clears the testing override for the current platform.
-  ///
-  /// See [overrideTestValue] for more details.
-  static void clearOverrideTestValue() {
-    _overrideTestValue = null;
+    return hostPlatform;
   }
 
   /// The internal value used to represent the current platform.
@@ -79,31 +43,31 @@ class HostPlatform {
   final String _value;
 
   /// Returns all values [HostPlatform] can represent.
-  static const values = {macOS, linux, windows};
+  static final values = {macOS, linux, windows};
 
-  /// The Apple macOS platform (`"macos"`).
+  /// The Apple macOS platform (`"macOS"`).
   ///
   /// See [HostPlatform] for more information.
-  static const macOS = HostPlatform._('macos');
+  static const macOS = HostPlatform._('macOS');
 
-  /// The Linux platform (`"linux"`).
+  /// The Linux platform (`"Linux"`).
   ///
   /// See [HostPlatform] for more information.
-  static const linux = HostPlatform._('linux');
+  static const linux = HostPlatform._('Linux');
 
-  /// The Microsoft Windows platform (`"windows"`).
+  /// The Microsoft Windows platform (`"Windows"`).
   ///
   /// See [HostPlatform] for more information.
-  static const windows = HostPlatform._('windows');
+  static const windows = HostPlatform._('Windows');
 
   /// The name of the current platform.
   ///
   /// This will return the name of this [HostPlatform].
   ///
   /// ```dart
-  /// HostPlatform.macOS.operatingSystem; // "macos"
-  /// HostPlatform.linux.operatingSystem; // "linux"
-  /// HostPlatform.windows.operatingSystem; // "windows"
+  /// HostPlatform.macOS.operatingSystem; // "macOS"
+  /// HostPlatform.linux.operatingSystem; // "Linux"
+  /// HostPlatform.windows.operatingSystem; // "Windows"
   /// ```
   String get operatingSystem => _value;
 
@@ -120,4 +84,7 @@ class HostPlatform {
   String toString() {
     return 'HostPlatform($_value)';
   }
+
+  @override
+  List<Object?> get props => [_value];
 }
