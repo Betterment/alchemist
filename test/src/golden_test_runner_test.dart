@@ -44,15 +44,10 @@ void main() {
   group('GoldenTestRunner', () {
     const goldenTestRunner = FlutterGoldenTestRunner();
     late MockAdapter adapter;
-    var pumpBeforeTestCalled = false;
     var cleanupCalled = false;
     var interactionCalled = false;
     var goldenFileExpectationCalled = false;
     var matcherInvocationCalled = false;
-
-    Future<void> pumpBeforeTest(WidgetTester tester) async {
-      pumpBeforeTestCalled = true;
-    }
 
     Future<void> cleanup() async {
       cleanupCalled = true;
@@ -79,7 +74,6 @@ void main() {
       adapter = MockAdapter();
       goldenTestAdapter = adapter;
 
-      pumpBeforeTestCalled = false;
       cleanupCalled = false;
       interactionCalled = false;
       goldenFileExpectationCalled = false;
@@ -92,6 +86,7 @@ void main() {
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
           theme: any(named: 'theme'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
           widget: any(named: 'widget'),
         ),
       ).thenAnswer((_) async {});
@@ -141,12 +136,10 @@ void main() {
         goldenPath: 'path/to/golden',
         widget: Container(),
         theme: theme,
-        pumpBeforeTest: pumpBeforeTest,
         whilePerforming: interaction,
         obscureText: true,
       );
 
-      expect(pumpBeforeTestCalled, isTrue);
       expect(interactionCalled, isTrue);
       expect(cleanupCalled, isTrue);
       expect(goldenFileExpectationCalled, isTrue);
@@ -159,6 +152,7 @@ void main() {
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
           theme: captureAny(named: 'theme'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
           widget: any(named: 'widget'),
         ),
       ).captured.first as ThemeData;
@@ -189,7 +183,6 @@ void main() {
         widget: Container(),
       );
 
-      expect(pumpBeforeTestCalled, isFalse);
       expect(interactionCalled, isFalse);
       expect(cleanupCalled, isFalse);
       expect(goldenFileExpectationCalled, isTrue);
@@ -202,6 +195,7 @@ void main() {
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
           theme: captureAny(named: 'theme'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
           widget: any(named: 'widget'),
         ),
       ).captured.first as ThemeData;

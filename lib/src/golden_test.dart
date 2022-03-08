@@ -70,10 +70,10 @@ Future<void> loadFonts() async {
 /// golden image under the `goldens` directory. This name should be unique, and
 /// may not contain an extension (such as `.png`).
 ///
-/// The provided [widget] describes the scenarios and layout of the widgets that
-/// are included in the test. A child must be provided. Alchemist provides two
-/// widgets to make creating a golden test scenario. See [GoldenTestGroup] and
-/// [GoldenTestScenario] for more details.
+/// The provided [builder] describes the scenarios and layout of the widgets
+/// that are included in the test. A child must be provided. Alchemist provides
+/// two widgets to make creating a golden test scenario. See [GoldenTestGroup]
+/// and [GoldenTestScenario] for more details.
 ///
 /// The [description] must be a unique description for the test.
 ///
@@ -131,7 +131,7 @@ Future<void> goldenTest(
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   Interaction? whilePerforming,
-  required Widget widget,
+  required ValueGetter<Widget> builder,
 }) async {
   if (skip) return;
 
@@ -163,7 +163,7 @@ Future<void> goldenTest(
           fileName,
           goldensConfig.environmentName,
         ),
-        widget: widget,
+        widget: builder(),
         forceUpdate: config.forceUpdateGoldenFiles,
         obscureText: goldensConfig.obscureText,
         textScaleFactor: textScaleFactor,

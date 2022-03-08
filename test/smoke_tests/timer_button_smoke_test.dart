@@ -27,7 +27,7 @@ void main() {
         await tester.tap(find.byType(TimerButton));
         await tester.pumpAndSettle();
       },
-      widget: const TimerButton(),
+      builder: () => const TimerButton(),
     );
   });
 }
