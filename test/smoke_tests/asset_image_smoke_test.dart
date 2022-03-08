@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:alchemist/src/golden_test.dart';
+import 'package:alchemist/src/pumps.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,17 +23,6 @@ class FakeTestAssetBundle extends TestAssetBundle {
     }
     return super.load(key);
   }
-}
-
-Future<void> precacheImages(WidgetTester tester) async {
-  await tester.runAsync(() async {
-    for (final element in find.byType(Image).evaluate()) {
-      final widget = element.widget as Image;
-      final image = widget.image;
-      await precacheImage(image, element);
-    }
-  });
-  await tester.pumpAndSettle();
 }
 
 void main() {

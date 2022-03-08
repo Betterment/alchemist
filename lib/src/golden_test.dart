@@ -103,9 +103,9 @@ Future<void> loadFonts() async {
 /// prime the widget tree before golden evaluation. By default, it is set to
 /// [onlyPumpAndSettle], which will pump the widget tree and wait for all
 /// scheduled frames to be completed, but can be overridden to customize the
-/// pump behavior. For example, a button tap can be simulated using
-/// `tester.tap(finder)`, after which the tester can be pumped and settled.
-/// See [pumpOnce], [pumpNTimes] and [onlyPumpAndSettle] for more details.
+/// pump behavior.
+/// See [pumpOnce], [pumpNTimes], [onlyPumpAndSettle], and [precacheImages] for
+/// more details.
 ///
 /// The [whilePerforming] interaction, if provided, will be called with the
 /// [WidgetTester] to perform a desired interaction during the golden test.

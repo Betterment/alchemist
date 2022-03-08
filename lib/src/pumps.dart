@@ -1,4 +1,5 @@
 import 'package:alchemist/alchemist.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A function that may perform pumping actions to prime a golden test.
@@ -30,3 +31,34 @@ final pumpOnce = pumpNTimes(1);
 ///
 /// See [PumpAction] for more details.
 Future<void> onlyPumpAndSettle(WidgetTester tester) => tester.pumpAndSettle();
+
+/// A custom pump action to ensure that the images for all [Image],
+/// [FadeInImage], and [DecoratedBox] widgets are loaded before the golden file
+/// is generated.
+///
+/// See [PumpAction] for more details.
+Future<void> precacheImages(WidgetTester tester) async {
+  await tester.runAsync(() async {
+    final images = <Future<void>>[];
+    for (final element in find.byType(Image).evaluate()) {
+      final widget = element.widget as Image;
+      final image = widget.image;
+      images.add(precacheImage(image, element));
+    }
+    for (final element in find.byType(FadeInImage).evaluate()) {
+      final widget = element.widget as FadeInImage;
+      final image = widget.image;
+      images.add(precacheImage(image, element));
+    }
+    for (final element in find.byType(DecoratedBox).evaluate()) {
+      final widget = element.widget as DecoratedBox;
+      final decoration = widget.decoration;
+      if (decoration is BoxDecoration && decoration.image != null) {
+        final image = decoration.image!.image;
+        images.add(precacheImage(image, element));
+      }
+    }
+    await Future.wait(images);
+  });
+  await tester.pumpAndSettle();
+}
