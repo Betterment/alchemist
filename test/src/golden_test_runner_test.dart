@@ -15,11 +15,11 @@ class MockWidgetTester extends Mock implements WidgetTester {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue<WidgetTester>(MockWidgetTester());
-    registerFallbackValue<BoxConstraints>(const BoxConstraints());
-    registerFallbackValue<ThemeData>(ThemeData.light());
-    registerFallbackValue<Widget>(const SizedBox.square());
-    registerFallbackValue<Finder>(find.byType(Widget));
+    registerFallbackValue(MockWidgetTester());
+    registerFallbackValue(const BoxConstraints());
+    registerFallbackValue(ThemeData.light());
+    registerFallbackValue(const SizedBox.square());
+    registerFallbackValue(find.byType(Widget));
   });
 
   group('Overrides', () {
@@ -103,7 +103,7 @@ void main() {
       ).thenReturn(goldenFileExpectation);
 
       when(
-        () => goldenTestAdapter.withForceUpdateGoldenFiles(
+        () => goldenTestAdapter.withForceUpdateGoldenFiles<void>(
           callback: any(named: 'callback'),
         ),
       ).thenAnswer((invocation) async {
@@ -111,7 +111,6 @@ void main() {
         await (invocation.namedArguments[#callback]
                 as MatchesGoldenFileInvocation<void>)
             .call();
-        return;
       });
     });
 

@@ -21,7 +21,7 @@ class MockRenderObject extends Mock implements RenderObject {
 
 void main() {
   setUpAll(() {
-    registerFallbackValue<RenderObject>(MockRenderObject());
+    registerFallbackValue(MockRenderObject());
   });
   group('overrides', () {
     group('goldenFileExpectationFn', () {
