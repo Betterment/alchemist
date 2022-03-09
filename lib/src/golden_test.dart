@@ -70,10 +70,9 @@ Future<void> loadFonts() async {
 /// golden image under the `goldens` directory. This name should be unique, and
 /// may not contain an extension (such as `.png`).
 ///
-/// The provided [builder] describes the scenarios and layout of the widgets
-/// that are included in the test. A child must be provided. Alchemist provides
-/// two widgets to make creating a golden test scenario. See [GoldenTestGroup]
-/// and [GoldenTestScenario] for more details.
+/// The provided [builder] builds the widget under test.
+/// Usually, it creates multiple scenarios using [GoldenTestGroup]
+/// and [GoldenTestScenario].
 ///
 /// The [description] must be a unique description for the test.
 ///
