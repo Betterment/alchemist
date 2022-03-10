@@ -285,7 +285,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     while (!renderObject.isRepaintBoundary) {
       renderObject = renderObject.parent! as RenderObject;
     }
-    final layer = OffsetLayer();
+    final layer = renderObject.debugLayer! as OffsetLayer;
     paintingContextBuilder(
       layer,
       renderObject.paintBounds,
