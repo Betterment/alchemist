@@ -1,8 +1,8 @@
 <h1>🧙🏼 Alchemist</h1>
 
-[![Very Good Ventures][vgv_logo]][very_good_ventures_link]
+<a href="https://verygood.ventures" ><img alt="Very Good Ventures" src="https://raw.githubusercontent.com/VGVentures/very_good_brand/main/logos/lockups/lockup.svg" width="400"></a>
 
-[![Betterment][betterment_logo]][betterment_link]
+<a href="https://betterment.com/" ><img alt="Betterment" src="https://resources.betterment.com/hubfs/Graphics/shared-assets/betterment-wordmark-logo.svg" width="400"></a>
 
 Developed with 💙 by [Very Good Ventures][very_good_ventures_link] 🦄 and [Betterment][betterment_link] ☀️.
 
@@ -433,9 +433,7 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 - Feel free to submit a pull request! If you're a developer, you can fork the repository and [submit your pull request][alchemist_pull_request].
 
 [very_good_ventures_link]: https://verygood.ventures
-[vgv_logo]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/logos/lockups/lockup.svg
 [betterment_link]: https://betterment.com/
-[betterment_logo]: https://resources.betterment.com/hubfs/Graphics/shared-assets/betterment-wordmark-logo.svg
 [ci_badge]: https://github.com/Betterment/alchemist/workflows/alchemist/badge.svg
 [ci_link]: https://github.com/Betterment/alchemist/actions
 [coverage_badge]: https://codecov.io/gh/Betterment/alchemist/branch/main/graph/badge.svg?token=M04EG8H8V9
