@@ -378,7 +378,7 @@ abstract class GoldensConfig extends Equatable {
 /// {@macro goldens_config_render_shadows}
 /// By default, [renderShadows] is set to true so platform golden images are a
 /// more accurate representation of the tested widget.
-/// 
+///
 /// {@endtemplate platform_goldens_config}
 class PlatformGoldensConfig extends GoldensConfig {
   /// {@macro platform_goldens_config}
@@ -432,7 +432,7 @@ class PlatformGoldensConfig extends GoldensConfig {
       platforms: platforms ?? this.platforms,
       enabled: enabled ?? this.enabled,
       obscureText: obscureText ?? this.obscureText,
-      renderShadows: renderShadows??this.renderShadows,
+      renderShadows: renderShadows ?? this.renderShadows,
       filePathResolver: filePathResolver ?? this.filePathResolver,
       theme: theme ?? this.theme,
     );
@@ -505,7 +505,7 @@ class CiGoldensConfig extends GoldensConfig {
     return CiGoldensConfig(
       enabled: enabled ?? this.enabled,
       obscureText: obscureText ?? this.obscureText,
-      renderShadows: renderShadows??this.renderShadows,
+      renderShadows: renderShadows ?? this.renderShadows,
       filePathResolver: filePathResolver ?? this.filePathResolver,
       theme: theme ?? this.theme,
     );
