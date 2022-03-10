@@ -8,7 +8,7 @@
 Developed with 💙 by [Very Good Ventures][very_good_ventures_link] 🦄 and [Betterment][betterment_link] ☀️.
 
 [![ci][ci_badge]][ci_link]
-[![coverage][coverage_badge]][ci_link]
+[![codecov][coverage_badge]][coverage_link]
 [![pub package][pub_badge]][pub_link]
 [![License: MIT][license_badge]][license_link]
 
@@ -441,7 +441,8 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 [betterment_link]: https://betterment.com/
 [ci_badge]: https://github.com/Betterment/alchemist/workflows/alchemist/badge.svg
 [ci_link]: https://github.com/Betterment/alchemist/actions
-[coverage_badge]: https://raw.githubusercontent.com/Betterment/alchemist/main/coverage_badge.svg
+[coverage_badge]: https://codecov.io/gh/Betterment/alchemist/branch/main/graph/badge.svg?token=M04EG8H8V9
+[coverage_link]: https://codecov.io/gh/Betterment/alchemist
 [pub_badge]: https://img.shields.io/pub/v/alchemist.svg
 [pub_link]: https://pub.dev/packages/alchemist
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
