@@ -1,0 +1,6 @@
+coverage:
+  range: "100...100"
+  status:
+    project:
+      default:
+        target: 100
