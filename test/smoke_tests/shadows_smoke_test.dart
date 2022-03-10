@@ -37,11 +37,9 @@ void main() {
       );
     },
   );
-  group('smoke test - renderShadows disabled', () {
-    goldenTest(
-      'succeeds after tapping button with timer',
-      fileName: 'shadows_smoke_test_default_ci_config',
-      widget: const ShadowWidget(),
-    );
-  });
+  goldenTest(
+    'does not render shadows',
+    fileName: 'shadows_smoke_test_default_ci_config',
+    widget: const ShadowWidget(),
+  );
 }
