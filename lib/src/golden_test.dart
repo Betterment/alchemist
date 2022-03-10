@@ -70,10 +70,9 @@ Future<void> loadFonts() async {
 /// golden image under the `goldens` directory. This name should be unique, and
 /// may not contain an extension (such as `.png`).
 ///
-/// The provided [widget] describes the scenarios and layout of the widgets that
-/// are included in the test. A child must be provided. Alchemist provides two
-/// widgets to make creating a golden test scenario. See [GoldenTestGroup] and
-/// [GoldenTestScenario] for more details.
+/// The provided [builder] builds the widget under test.
+/// Usually, it creates multiple scenarios using [GoldenTestGroup]
+/// and [GoldenTestScenario].
 ///
 /// The [description] must be a unique description for the test.
 ///
@@ -103,9 +102,9 @@ Future<void> loadFonts() async {
 /// prime the widget tree before golden evaluation. By default, it is set to
 /// [onlyPumpAndSettle], which will pump the widget tree and wait for all
 /// scheduled frames to be completed, but can be overridden to customize the
-/// pump behavior. For example, a button tap can be simulated using
-/// `tester.tap(finder)`, after which the tester can be pumped and settled.
-/// See [pumpOnce], [pumpNTimes] and [onlyPumpAndSettle] for more details.
+/// pump behavior.
+/// See [pumpOnce], [pumpNTimes], [onlyPumpAndSettle], and [precacheImages] for
+/// more details.
 ///
 /// The [whilePerforming] interaction, if provided, will be called with the
 /// [WidgetTester] to perform a desired interaction during the golden test.
@@ -131,7 +130,7 @@ Future<void> goldenTest(
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   Interaction? whilePerforming,
-  required Widget widget,
+  required ValueGetter<Widget> builder,
 }) async {
   if (skip) return;
 
@@ -163,7 +162,7 @@ Future<void> goldenTest(
           fileName,
           goldensConfig.environmentName,
         ),
-        widget: widget,
+        widget: builder(),
         forceUpdate: config.forceUpdateGoldenFiles,
         obscureText: goldensConfig.obscureText,
         renderShadows: goldensConfig.renderShadows,

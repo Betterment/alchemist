@@ -15,11 +15,11 @@ class MockWidgetTester extends Mock implements WidgetTester {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue<WidgetTester>(MockWidgetTester());
-    registerFallbackValue<BoxConstraints>(const BoxConstraints());
-    registerFallbackValue<ThemeData>(ThemeData.light());
-    registerFallbackValue<Widget>(const SizedBox.square());
-    registerFallbackValue<Finder>(find.byType(Widget));
+    registerFallbackValue(MockWidgetTester());
+    registerFallbackValue(const BoxConstraints());
+    registerFallbackValue(ThemeData.light());
+    registerFallbackValue(const SizedBox.square());
+    registerFallbackValue(find.byType(Widget));
   });
 
   group('Overrides', () {
@@ -44,15 +44,10 @@ void main() {
   group('GoldenTestRunner', () {
     const goldenTestRunner = FlutterGoldenTestRunner();
     late MockAdapter adapter;
-    var pumpBeforeTestCalled = false;
     var cleanupCalled = false;
     var interactionCalled = false;
     var goldenFileExpectationCalled = false;
     var matcherInvocationCalled = false;
-
-    Future<void> pumpBeforeTest(WidgetTester tester) async {
-      pumpBeforeTestCalled = true;
-    }
 
     Future<void> cleanup() async {
       cleanupCalled = true;
@@ -79,7 +74,6 @@ void main() {
       adapter = MockAdapter();
       goldenTestAdapter = adapter;
 
-      pumpBeforeTestCalled = false;
       cleanupCalled = false;
       interactionCalled = false;
       goldenFileExpectationCalled = false;
@@ -92,6 +86,7 @@ void main() {
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
           theme: any(named: 'theme'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
           widget: any(named: 'widget'),
         ),
       ).thenAnswer((_) async {});
@@ -108,7 +103,7 @@ void main() {
       ).thenReturn(goldenFileExpectation);
 
       when(
-        () => goldenTestAdapter.withForceUpdateGoldenFiles(
+        () => goldenTestAdapter.withForceUpdateGoldenFiles<void>(
           callback: any(named: 'callback'),
         ),
       ).thenAnswer((invocation) async {
@@ -116,7 +111,6 @@ void main() {
         await (invocation.namedArguments[#callback]
                 as MatchesGoldenFileInvocation<void>)
             .call();
-        return;
       });
     });
 
@@ -141,12 +135,10 @@ void main() {
         goldenPath: 'path/to/golden',
         widget: Container(),
         theme: theme,
-        pumpBeforeTest: pumpBeforeTest,
         whilePerforming: interaction,
         obscureText: true,
       );
 
-      expect(pumpBeforeTestCalled, isTrue);
       expect(interactionCalled, isTrue);
       expect(cleanupCalled, isTrue);
       expect(goldenFileExpectationCalled, isTrue);
@@ -159,6 +151,7 @@ void main() {
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
           theme: captureAny(named: 'theme'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
           widget: any(named: 'widget'),
         ),
       ).captured.first as ThemeData;
@@ -189,7 +182,6 @@ void main() {
         widget: Container(),
       );
 
-      expect(pumpBeforeTestCalled, isFalse);
       expect(interactionCalled, isFalse);
       expect(cleanupCalled, isFalse);
       expect(goldenFileExpectationCalled, isTrue);
@@ -202,6 +194,7 @@ void main() {
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
           theme: captureAny(named: 'theme'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
           widget: any(named: 'widget'),
         ),
       ).captured.first as ThemeData;
@@ -250,7 +243,7 @@ void main() {
           goldenPath: 'path/to/golden',
           renderShadows: true,
           widget: Container(),
-          pumpBeforeTest: (_) async {
+          whilePerforming: (_) {
             debugDisableShadowsDuringTestRun = debugDisableShadows;
             throw givenException;
           },

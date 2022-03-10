@@ -31,7 +31,7 @@ void main() {
     goldenTest(
       'succeeds with CompositedTransformFollower',
       fileName: 'composited_transform_smoke_test',
-      widget: _SmokeTest(),
+      builder: _SmokeTest.new,
     );
   });
 }

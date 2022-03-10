@@ -84,6 +84,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
         rootKey: rootKey,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
+        pumpBeforeTest: pumpBeforeTest,
         theme: themeData.copyWith(
           textTheme: obscureText
               ? themeData.textTheme.apply(
@@ -93,8 +94,6 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
         ),
         widget: widget,
       );
-
-      await pumpBeforeTest(tester);
 
       AsyncCallback? cleanup;
       if (whilePerforming != null) {

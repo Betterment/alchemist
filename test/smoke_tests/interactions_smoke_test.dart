@@ -26,21 +26,21 @@ void main() {
     goldenTest(
       'succeeds in regular state',
       fileName: 'interactions_smoke_test_regular',
-      widget: buildSmokeTestGroup(),
+      builder: buildSmokeTestGroup,
     );
 
     goldenTest(
       'succeeds while pressed',
       fileName: 'interactions_smoke_test_pressed',
       whilePerforming: press(find.byType(ElevatedButton)),
-      widget: buildSmokeTestGroup(),
+      builder: buildSmokeTestGroup,
     );
 
     goldenTest(
       'succeeds while long pressed',
       fileName: 'interactions_smoke_test_long_pressed',
       whilePerforming: longPress(find.byType(ElevatedButton)),
-      widget: buildSmokeTestGroup(),
+      builder: buildSmokeTestGroup,
     );
   });
 }

@@ -39,6 +39,7 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required double textScaleFactor,
     required BoxConstraints constraints,
     required ThemeData theme,
+    required PumpAction pumpBeforeTest,
     required Widget widget,
   }) {
     return Future.value();
@@ -78,9 +79,9 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
 
 void main() {
   setUpAll(() {
-    registerFallbackValue<WidgetTester>(MockWidgetTester());
-    registerFallbackValue<Widget>(Container());
-    registerFallbackValue<BoxConstraints>(const BoxConstraints());
+    registerFallbackValue(MockWidgetTester());
+    registerFallbackValue(Container());
+    registerFallbackValue(const BoxConstraints());
   });
 
   group('goldenTest', () {
@@ -120,7 +121,7 @@ void main() {
         goldenTest(
           'golden test test',
           fileName: 'test.png',
-          widget: Container(),
+          builder: () => const SizedBox(),
         ),
         throwsAssertionError,
       );
@@ -151,7 +152,7 @@ void main() {
         run: () async => goldenTest(
           'test golden test',
           fileName: 'test_golden_test',
-          widget: widget,
+          builder: () => widget,
         ),
       );
       expect(filePathResolverCalled, isTrue);

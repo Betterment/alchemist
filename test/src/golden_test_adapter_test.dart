@@ -4,6 +4,7 @@ import 'package:alchemist/src/blocked_text_image.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_group.dart';
 import 'package:alchemist/src/golden_test_scenario.dart';
+import 'package:alchemist/src/pumps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -20,7 +21,7 @@ class MockRenderObject extends Mock implements RenderObject {
 
 void main() {
   setUpAll(() {
-    registerFallbackValue<RenderObject>(MockRenderObject());
+    registerFallbackValue(MockRenderObject());
   });
   group('overrides', () {
     group('goldenFileExpectationFn', () {
@@ -213,6 +214,7 @@ void main() {
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
             theme: ThemeData.light(),
+            pumpBeforeTest: onlyPumpAndSettle,
             widget: buildGroup(),
           );
 
@@ -233,6 +235,7 @@ void main() {
             textScaleFactor: 1,
             constraints: BoxConstraints.tight(providedSize),
             theme: ThemeData.light(),
+            pumpBeforeTest: onlyPumpAndSettle,
             widget: buildGroup(),
           );
 
@@ -256,6 +259,7 @@ void main() {
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
             theme: ThemeData.light(),
+            pumpBeforeTest: onlyPumpAndSettle,
             widget: buildGroup(),
           );
 
@@ -286,6 +290,7 @@ void main() {
               minHeight: minSize.height,
             ),
             theme: ThemeData.light(),
+            pumpBeforeTest: onlyPumpAndSettle,
             widget: buildGroup(),
           );
 
@@ -326,6 +331,7 @@ void main() {
               maxHeight: maxSize.height,
             ),
             theme: ThemeData.light(),
+            pumpBeforeTest: onlyPumpAndSettle,
             widget: buildGroup(),
           );
 
@@ -342,6 +348,7 @@ void main() {
           textScaleFactor: 2,
           constraints: const BoxConstraints(),
           theme: ThemeData.light(),
+          pumpBeforeTest: onlyPumpAndSettle,
           widget: buildGroup(),
         );
 
@@ -366,6 +373,7 @@ void main() {
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
             theme: theme,
+            pumpBeforeTest: onlyPumpAndSettle,
             widget: buildGroup(),
           );
 
@@ -397,6 +405,20 @@ void main() {
           );
         },
       );
+
+      testWidgets('calls the provided pumpBeforeTest', (tester) async {
+        var pumpBeforeTestCalled = false;
+        await adapter.pumpGoldenTest(
+          tester: tester,
+          textScaleFactor: 2,
+          constraints: const BoxConstraints(),
+          theme: ThemeData.light(),
+          pumpBeforeTest: (_) async => pumpBeforeTestCalled = true,
+          widget: buildGroup(),
+        );
+
+        expect(pumpBeforeTestCalled, isTrue);
+      });
     });
   });
 }
