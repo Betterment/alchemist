@@ -36,6 +36,7 @@ abstract class GoldenTestRunner {
     required Widget widget,
     bool forceUpdate = false,
     bool obscureText = false,
+    bool renderShadows = false,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
     ThemeData? theme,
@@ -59,6 +60,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     required Widget widget,
     bool forceUpdate = false,
     bool obscureText = false,
+    bool renderShadows = false,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
     ThemeData? theme,
@@ -73,44 +75,52 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     final themeData = theme ?? ThemeData.light();
     final rootKey = FlutterGoldenTestAdapter.rootKey;
 
-    await goldenTestAdapter.pumpGoldenTest(
-      tester: tester,
-      rootKey: rootKey,
-      textScaleFactor: textScaleFactor,
-      constraints: constraints,
-      pumpBeforeTest: pumpBeforeTest,
-      theme: themeData.copyWith(
-        textTheme: obscureText
-            ? themeData.textTheme.apply(
-                fontFamily: obscuredTextFontFamily,
-              )
-            : themeData.textTheme,
-      ),
-      widget: widget,
-    );
-
-    AsyncCallback? cleanup;
-    if (whilePerforming != null) {
-      cleanup = await whilePerforming(tester);
-    }
-
-    final root = find.byKey(rootKey);
-
-    final toMatch = obscureText
-        ? goldenTestAdapter.getBlockedTextImage(
-            finder: root,
-            tester: tester,
-          )
-        : root;
+    final mementoDebugDisableShadows = debugDisableShadows;
+    debugDisableShadows = !renderShadows;
 
     try {
-      await goldenTestAdapter.withForceUpdateGoldenFiles(
-        forceUpdate: forceUpdate,
-        callback: goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
+      await goldenTestAdapter.pumpGoldenTest(
+        tester: tester,
+        rootKey: rootKey,
+        textScaleFactor: textScaleFactor,
+        constraints: constraints,
+        pumpBeforeTest: pumpBeforeTest,
+        theme: themeData.copyWith(
+          textTheme: obscureText
+              ? themeData.textTheme.apply(
+                  fontFamily: obscuredTextFontFamily,
+                )
+              : themeData.textTheme,
+        ),
+        widget: widget,
       );
-      await cleanup?.call();
-    } on TestFailure {
-      rethrow;
+
+      AsyncCallback? cleanup;
+      if (whilePerforming != null) {
+        cleanup = await whilePerforming(tester);
+      }
+
+      final root = find.byKey(rootKey);
+
+      final toMatch = obscureText
+          ? goldenTestAdapter.getBlockedTextImage(
+              finder: root,
+              tester: tester,
+            )
+          : root;
+
+      try {
+        await goldenTestAdapter.withForceUpdateGoldenFiles(
+          forceUpdate: forceUpdate,
+          callback:
+              goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
+        );
+        await cleanup?.call();
+      } on TestFailure {
+        rethrow;
+      }
+    } finally {
+      debugDisableShadows = mementoDebugDisableShadows;
     }
   }
 }
