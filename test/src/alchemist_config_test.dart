@@ -251,6 +251,13 @@ void main() {
     group('has correct default value', () {
       const defaultValue = PlatformGoldensConfig();
 
+      test('for renderShadows', () {
+        expect(
+          defaultValue.renderShadows,
+          isTrue,
+        );
+      });
+
       group('for default filePathResolver', () {
         test('generates path correctly', () {
           expect(
@@ -339,6 +346,13 @@ void main() {
 
     group('has correct default value', () {
       const defaultValue = CiGoldensConfig();
+
+      test('for renderShadows', () {
+        expect(
+          defaultValue.renderShadows,
+          isFalse,
+        );
+      });
 
       test('for filePathResolver', () {
         expect(

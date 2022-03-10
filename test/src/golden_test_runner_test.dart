@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:flutter/material.dart';
@@ -236,6 +237,30 @@ void main() {
       } catch (e) {
         expect(e, isA<TestFailure>());
       }
+    });
+
+    testWidgets(
+        'renderShadows sets debugDisableShadows correctly '
+        'and resets it after the test has run', (tester) async {
+      late final bool debugDisableShadowsDuringTestRun;
+
+      final givenException = Exception();
+      await expectLater(
+        goldenTestRunner.run(
+          tester: tester,
+          goldenPath: 'path/to/golden',
+          renderShadows: true,
+          widget: Container(),
+          pumpBeforeTest: (_) async {
+            debugDisableShadowsDuringTestRun = debugDisableShadows;
+            throw givenException;
+          },
+        ),
+        throwsA(same(givenException)),
+      );
+
+      expect(debugDisableShadows, isTrue);
+      expect(debugDisableShadowsDuringTestRun, isFalse);
     });
 
     tearDownAll(() {
