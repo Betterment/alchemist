@@ -113,12 +113,18 @@ void main() {
           );
           await precacheImages(tester);
 
-          expect(
-            await _isCached(networkImage, find.image(networkImage)),
-            isTrue,
+          await expectLater(
+            _isCached(networkImage, find.image(networkImage)),
+            completion(isTrue),
           );
-          expect(await _isCached(assetImage, find.image(assetImage)), isTrue);
-          expect(await _isCached(memoryImage, find.image(memoryImage)), isTrue);
+          await expectLater(
+            _isCached(assetImage, find.image(assetImage)),
+            completion(isTrue),
+          );
+          await expectLater(
+            _isCached(memoryImage, find.image(memoryImage)),
+            completion(isTrue),
+          );
         }),
       );
 
@@ -148,17 +154,17 @@ void main() {
           );
           await precacheImages(tester);
 
-          expect(
-            await _isCached(networkImage, find.fadeInImage(networkImage)),
-            isTrue,
+          await expectLater(
+            _isCached(networkImage, find.fadeInImage(networkImage)),
+            completion(isTrue),
           );
-          expect(
-            await _isCached(assetImage, find.fadeInImage(assetImage)),
-            isTrue,
+          await expectLater(
+            _isCached(assetImage, find.fadeInImage(assetImage)),
+            completion(isTrue),
           );
-          expect(
-            await _isCached(memoryImage, find.fadeInImage(memoryImage)),
-            isTrue,
+          await expectLater(
+            _isCached(memoryImage, find.fadeInImage(memoryImage)),
+            completion(isTrue),
           );
         }),
       );
@@ -198,17 +204,17 @@ void main() {
           );
           await precacheImages(tester);
 
-          expect(
-            await _isCached(networkImage, find.decorationImage(networkImage)),
-            isTrue,
+          await expectLater(
+            _isCached(networkImage, find.decorationImage(networkImage)),
+            completion(isTrue),
           );
-          expect(
-            await _isCached(assetImage, find.decorationImage(assetImage)),
-            isTrue,
+          await expectLater(
+            _isCached(assetImage, find.decorationImage(assetImage)),
+            completion(isTrue),
           );
-          expect(
-            await _isCached(memoryImage, find.decorationImage(memoryImage)),
-            isTrue,
+          await expectLater(
+            _isCached(memoryImage, find.decorationImage(memoryImage)),
+            completion(isTrue),
           );
         }),
       );
