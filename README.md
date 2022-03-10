@@ -93,7 +93,7 @@ void main() {
       'renders correctly',
       fileName: 'list_tile',
       constraints: const BoxConstraints(maxWidth: 600),
-      widget: GoldenTestGroup(
+      builder: () => GoldenTestGroup(
         columnWidthBuilder: (_) => const FlexColumnWidth(),
         children: [
           GoldenTestScenario(
@@ -214,7 +214,8 @@ Both the `PlatformGoldensConfig` and `CiGoldensConfig` classes contain a number 
 | Field                                      | Default                      | Description                                                                                                                                                                                                                                                                                                                                                   |
 |--------------------------------------------|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `bool enabled`                             | `true`                       | Indicates if this type of test should run. If set to `false`, this type of test is never allowed to run. Defaults to `true`.                                                                                                                                                                                                                                  |
-| `TestComparisonPredicate comparePredicate` | `<_defaultComparePredicate>` | A predicate that determines whether a golden test should compare its output to the reference golden file. By default, CI tests are always compared, whereas platform tests never compared.                                                                                                                                                                    |
+| `bool obscureText` | `true` for CI, `false` for platform | Indicates if the text in the rendered widget should be obscured by colored rectangles. This is useful for circumventing issues with Flutter's font rendering between host platforms. |
+| `bool renderShadows` | `false` for CI, `true` for platform | Indicates if shadows should actually be rendered, or if they should be replaced by opaque colors. This is useful because shadow rendering can be inconsistent between test runs. |
 | `FilePathResolver filePathResolver`        | `<_defaultFilePathResolver>` | A function that resolves the path to the golden file, relative to the test that generates it. By default, CI golden test files are placed in `goldens/ci/`, and readable golden test files are placed in `goldens/`.                                                                                                                                          |
 | `ThemeData? theme`                         | `null`                       | The theme to use for this type of test. If `null`, the enclosing `AlchemistConfig`'s `theme` will be used, or `ThemeData.light()` if that is also `null`. _Note that CI tests are always run using the Ahem font family, which is a font that solely renders square characters. This is done to ensure that CI tests are always consistent across platforms._ |
 
@@ -328,7 +329,7 @@ void main() {
     config: AlchemistConfig(
       forceUpdateGoldenFiles: true,
       platformGoldensConfig: PlatformGoldensConfig(
-        comparePredicate: (String _) => false,
+        renderShadows: false,
         fileNameResolver: (String name) => 'top_level_config/goldens/$name.png',
       ),
     ),
@@ -337,7 +338,7 @@ void main() {
 
       print(currentConfig.forceUpdateGoldenFiles);
       // > true
-      print(currentConfig.platformGoldensConfig.comparePredicate(''));
+      print(currentConfig.platformGoldensConfig.renderShadows);
       // > false
       print(currentConfig.platformGoldensConfig.fileNameResolver('my_widget'));
       // > top_level_config/goldens/my_widget.png
@@ -349,7 +350,7 @@ void main() {
         config: AlchemistConfig.current().merge(
             AlchemistConfig(
               platformGoldensConfig: PlatformGoldensConfig(
-                comparePredicate: (String _) => true,
+                renderShadows: true,
               ),
             ),
           ),
@@ -360,7 +361,7 @@ void main() {
 
           print(currentConfig.forceUpdateGoldenFiles);
           // > true (preserved from the top level config)
-          print(currentConfig.platformGoldensConfig.comparePredicate(''));
+          print(currentConfig.platformGoldensConfig.renderShadows);
           // > true (changed by the newly merged config)
           print(currentConfig.platformGoldensConfig.fileNameResolver('my_widget'));
           // > top_level_config/goldens/my_widget.png (preserved from the top level config)
@@ -377,16 +378,14 @@ void main() {
 
 Some golden tests may require some form of user input to be performed. For example, to make sure a button shows the right color when being pressed, a test may require a tap gesture to be performed while the golden test image is being generated.
 
-These kinds of gestures can be performed by providing the `goldenTest` function with a `whilePressing` argument. This parameter takes a `Finder` that will be used to find the widget that should be pressed.
-
-Any widgets that match the `whilePressed` finder will be held down while the golden test is being generated.
+These kinds of gestures can be performed by providing the `goldenTest` function with a `whilePerforming` argument. This parameter takes a function that will be used to find the widget that should be pressed. There are some default interactions already provided, such as `press` and `longPress`.
 
 ```dart
 void main() {
   goldenTest(
     'ElevatedButton renders tap indicator when pressed',
     fileName: 'elevated_button_pressed',
-    whilePressing: find.byType(ElevatedButton),
+    whilePerforming: press(find.byType(ElevatedButton)),
     widget: GoldenTestGroup(
       children: [
         GoldenTestScenario(
@@ -419,6 +418,8 @@ If the passed in constraints are tight, meaning the minimum width and height are
 Before running every golden test, the `goldenTest` function will call its `pumpBeforeTest` function. This function is used to prime the widget tree prior to generating the golden test image. By default, the tree is pumped and settled (using `tester.pumpAndSettle()`), but in some scenarios, custom pumping behavior may be required.
 
 In these cases, a different `pumpBeforeTest` function can be provided to the `goldenTest` function. A set of predefined functions are included in this package, including `pumpOnce`, `pumpNTimes(n)`, and `onlyPumpAndSettle`, but custom functions can be created as well.
+
+Additionally, there is a `precacheImages` function, which can be passed to `pumpBeforeTest` in order to preload all images in the tree, so that they will appear in the generated golden files.
 
 #### Custom text scale factor
 
