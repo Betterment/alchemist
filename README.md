@@ -433,7 +433,7 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 - Feel free to submit a pull request! If you're a developer, you can fork the repository and [submit your pull request][alchemist_pull_request].
 
 [very_good_ventures_link]: https://verygood.ventures
-[vgv_logo]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_black.png
+[vgv_logo]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/logos/lockups/lockup.svg
 [betterment_link]: https://betterment.com/
 [betterment_logo]: https://resources.betterment.com/hubfs/Graphics/shared-assets/betterment-wordmark-logo.svg
 [ci_badge]: https://github.com/Betterment/alchemist/workflows/alchemist/badge.svg
