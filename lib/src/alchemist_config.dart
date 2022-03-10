@@ -267,12 +267,19 @@ class AlchemistConfig extends Equatable {
 /// in the "Ahem" font family to ensure consistent results across platforms.
 /// In other words, the font family of the [theme] will be ignored.
 /// {@endtemplate goldens_config_theme}
+///
+/// {@template goldens_config_render_shadows}
+/// The [renderShadows] flag determines whether or not shadows are rendered in
+/// golden tests.
+/// If set to `false`, all shadows are replaced with solid color blocks.
+/// {@endtemplate goldens_config_render_shadows}
 /// {@endtemplate goldens_config}
 abstract class GoldensConfig extends Equatable {
   /// {@macro goldens_config}
   const GoldensConfig({
     required this.enabled,
     required this.obscureText,
+    required this.renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   })  : _filePathResolver = filePathResolver,
@@ -286,6 +293,12 @@ abstract class GoldensConfig extends Equatable {
   /// This is useful for circumventing differences in font rendering
   /// between platforms.
   final bool obscureText;
+
+  /// Whether shadows should be rendered normally or as solid color blocks.
+  ///
+  /// The rendering of shadows is not guaranteed to be pixel-for-pixel identical
+  /// from version to version (or even from run to run).
+  final bool renderShadows;
 
   /// A name for the environment in which this test is run
   ///
@@ -328,6 +341,8 @@ abstract class GoldensConfig extends Equatable {
   /// Creates a copy of this [GoldensConfig] and replaces the given fields.
   GoldensConfig copyWith({
     bool? enabled,
+    bool? obscureText,
+    bool? renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   });
@@ -342,6 +357,7 @@ abstract class GoldensConfig extends Equatable {
         enabled,
         filePathResolver,
         theme,
+        renderShadows,
       ];
 }
 
@@ -359,6 +375,10 @@ abstract class GoldensConfig extends Equatable {
 ///
 /// {@macro goldens_config_theme}
 ///
+/// {@macro goldens_config_render_shadows}
+/// By default, [renderShadows] is set to true so platform golden images are a
+/// more accurate representation of the tested widget.
+///
 /// {@endtemplate platform_goldens_config}
 class PlatformGoldensConfig extends GoldensConfig {
   /// {@macro platform_goldens_config}
@@ -366,12 +386,14 @@ class PlatformGoldensConfig extends GoldensConfig {
     Set<HostPlatform>? platforms,
     bool enabled = true,
     bool obscureText = false,
+    bool renderShadows = true,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   })  : _platforms = platforms,
         super(
           enabled: enabled,
           obscureText: obscureText,
+          renderShadows: renderShadows,
           filePathResolver: filePathResolver,
           theme: theme,
         );
@@ -401,12 +423,16 @@ class PlatformGoldensConfig extends GoldensConfig {
   PlatformGoldensConfig copyWith({
     Set<HostPlatform>? platforms,
     bool? enabled,
+    bool? obscureText,
+    bool? renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   }) {
     return PlatformGoldensConfig(
       platforms: platforms ?? this.platforms,
       enabled: enabled ?? this.enabled,
+      obscureText: obscureText ?? this.obscureText,
+      renderShadows: renderShadows ?? this.renderShadows,
       filePathResolver: filePathResolver ?? this.filePathResolver,
       theme: theme ?? this.theme,
     );
@@ -417,6 +443,8 @@ class PlatformGoldensConfig extends GoldensConfig {
     return copyWith(
       platforms: other?._platforms,
       enabled: other?.enabled,
+      obscureText: other?.obscureText,
+      renderShadows: other?.renderShadows,
       filePathResolver: other?._filePathResolver,
       theme: other?._theme,
     );
@@ -443,17 +471,22 @@ class PlatformGoldensConfig extends GoldensConfig {
 ///
 /// {@macro goldens_config_theme}
 ///
+/// {@macro goldens_config_render_shadows}
+/// By default, [renderShadows] is set to false to make CI tests more stable.
+///
 /// {@endtemplate ci_goldens_config}
 class CiGoldensConfig extends GoldensConfig {
   /// {@macro ci_goldens_config}
   const CiGoldensConfig({
     bool enabled = true,
     bool obscureText = true,
+    bool renderShadows = false,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   }) : super(
           enabled: enabled,
           obscureText: obscureText,
+          renderShadows: renderShadows,
           filePathResolver: filePathResolver,
           theme: theme,
         );
@@ -464,11 +497,15 @@ class CiGoldensConfig extends GoldensConfig {
   @override
   CiGoldensConfig copyWith({
     bool? enabled,
+    bool? obscureText,
+    bool? renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
   }) {
     return CiGoldensConfig(
       enabled: enabled ?? this.enabled,
+      obscureText: obscureText ?? this.obscureText,
+      renderShadows: renderShadows ?? this.renderShadows,
       filePathResolver: filePathResolver ?? this.filePathResolver,
       theme: theme ?? this.theme,
     );
@@ -478,6 +515,8 @@ class CiGoldensConfig extends GoldensConfig {
   CiGoldensConfig merge(covariant CiGoldensConfig? other) {
     return copyWith(
       enabled: other?.enabled,
+      obscureText: other?.obscureText,
+      renderShadows: other?.renderShadows,
       filePathResolver: other?._filePathResolver,
       theme: other?._theme,
     );

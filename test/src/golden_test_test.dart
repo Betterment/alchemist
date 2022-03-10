@@ -101,6 +101,7 @@ void main() {
           widget: any(named: 'widget'),
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
+          renderShadows: any(named: 'renderShadows'),
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
           theme: any(named: 'theme'),
@@ -108,6 +109,10 @@ void main() {
           whilePerforming: any(named: 'whilePerforming'),
         ),
       ).thenAnswer((_) async {});
+    });
+
+    tearDown(() {
+      verifyNoMoreInteractions(runner);
     });
 
     testWidgets('asserts filename does not end in .png', (tester) async {
@@ -126,11 +131,13 @@ void main() {
       final alchemistTheme =
           ThemeData.light().copyWith(primaryColor: Colors.red);
       final ciTheme = ThemeData.light().copyWith(primaryColor: Colors.blue);
+      const ciRenderShadows = true;
       final config = AlchemistConfig(
         forceUpdateGoldenFiles: false,
         theme: alchemistTheme,
         ciGoldensConfig: CiGoldensConfig(
           theme: ciTheme,
+          renderShadows: ciRenderShadows,
           filePathResolver: (fileName, environmentName) async {
             filePathResolverCalled = true;
             return 'myGoldenFile';
@@ -156,6 +163,7 @@ void main() {
           widget: widget,
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
+          renderShadows: ciRenderShadows,
           textScaleFactor: any(named: 'textScaleFactor'),
           theme: ciTheme,
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
@@ -170,6 +178,7 @@ void main() {
           widget: widget,
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
+          renderShadows: any(named: 'renderShadows'),
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
           theme: alchemistTheme,
