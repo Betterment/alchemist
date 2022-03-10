@@ -243,7 +243,7 @@ void main() {
           goldenPath: 'path/to/golden',
           renderShadows: true,
           widget: Container(),
-          pumpBeforeTest: (_) async {
+          whilePerforming: (_) {
             debugDisableShadowsDuringTestRun = debugDisableShadows;
             throw givenException;
           },
