@@ -140,11 +140,12 @@ extension GoldenTestTextStyleExtensions on TextStyle {
   }
 }
 
-/// An asset bundle class used in golden testing.
+/// An [AssetBundle] class used in golden testing.
 ///
 /// This bundle is required in order to avoid issues with large assets when
-/// running golden tests. For more details, read [this Medium article](https://medium.com/@sardox/flutter-test-and-randomly-missing-assets-in-goldens-ea959cdd336a).
-@protected
+/// running golden tests.
+///
+/// For more details, read [this Medium article](https://medium.com/@sardox/flutter-test-and-randomly-missing-assets-in-goldens-ea959cdd336a).
 class TestAssetBundle extends CachingAssetBundle {
   // This method is overridden to avoid the inherent limit of 50KB per asset.
   @override

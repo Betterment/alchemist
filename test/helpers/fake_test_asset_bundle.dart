@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:alchemist/src/utilities.dart';
+import 'package:alchemist/alchemist.dart';
 
 final redPixelImage = base64Decode(
   'iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAApElEQVR42u3RAQ0AAAjD'

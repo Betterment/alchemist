@@ -10,3 +10,4 @@ export 'src/golden_test_scenario.dart';
 export 'src/host_platform.dart';
 export 'src/interactions.dart';
 export 'src/pumps.dart';
+export 'src/utilities.dart' show TestAssetBundle;
