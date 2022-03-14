@@ -1,3 +1,7 @@
+# 0.3.1
+
+- feat: export test asset bundle
+
 # 0.3.0
 
 - chore: remove dependabot
