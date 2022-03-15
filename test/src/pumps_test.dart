@@ -43,6 +43,10 @@ void main() {
   // which requires us to initialize a custom widgets binding.
   AlchemistWidgetsBinding(imageCache: imageCache);
 
+  // ! [imageCache] should clear after these test run
+  // to avoid cache issues in other image tests.
+  tearDown(imageCache.clear);
+
   group('Custom pump functions', () {
     late WidgetTester tester;
 
@@ -96,10 +100,6 @@ void main() {
       const networkImage = NetworkImage('https://fakeurl.com/image.png');
       const assetImage = AssetImage('path.png');
       final memoryImage = MemoryImage(redPixelImage);
-
-      // ! [imageCache] should clear after these test run
-      // to avoid cache issues in other image tests.
-      tearDownAll(imageCache.clear);
 
       testWidgets(
         'caches all Image widgets',
