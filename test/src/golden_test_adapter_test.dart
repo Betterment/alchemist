@@ -436,7 +436,10 @@ void main() {
           constraints: const BoxConstraints(),
           theme: ThemeData.light(),
           pumpBeforeTest: onlyPumpAndSettle,
-          pumpWidget: (_, __) async => pumpWidgetCalled = true,
+          pumpWidget: (tester, widget) async {
+            await onlyPumpWidget(tester, widget);
+            pumpWidgetCalled = true;
+          },
           widget: buildGroup(),
         );
 
