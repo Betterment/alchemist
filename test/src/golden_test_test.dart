@@ -86,10 +86,11 @@ void main() {
   });
 
   group('goldenTest', () {
-    final adapter = FakeGoldenTestAdapter();
-    late MockGoldenTestRunner runner;
+    late GoldenTestAdapter adapter;
+    late GoldenTestRunner runner;
 
     setUp(() {
+      adapter = FakeGoldenTestAdapter();
       runner = MockGoldenTestRunner();
 
       goldenTestAdapter = adapter;
@@ -131,8 +132,9 @@ void main() {
 
     testWidgets('invokes goldenTestRunner correctly', (tester) async {
       var filePathResolverCalled = false;
-      final alchemistTheme =
-          ThemeData.light().copyWith(primaryColor: Colors.red);
+      final alchemistTheme = ThemeData.light().copyWith(
+        primaryColor: Colors.red,
+      );
       final ciTheme = ThemeData.light().copyWith(primaryColor: Colors.blue);
       const ciRenderShadows = true;
       final config = AlchemistConfig(
