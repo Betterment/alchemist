@@ -37,6 +37,10 @@ extension on CommonFinders {
 }
 
 void main() {
+  final imageCache = ImageCache();
+
+  AlchemistWidgetsBinding(imageCache: imageCache);
+
   group('Custom pump functions', () {
     late WidgetTester tester;
 
@@ -48,8 +52,9 @@ void main() {
     setUp(() {
       tester = MockWidgetTester();
       when(() => tester.pump(any(), any())).thenAnswer((_) async {});
-      when(() => tester.pumpAndSettle(any(), any(), any()))
-          .thenAnswer((_) async => 1);
+      when(
+        () => tester.pumpAndSettle(any(), any(), any()),
+      ).thenAnswer((_) async => 1);
     });
 
     group('pumpNTimes', () {
@@ -90,6 +95,8 @@ void main() {
       const assetImage = AssetImage('path.png');
       final memoryImage = MemoryImage(redPixelImage);
 
+      tearDownAll(imageCache.clear);
+
       testWidgets(
         'caches all Image widgets',
         (tester) => mockNetworkImages(() async {
@@ -115,15 +122,15 @@ void main() {
 
           await expectLater(
             _isCached(networkImage, find.image(networkImage)),
-            completion(isTrue),
+            completes,
           );
           await expectLater(
             _isCached(assetImage, find.image(assetImage)),
-            completion(isTrue),
+            completes,
           );
           await expectLater(
             _isCached(memoryImage, find.image(memoryImage)),
-            completion(isTrue),
+            completes,
           );
         }),
       );
@@ -156,15 +163,15 @@ void main() {
 
           await expectLater(
             _isCached(networkImage, find.fadeInImage(networkImage)),
-            completion(isTrue),
+            completes,
           );
           await expectLater(
             _isCached(assetImage, find.fadeInImage(assetImage)),
-            completion(isTrue),
+            completes,
           );
           await expectLater(
             _isCached(memoryImage, find.fadeInImage(memoryImage)),
-            completion(isTrue),
+            completes,
           );
         }),
       );
@@ -206,15 +213,15 @@ void main() {
 
           await expectLater(
             _isCached(networkImage, find.decorationImage(networkImage)),
-            completion(isTrue),
+            completes,
           );
           await expectLater(
             _isCached(assetImage, find.decorationImage(assetImage)),
-            completion(isTrue),
+            completes,
           );
           await expectLater(
             _isCached(memoryImage, find.decorationImage(memoryImage)),
-            completion(isTrue),
+            completes,
           );
         }),
       );
