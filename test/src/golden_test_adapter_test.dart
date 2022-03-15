@@ -215,6 +215,7 @@ void main() {
             constraints: const BoxConstraints(),
             theme: ThemeData.light(),
             pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
           );
 
@@ -236,6 +237,7 @@ void main() {
             constraints: BoxConstraints.tight(providedSize),
             theme: ThemeData.light(),
             pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
           );
 
@@ -260,6 +262,7 @@ void main() {
             constraints: const BoxConstraints(),
             theme: ThemeData.light(),
             pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
           );
 
@@ -291,6 +294,7 @@ void main() {
             ),
             theme: ThemeData.light(),
             pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
           );
 
@@ -332,6 +336,7 @@ void main() {
             ),
             theme: ThemeData.light(),
             pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
           );
 
@@ -349,6 +354,7 @@ void main() {
           constraints: const BoxConstraints(),
           theme: ThemeData.light(),
           pumpBeforeTest: onlyPumpAndSettle,
+          pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
         );
 
@@ -374,6 +380,7 @@ void main() {
             constraints: const BoxConstraints(),
             theme: theme,
             pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
           );
 
@@ -414,10 +421,26 @@ void main() {
           constraints: const BoxConstraints(),
           theme: ThemeData.light(),
           pumpBeforeTest: (_) async => pumpBeforeTestCalled = true,
+          pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
         );
 
         expect(pumpBeforeTestCalled, isTrue);
+      });
+
+      testWidgets('calls the provided pumpWidget', (tester) async {
+        var pumpWidgetCalled = false;
+        await adapter.pumpGoldenTest(
+          tester: tester,
+          textScaleFactor: 2,
+          constraints: const BoxConstraints(),
+          theme: ThemeData.light(),
+          pumpBeforeTest: onlyPumpAndSettle,
+          pumpWidget: (_, __) async => pumpWidgetCalled = true,
+          widget: buildGroup(),
+        );
+
+        expect(pumpWidgetCalled, isTrue);
       });
     });
   });

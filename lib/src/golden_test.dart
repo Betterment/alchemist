@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
+import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -129,6 +130,7 @@ Future<void> goldenTest(
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
+  PumpWidget pumpWidget = onlyPumpWidget,
   Interaction? whilePerforming,
   required ValueGetter<Widget> builder,
 }) async {
@@ -170,6 +172,7 @@ Future<void> goldenTest(
         constraints: constraints,
         theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
         pumpBeforeTest: pumpBeforeTest,
+        pumpWidget: pumpWidget,
         whilePerforming: whilePerforming,
       );
     },

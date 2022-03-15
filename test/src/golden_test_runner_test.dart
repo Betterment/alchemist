@@ -87,6 +87,7 @@ void main() {
           constraints: any(named: 'constraints'),
           theme: any(named: 'theme'),
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
         ),
       ).thenAnswer((_) async {});
@@ -152,6 +153,7 @@ void main() {
           constraints: any(named: 'constraints'),
           theme: captureAny(named: 'theme'),
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
         ),
       ).captured.first as ThemeData;
@@ -195,6 +197,7 @@ void main() {
           constraints: any(named: 'constraints'),
           theme: captureAny(named: 'theme'),
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
         ),
       ).captured.first as ThemeData;

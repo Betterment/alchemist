@@ -40,6 +40,7 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required BoxConstraints constraints,
     required ThemeData theme,
     required PumpAction pumpBeforeTest,
+    required PumpWidget pumpWidget,
     required Widget widget,
   }) {
     return Future.value();
@@ -107,6 +108,7 @@ void main() {
           constraints: any(named: 'constraints'),
           theme: any(named: 'theme'),
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
         ),
       ).thenAnswer((_) async {});
@@ -168,6 +170,7 @@ void main() {
           textScaleFactor: any(named: 'textScaleFactor'),
           theme: ciTheme,
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
         ),
       ).called(1);
@@ -184,6 +187,7 @@ void main() {
           constraints: any(named: 'constraints'),
           theme: alchemistTheme,
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
         ),
       );
