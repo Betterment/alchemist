@@ -35,9 +35,6 @@ typedef GoldenFileExpectation = MatchesGoldenFileInvocation<void> Function(
   Object,
 );
 
-/// A function used to render a given [Widget].
-typedef PumpWidget = Future<void> Function(WidgetTester tester, Widget widget);
-
 /// Default golden file expectation function.
 // ignore: prefer_function_declarations_over_variables
 GoldenFileExpectation defaultGoldenFileExpectation =
