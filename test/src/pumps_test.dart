@@ -39,6 +39,8 @@ extension on CommonFinders {
 void main() {
   final imageCache = ImageCache();
 
+  // We need to clear out images from the cache,
+  // which requires us to initialize a custom widgets binding.
   AlchemistWidgetsBinding(imageCache: imageCache);
 
   group('Custom pump functions', () {
@@ -95,6 +97,8 @@ void main() {
       const assetImage = AssetImage('path.png');
       final memoryImage = MemoryImage(redPixelImage);
 
+      // ! [imageCache] should clear after these test run
+      // to avoid cache issues in other image tests.
       tearDownAll(imageCache.clear);
 
       testWidgets(
