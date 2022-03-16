@@ -1,3 +1,7 @@
+# 0.3.2
+
+- feat: add `pumpWidget` callback to `goldenTest`
+
 # 0.3.1
 
 - feat: export test asset bundle
