@@ -129,6 +129,7 @@ Future<void> goldenTest(
   double textScaleFactor = 1.0,
   BoxConstraints constraints = const BoxConstraints(),
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
+  PumpWidget pumpWidget = onlyPumpWidget,
   Interaction? whilePerforming,
   required ValueGetter<Widget> builder,
 }) async {
@@ -170,6 +171,7 @@ Future<void> goldenTest(
         constraints: constraints,
         theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
         pumpBeforeTest: pumpBeforeTest,
+        pumpWidget: pumpWidget,
         whilePerforming: whilePerforming,
       );
     },

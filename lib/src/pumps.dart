@@ -8,7 +8,10 @@ import 'package:flutter_test/flutter_test.dart';
 /// the widget tree before the golden test is compared or generated.
 typedef PumpAction = Future<void> Function(WidgetTester tester);
 
-/// Returns a custom pump action that pumps the widget tree [n] times before
+/// A function used to render a given [Widget].
+typedef PumpWidget = Future<void> Function(WidgetTester tester, Widget widget);
+
+/// Returns a custom [PumpAction] that pumps the widget tree [n] times before
 /// golden evaluation.
 ///
 /// See [PumpAction] for more details.
@@ -20,19 +23,19 @@ PumpAction pumpNTimes(int n, [Duration? duration]) {
   };
 }
 
-/// A custom pump action that pumps the widget tree once before golden
+/// A custom [PumpAction] that pumps the widget tree once before golden
 /// evaluation.
 ///
 /// See [PumpAction] for more details.
 final pumpOnce = pumpNTimes(1);
 
-/// A custom pump action that pumps and settles the widget tree before golden
+/// A custom [PumpAction] that pumps and settles the widget tree before golden
 /// evaluation.
 ///
 /// See [PumpAction] for more details.
 Future<void> onlyPumpAndSettle(WidgetTester tester) => tester.pumpAndSettle();
 
-/// A custom pump action to ensure that the images for all [Image],
+/// A custom [PumpAction] to ensure that the images for all [Image],
 /// [FadeInImage], and [DecoratedBox] widgets are loaded before the golden file
 /// is generated.
 ///
@@ -61,4 +64,12 @@ Future<void> precacheImages(WidgetTester tester) async {
     await Future.wait(images);
   });
   await tester.pumpAndSettle();
+}
+
+/// A custom [PumpWidget] that pumps the widget tree before golden
+/// evaluation.
+///
+/// See [PumpWidget] for more details.
+Future<void> onlyPumpWidget(WidgetTester tester, Widget widget) {
+  return tester.pumpWidget(widget);
 }

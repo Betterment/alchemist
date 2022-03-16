@@ -40,6 +40,7 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required BoxConstraints constraints,
     required ThemeData theme,
     required PumpAction pumpBeforeTest,
+    required PumpWidget pumpWidget,
     required Widget widget,
   }) {
     return Future.value();
@@ -85,10 +86,11 @@ void main() {
   });
 
   group('goldenTest', () {
-    final adapter = FakeGoldenTestAdapter();
-    late MockGoldenTestRunner runner;
+    late GoldenTestAdapter adapter;
+    late GoldenTestRunner runner;
 
     setUp(() {
+      adapter = FakeGoldenTestAdapter();
       runner = MockGoldenTestRunner();
 
       goldenTestAdapter = adapter;
@@ -107,6 +109,7 @@ void main() {
           constraints: any(named: 'constraints'),
           theme: any(named: 'theme'),
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
         ),
       ).thenAnswer((_) async {});
@@ -129,8 +132,9 @@ void main() {
 
     testWidgets('invokes goldenTestRunner correctly', (tester) async {
       var filePathResolverCalled = false;
-      final alchemistTheme =
-          ThemeData.light().copyWith(primaryColor: Colors.red);
+      final alchemistTheme = ThemeData.light().copyWith(
+        primaryColor: Colors.red,
+      );
       final ciTheme = ThemeData.light().copyWith(primaryColor: Colors.blue);
       const ciRenderShadows = true;
       final config = AlchemistConfig(
@@ -168,6 +172,7 @@ void main() {
           textScaleFactor: any(named: 'textScaleFactor'),
           theme: ciTheme,
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
         ),
       ).called(1);
@@ -184,6 +189,7 @@ void main() {
           constraints: any(named: 'constraints'),
           theme: alchemistTheme,
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
         ),
       );

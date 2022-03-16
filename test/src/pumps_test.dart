@@ -48,8 +48,9 @@ void main() {
     setUp(() {
       tester = MockWidgetTester();
       when(() => tester.pump(any(), any())).thenAnswer((_) async {});
-      when(() => tester.pumpAndSettle(any(), any(), any()))
-          .thenAnswer((_) async => 1);
+      when(
+        () => tester.pumpAndSettle(any(), any(), any()),
+      ).thenAnswer((_) async => 1);
     });
 
     group('pumpNTimes', () {
