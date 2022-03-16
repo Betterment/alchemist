@@ -116,15 +116,15 @@ void main() {
 
           await expectLater(
             _isCached(networkImage, find.image(networkImage)),
-            completes,
+            completion(isTrue),
           );
           await expectLater(
             _isCached(assetImage, find.image(assetImage)),
-            completes,
+            completion(isTrue),
           );
           await expectLater(
             _isCached(memoryImage, find.image(memoryImage)),
-            completes,
+            completion(isTrue),
           );
         }),
       );
@@ -157,15 +157,15 @@ void main() {
 
           await expectLater(
             _isCached(networkImage, find.fadeInImage(networkImage)),
-            completes,
+            completion(isTrue),
           );
           await expectLater(
             _isCached(assetImage, find.fadeInImage(assetImage)),
-            completes,
+            completion(isTrue),
           );
           await expectLater(
             _isCached(memoryImage, find.fadeInImage(memoryImage)),
-            completes,
+            completion(isTrue),
           );
         }),
       );
@@ -207,15 +207,15 @@ void main() {
 
           await expectLater(
             _isCached(networkImage, find.decorationImage(networkImage)),
-            completes,
+            completion(isTrue),
           );
           await expectLater(
             _isCached(assetImage, find.decorationImage(assetImage)),
-            completes,
+            completion(isTrue),
           );
           await expectLater(
             _isCached(memoryImage, find.decorationImage(memoryImage)),
-            completes,
+            completion(isTrue),
           );
         }),
       );
