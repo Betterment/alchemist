@@ -37,16 +37,6 @@ extension on CommonFinders {
 }
 
 void main() {
-  final imageCache = ImageCache();
-
-  // We need to clear out images from the cache,
-  // which requires us to initialize a custom [WidgetsBinding].
-  AlchemistWidgetsBinding(imageCache: imageCache);
-
-  // ! `imageCache` should clear after these test run
-  // to avoid cache issues in other image tests.
-  tearDown(imageCache.clear);
-
   group('Custom pump functions', () {
     late WidgetTester tester;
 

@@ -1,6 +1,7 @@
 import 'package:alchemist/src/alchemist_config.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
 import 'package:alchemist/src/host_platform.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -10,6 +11,8 @@ class MockPlatformGoldensConfig extends Mock implements PlatformGoldensConfig {}
 
 class MockCiGoldensConfig extends Mock implements CiGoldensConfig {}
 
+class FakeImageStreamCompleter extends ImageStreamCompleter {}
+
 void main() {
   group('AlchemistTestVariant', () {
     test('returns values', () {
@@ -18,9 +21,7 @@ void main() {
       when(() => ciConfig.enabled).thenReturn(true);
       final platformConfig = MockPlatformGoldensConfig();
       when(() => platformConfig.enabled).thenReturn(true);
-      when(() => platformConfig.platforms).thenReturn({
-        platform,
-      });
+      when(() => platformConfig.platforms).thenReturn({platform});
       final config = MockAlchemistConfig();
       when(() => config.platformGoldensConfig).thenReturn(platformConfig);
       when(() => config.ciGoldensConfig).thenReturn(ciConfig);
@@ -47,11 +48,12 @@ void main() {
         expect(variant, isA<AlchemistTestVariant>());
       });
 
-      test('tearDown does nothing', () async {
-        await expectLater(
-          variant.tearDown(MockCiGoldensConfig(), null),
-          completes,
-        );
+      test('tearDown clears the image cache', () async {
+        TestWidgetsFlutterBinding.ensureInitialized();
+        imageCache?.putIfAbsent('key', FakeImageStreamCompleter.new);
+        expect(imageCache?.containsKey('key'), isTrue);
+        await variant.tearDown(MockCiGoldensConfig(), null);
+        expect(imageCache?.containsKey('key'), isFalse);
       });
 
       test('setUp sets current value', () async {
