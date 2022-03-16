@@ -1,7 +1,7 @@
 import 'package:alchemist/src/alchemist_config.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
 import 'package:alchemist/src/host_platform.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
