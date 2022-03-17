@@ -1,6 +1,7 @@
 # 0.3.2
 
 - feat: add `pumpWidget` callback to `goldenTest`
+- feat: add scroll interaction
 
 # 0.3.1
 
