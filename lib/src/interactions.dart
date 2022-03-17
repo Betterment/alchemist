@@ -35,9 +35,7 @@ Interaction scroll(
 }) =>
     (WidgetTester tester) async {
       final elements = finder.evaluate();
-      await Future.wait([
-        for (final element in elements)
-          tester.fling(find.byWidget(element.widget), offset, speed)
-      ]);
-      return null;
+      for (final element in elements) {
+        await tester.fling(find.byWidget(element.widget), offset, speed);
+      }
     };
