@@ -80,7 +80,7 @@ void main() {
         ListView.builder(
           // this `itemCount` is long enough to reach the `dragOffset`
           // we're using on our scroll interaction.
-          itemCount: 10,
+          itemCount: 20,
           itemBuilder: (context, index) {
             return ListTile(
               title: Text('item $index'),

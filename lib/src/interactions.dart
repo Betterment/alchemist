@@ -36,8 +36,13 @@ Interaction scroll(
     (WidgetTester tester) async {
       final elements = finder.evaluate();
       return () async {
-        for (final element in elements) {
-          await tester.fling(find.byWidget(element.widget), offset, speed);
-        }
+        await Future.wait([
+          for (final element in elements)
+            tester.fling(
+              find.byWidget(element.widget),
+              offset,
+              speed,
+            ),
+        ]);
       };
     };
