@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// the golden test completes.
 typedef Interaction = Future<AsyncCallback?> Function(WidgetTester);
 
-/// Presses all widgets matching [finder].
+/// Presses all widgets matching `finder`.
 Interaction press(
   Finder finder, {
   Duration? holdFor = const Duration(milliseconds: 300),
@@ -25,4 +25,17 @@ Interaction longPress(Finder finder) => (WidgetTester tester) async {
       final gestures = await tester.pressAll(finder);
       await tester.pump(kLongPressTimeout);
       return gestures.releaseAll;
+    };
+
+/// Scrolls all widgets matching `finder`.
+Interaction scroll(
+  Finder finder, {
+  required Offset offset,
+  double speed = kMinFlingVelocity,
+}) =>
+    (WidgetTester tester) async {
+      final elements = finder.evaluate();
+      for (final element in elements) {
+        await tester.fling(find.byWidget(element.widget), offset, speed);
+      }
     };

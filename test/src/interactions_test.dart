@@ -1,6 +1,7 @@
 import 'package:alchemist/src/interactions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -40,8 +41,8 @@ void main() {
         ),
       );
       const holdForDuration = Duration(seconds: 3);
-      // Since testWidgets runs inside a fakeAsync context, we can grab the
-      // fake starting time. Pumping for a certain duration advances the
+      // Since `testWidgets` runs inside a `fakeAsync` context, we can grab the
+      // fake starting time. Pumping for a certain [Duration] advances the
       // fake test clock, allowing us to verify we are pumping correctly
       // in the interactions code.
       final startTime = tester.binding.clock.now();
@@ -71,5 +72,36 @@ void main() {
     final cleanup = await longPress(find.byType(ElevatedButton))(tester);
     await cleanup?.call();
     expect(onLongPressedCalled, isTrue);
+  });
+
+  testWidgets('scroll', (tester) async {
+    await tester.pumpWidget(
+      buildWrapper(
+        ListView.builder(
+          // this `itemCount` is long enough to reach the `dragOffset`
+          // we're using on our scroll interaction.
+          itemCount: 20,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text('item $index'),
+            );
+          },
+        ),
+      ),
+    );
+
+    const dragOffset = 100.0;
+
+    final cleanup = await scroll(
+      find.byType(Scrollable),
+      offset: const Offset(0, -dragOffset),
+    )(tester);
+
+    await cleanup?.call();
+
+    final viewportFinder = find.byType(Viewport);
+    final viewport = tester.renderObject(viewportFinder) as RenderViewport;
+
+    expect(viewport.offset.pixels, dragOffset);
   });
 }
