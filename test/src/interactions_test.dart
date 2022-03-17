@@ -27,7 +27,7 @@ void main() {
         ),
       );
       final cleanup = await press(find.byType(ElevatedButton))(tester);
-      await cleanup.call();
+      await cleanup?.call();
       expect(onPressedCalled, isTrue);
     });
 
@@ -43,14 +43,14 @@ void main() {
       const holdForDuration = Duration(seconds: 3);
       // Since `testWidgets` runs inside a `fakeAsync` context, we can grab the
       // fake starting time. Pumping for a certain [Duration] advances the
-      // fake test `clock`, allowing us to verify we are pumping correctly
+      // fake test clock, allowing us to verify we are pumping correctly
       // in the interactions code.
       final startTime = tester.binding.clock.now();
       final cleanup = await press(
         find.byType(ElevatedButton),
         holdFor: holdForDuration,
       )(tester);
-      await cleanup.call();
+      await cleanup?.call();
       final elapsed = tester.binding.clock.now().difference(startTime);
       expect(elapsed, greaterThanOrEqualTo(holdForDuration + kPressTimeout));
     });
@@ -70,7 +70,7 @@ void main() {
       ),
     );
     final cleanup = await longPress(find.byType(ElevatedButton))(tester);
-    await cleanup.call();
+    await cleanup?.call();
     expect(onLongPressedCalled, isTrue);
   });
 
@@ -97,7 +97,7 @@ void main() {
       offset: const Offset(0, -dragOffset),
     )(tester);
 
-    await cleanup.call();
+    await cleanup?.call();
 
     final viewportFinder = find.byType(Viewport);
     final viewport = tester.renderObject(viewportFinder) as RenderViewport;
