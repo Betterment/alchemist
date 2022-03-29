@@ -25,25 +25,25 @@ void main() {
       'renders correctly',
       fileName: 'list_tile',
       constraints: const BoxConstraints(maxWidth: 600),
-      widget: GoldenTestGroup(
+      builder: () => GoldenTestGroup(
         columnWidthBuilder: (_) => const FlexColumnWidth(),
         children: [
           GoldenTestScenario(
             name: 'with title',
-            child: ListTile(
+            child: const ListTile(
               title: Text('ListTile.title'),
             ),
           ),
           GoldenTestScenario(
             name: 'with title and subtitle',
-            child: ListTile(
+            child: const ListTile(
               title: Text('ListTile.title'),
               subtitle: Text('ListTile.subtitle'),
             ),
           ),
           GoldenTestScenario(
             name: 'with trailing icon',
-            child: ListTile(
+            child: const ListTile(
               title: Text('ListTile.title'),
               trailing: Icon(Icons.chevron_right_rounded),
             ),
