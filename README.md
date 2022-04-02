@@ -444,8 +444,8 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
 [golden_toolkit_pub]: https://pub.dev/packages/golden_toolkit
-[alchemist_repo]: https://github.com/Betterment/mobile/tree/main/flutter/alchemist
-[alchemist_issues]: https://github.com/Betterment/mobile/issues
-[alchemist_pull_request]: https://github.com/Betterment/mobile/compare
+[alchemist_repo]: https://github.com/Betterment/alchemist
+[alchemist_issues]: https://github.com/Betterment/alchemist/issues
+[alchemist_pull_request]: https://github.com/Betterment/alchemist/compare
 [platform_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/macos_list_tile_golden_file.png
 [ci_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/ci_list_tile_golden_file.png
