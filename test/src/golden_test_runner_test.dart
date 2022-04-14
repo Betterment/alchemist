@@ -89,6 +89,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
+          coreWrapper: any(named: 'coreWrapper'),
         ),
       ).thenAnswer((_) async {});
 
@@ -155,6 +156,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
+          coreWrapper: any(named: 'coreWrapper'),
         ),
       ).captured.first as ThemeData;
 
@@ -199,6 +201,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
+          coreWrapper: any(named: 'coreWrapper'),
         ),
       ).captured.first as ThemeData;
 

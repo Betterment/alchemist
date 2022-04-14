@@ -8,6 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
+/// The core wrapper of the alchemist
+typedef CoreWidgetWrapper = Widget Function(Widget child, Key? key);
+
 /// Default golden test runner which uses the flutter test framework.
 const defaultGoldenTestRunner = FlutterGoldenTestRunner();
 GoldenTestRunner _goldenTestRunner = defaultGoldenTestRunner;
@@ -124,6 +127,7 @@ Future<void> loadFonts() async {
 Future<void> goldenTest(
   String description, {
   required String fileName,
+  CoreWidgetWrapper? coreWrapper,
   bool skip = false,
   List<String> tags = const ['golden'],
   double textScaleFactor = 1.0,
@@ -163,6 +167,7 @@ Future<void> goldenTest(
           fileName,
           goldensConfig.environmentName,
         ),
+        coreWrapper: coreWrapper,
         widget: builder(),
         forceUpdate: config.forceUpdateGoldenFiles,
         obscureText: goldensConfig.obscureText,

@@ -217,6 +217,7 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           expect(find.byType(GoldenTestGroup), findsOneWidget);
@@ -239,6 +240,7 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           expect(tester.binding.window.physicalSize, providedSize);
@@ -264,6 +266,7 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           final targetSize = tester.getSize(find.byKey(groupKey));
@@ -296,6 +299,7 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           final groupSize = tester.getSize(find.byKey(groupKey));
@@ -338,6 +342,7 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           expect(tester.binding.window.physicalSize, maxSize);
@@ -356,6 +361,7 @@ void main() {
           pumpBeforeTest: onlyPumpAndSettle,
           pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
+          coreWrapper: null,
         );
 
         expect(tester.binding.window.textScaleFactor, 2.0);
@@ -382,6 +388,7 @@ void main() {
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
+            coreWrapper: null,
           );
 
           expect(
@@ -423,6 +430,7 @@ void main() {
           pumpBeforeTest: (_) async => pumpBeforeTestCalled = true,
           pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
+          coreWrapper: null,
         );
 
         expect(pumpBeforeTestCalled, isTrue);
@@ -441,6 +449,7 @@ void main() {
             pumpWidgetCalled = true;
           },
           widget: buildGroup(),
+          coreWrapper: null,
         );
 
         expect(pumpWidgetCalled, isTrue);
