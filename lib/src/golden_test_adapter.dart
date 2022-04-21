@@ -243,25 +243,23 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
         theme: theme.stripTextPackages(),
         debugShowCheckedModeBanner: false,
         supportedLocales: const [Locale('en')],
-        builder: (context, _) {
-          return DefaultAssetBundle(
-            bundle: TestAssetBundle(),
-            child: Material(
-              type: MaterialType.transparency,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: ColoredBox(
-                  color: theme.colorScheme.background,
-                  child: Padding(
-                    key: childKey,
-                    padding: const EdgeInsets.all(8),
-                    child: widget,
-                  ),
+        home: DefaultAssetBundle(
+          bundle: TestAssetBundle(),
+          child: Material(
+            type: MaterialType.transparency,
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: ColoredBox(
+                color: theme.colorScheme.background,
+                child: Padding(
+                  key: childKey,
+                  padding: const EdgeInsets.all(8),
+                  child: widget,
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
 
