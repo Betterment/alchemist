@@ -38,4 +38,5 @@ Interaction scroll(
       for (final element in elements) {
         await tester.fling(find.byWidget(element.widget), offset, speed);
       }
+      return;
     };
