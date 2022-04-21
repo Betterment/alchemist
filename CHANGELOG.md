@@ -1,3 +1,9 @@
+# 0.3.3
+
+- fix: use `home` instead of `builder` when `pumpWidget` in `GoldenTestAdapter.pumpGoldenTest`
+- chore: fix repo links in README
+- chore: update example to use builder
+
 # 0.3.2
 
 - feat: add `pumpWidget` callback to `goldenTest`
