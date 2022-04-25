@@ -1,3 +1,11 @@
+# 0.3.3
+
+- chore: upgrade flutter to 2.10.4
+- ci: use semantic-pull-request github action over semantic-pull-requests app
+- fix: use `home` instead of `builder` when `pumpWidget` in `GoldenTestAdapter.pumpGoldenTest`
+- chore: fix repo links in README
+- chore: update example to use builder
+
 # 0.3.2
 
 - feat: add `pumpWidget` callback to `goldenTest`
