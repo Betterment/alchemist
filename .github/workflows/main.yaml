@@ -7,9 +7,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v1.5.3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 2.10.4
+          cache: true
 
       - name: Install Dependencies
         run: flutter packages get
@@ -31,9 +34,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v1.5.3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 2.10.4
+          cache: true
 
       - name: Install Dependencies
         run: |
