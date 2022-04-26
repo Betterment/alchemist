@@ -3,7 +3,7 @@ name: Semantic PR
 on: [pull_request_target]
 
 jobs:
-  build:
+  validate_title:
     runs-on: ubuntu-latest
     steps:
       - name: Validate PR title
