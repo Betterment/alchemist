@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
+import 'package:alchemist/src/capture_animation.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,8 +52,70 @@ Future<void> loadFonts() async {
   }
 }
 
-/// Performs a Flutter widget test that compares against golden image.
+Future<void> _runGoldenTest(
+  String description, {
+  required GetImageFn getImageFn,
+  required String fileName,
+  bool skip = false,
+  List<String> tags = const ['golden'],
+  double textScaleFactor = 1.0,
+  BoxConstraints constraints = const BoxConstraints(),
+  PumpAction pumpBeforeTest = onlyPumpAndSettle,
+  PumpWidget pumpWidget = onlyPumpWidget,
+  Interaction? whilePerforming,
+  required ValueGetter<Widget> builder,
+}) async {
+  if (skip) return;
+
+  assert(
+    !fileName.endsWith('.png'),
+    'Golden tests file names should not include file type extension.\n\n'
+    'This logic should be handled in the [filePathResolver] function of the '
+    '[PlatformGoldensConfig] and [CiGoldensConfig] classes in '
+    '[AlchemistConfig].',
+  );
+
+  final config = AlchemistConfig.current();
+
+  final currentPlatform = HostPlatform.current();
+  final variant = AlchemistTestVariant(
+    config: config,
+    currentPlatform: currentPlatform,
+  );
+
+  goldenTestAdapter.setUp(_setUpGoldenTests);
+
+  await goldenTestAdapter.testWidgets(
+    description,
+    (tester) async {
+      final goldensConfig = variant.currentConfig;
+      await goldenTestRunner.run(
+        tester: tester,
+        goldenPath: await goldensConfig.filePathResolver(
+          fileName,
+          goldensConfig.environmentName,
+        ),
+        widget: builder(),
+        getImage: getImageFn,
+        forceUpdate: config.forceUpdateGoldenFiles,
+        obscureText: goldensConfig.obscureText,
+        renderShadows: goldensConfig.renderShadows,
+        textScaleFactor: textScaleFactor,
+        constraints: constraints,
+        theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
+        pumpBeforeTest: pumpBeforeTest,
+        pumpWidget: pumpWidget,
+        whilePerforming: whilePerforming,
+      );
+    },
+    tags: tags,
+    variant: variant,
+  );
+}
+
+/// Performs a Flutter widget test that compares against golden images.
 ///
+/// {@template golden_test_description}
 /// This function will perform the required setup and tear down for golden
 /// tests. On all platforms, the golden test images will have their text
 /// converted to black boxes in order to ensure compatibility between all
@@ -120,6 +183,7 @@ Future<void> loadFonts() async {
 /// **Note:** If any matched widget does not respond to a press or long
 /// press interaction, all other gestures will fail, rendering the
 /// [whilePerforming] argument useless.
+/// {@endtemplate}
 @isTest
 Future<void> goldenTest(
   String description, {
@@ -132,50 +196,60 @@ Future<void> goldenTest(
   PumpWidget pumpWidget = onlyPumpWidget,
   Interaction? whilePerforming,
   required ValueGetter<Widget> builder,
-}) async {
-  if (skip) return;
+}) =>
+    _runGoldenTest(
+      description,
+      getImageFn: goldenTestAdapter.getImage,
+      fileName: fileName,
+      builder: builder,
+      skip: skip,
+      tags: tags,
+      textScaleFactor: textScaleFactor,
+      constraints: constraints,
+      pumpBeforeTest: pumpBeforeTest,
+      pumpWidget: pumpWidget,
+      whilePerforming: whilePerforming,
+    );
 
-  assert(
-    !fileName.endsWith('.png'),
-    'Golden tests file names should not include file type extension.\n\n'
-    'This logic should be handled in the [filePathResolver] function of the '
-    '[PlatformGoldensConfig] and [CiGoldensConfig] classes in '
-    '[AlchemistConfig].',
-  );
-
-  final config = AlchemistConfig.current();
-
-  final currentPlatform = HostPlatform.current();
-  final variant = AlchemistTestVariant(
-    config: config,
-    currentPlatform: currentPlatform,
-  );
-
-  goldenTestAdapter.setUp(_setUpGoldenTests);
-
-  await goldenTestAdapter.testWidgets(
-    description,
-    (tester) async {
-      final goldensConfig = variant.currentConfig;
-      await goldenTestRunner.run(
-        tester: tester,
-        goldenPath: await goldensConfig.filePathResolver(
-          fileName,
-          goldensConfig.environmentName,
-        ),
-        widget: builder(),
-        forceUpdate: config.forceUpdateGoldenFiles,
-        obscureText: goldensConfig.obscureText,
-        renderShadows: goldensConfig.renderShadows,
-        textScaleFactor: textScaleFactor,
-        constraints: constraints,
-        theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
-        pumpBeforeTest: pumpBeforeTest,
-        pumpWidget: pumpWidget,
-        whilePerforming: whilePerforming,
-      );
-    },
-    tags: tags,
-    variant: variant,
-  );
-}
+/// Performs a Flutter widget test that compares an animation against a golden
+/// image by generating a grid of the animation's frames.
+///
+/// {@macro golden_test_description}
+///
+/// The [timeout] provides a max amount of time to run the animation for, which
+/// can be used to test infinite running animations. It defaults to 3 seconds.
+///
+/// The [frameInterval] is the amount of time to elapse between frames. It
+/// defaults to 16.683ms, or 60 frames per second.
+@isTest
+Future<void> goldenTestAnimation(
+  String description, {
+  required String fileName,
+  bool skip = false,
+  List<String> tags = const ['golden'],
+  double textScaleFactor = 1.0,
+  BoxConstraints constraints = const BoxConstraints(),
+  PumpAction pumpBeforeTest = pumpOnce,
+  PumpWidget pumpWidget = onlyPumpWidget,
+  Interaction? whilePerforming,
+  required ValueGetter<Widget> builder,
+  Duration timeout = const Duration(seconds: 3),
+  Duration frameInterval = const Duration(milliseconds: 16, microseconds: 683),
+}) =>
+    _runGoldenTest(
+      description,
+      getImageFn: CaptureAnimation(
+        frameInterval: frameInterval,
+        timeout: timeout,
+        captureImage: goldenTestAdapter.getImage,
+      ).getFrames,
+      fileName: fileName,
+      builder: builder,
+      skip: skip,
+      tags: tags,
+      textScaleFactor: textScaleFactor,
+      constraints: constraints,
+      pumpBeforeTest: pumpBeforeTest,
+      pumpWidget: pumpWidget,
+      whilePerforming: whilePerforming,
+    );

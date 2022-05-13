@@ -169,8 +169,11 @@ void main() {
         );
         final finder = find.byKey(key);
 
-        final uiImage =
-            await adapter.getBlockedTextImage(finder: finder, tester: tester);
+        final uiImage = await adapter.getImage(
+          finder: finder,
+          tester: tester,
+          obscureText: true,
+        );
 
         verify(
           () => paintingContext.paintSingleChild(

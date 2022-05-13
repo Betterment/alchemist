@@ -93,9 +93,10 @@ void main() {
       ).thenAnswer((_) async {});
 
       when(
-        () => goldenTestAdapter.getBlockedTextImage(
+        () => goldenTestAdapter.getImage(
           finder: any(named: 'finder'),
           tester: any(named: 'tester'),
+          obscureText: any(named: 'obscureText'),
         ),
       ).thenAnswer((_) async => MockUiImage());
 
@@ -121,6 +122,7 @@ void main() {
           tester: tester,
           goldenPath: 1,
           widget: Container(),
+          getImage: goldenTestAdapter.getImage,
         ),
         throwsAssertionError,
       );
@@ -138,6 +140,7 @@ void main() {
         theme: theme,
         whilePerforming: interaction,
         obscureText: true,
+        getImage: goldenTestAdapter.getImage,
       );
 
       expect(interactionCalled, isTrue);
@@ -182,6 +185,7 @@ void main() {
         tester: tester,
         goldenPath: 'path/to/golden',
         widget: Container(),
+        getImage: goldenTestAdapter.getImage,
       );
 
       expect(interactionCalled, isFalse);
@@ -227,6 +231,7 @@ void main() {
           tester: tester,
           goldenPath: 'path/to/golden',
           widget: Container(),
+          getImage: goldenTestAdapter.getImage,
         );
         fail('Expected goldenTestRunner.run to throw TestFailure');
       } catch (e) {
@@ -250,6 +255,7 @@ void main() {
             debugDisableShadowsDuringTestRun = debugDisableShadows;
             throw givenException;
           },
+          getImage: goldenTestAdapter.getImage,
         ),
         throwsA(same(givenException)),
       );

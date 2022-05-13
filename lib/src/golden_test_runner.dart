@@ -1,9 +1,18 @@
+import 'dart:ui' as ui;
+
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/interactions.dart';
 import 'package:alchemist/src/pumps.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// A function to capture an image of the widget found with the given [Finder].
+typedef GetImageFn = Future<ui.Image> Function({
+  required Finder finder,
+  required WidgetTester tester,
+  required bool obscureText,
+});
 
 /// Default golden test adapter used to interface with Flutter's testing
 /// framework.
@@ -34,6 +43,7 @@ abstract class GoldenTestRunner {
     required WidgetTester tester,
     required Object goldenPath,
     required Widget widget,
+    required GetImageFn getImage,
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
@@ -59,6 +69,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     required WidgetTester tester,
     required Object goldenPath,
     required Widget widget,
+    required GetImageFn getImage,
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
@@ -105,18 +116,19 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
 
       final root = find.byKey(rootKey);
 
-      final toMatch = obscureText
-          ? goldenTestAdapter.getBlockedTextImage(
-              finder: root,
-              tester: tester,
-            )
-          : root;
+      final toMatch = await getImage(
+        finder: root,
+        tester: tester,
+        obscureText: obscureText,
+      );
 
       try {
         await goldenTestAdapter.withForceUpdateGoldenFiles(
           forceUpdate: forceUpdate,
-          callback:
-              goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
+          callback: goldenTestAdapter.goldenFileExpectation(
+            toMatch,
+            goldenPath,
+          ),
         );
         await cleanup?.call();
       } on TestFailure {

@@ -22,9 +22,10 @@ class MockWidgetTester extends Mock implements WidgetTester {}
 
 class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
   @override
-  Future<ui.Image> getBlockedTextImage({
+  Future<ui.Image> getImage({
     required Finder finder,
     required WidgetTester tester,
+    required bool obscureText,
   }) {
     return Future.value(MockImage());
   }
@@ -83,6 +84,14 @@ void main() {
     registerFallbackValue(MockWidgetTester());
     registerFallbackValue(Container());
     registerFallbackValue(const BoxConstraints());
+    registerFallbackValue(
+      ({
+        required Finder finder,
+        required bool obscureText,
+        required WidgetTester tester,
+      }) =>
+          Future<ui.Image>.value(MockImage()),
+    );
   });
 
   group('goldenTest', () {
@@ -111,6 +120,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
+          getImage: any(named: 'getImage'),
         ),
       ).thenAnswer((_) async {});
     });
@@ -174,6 +184,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
+          getImage: any(named: 'getImage'),
         ),
       ).called(1);
       // Verify [GoldenTestRunner.run] was not called for the platform config.
@@ -191,6 +202,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
+          getImage: any(named: 'getImage'),
         ),
       );
     });

@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'package:alchemist/src/blocked_text_image.dart';
 import 'package:alchemist/src/pumps.dart';
 import 'package:alchemist/src/utilities.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Animation;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -166,13 +166,11 @@ abstract class GoldenTestAdapter {
     required PumpWidget pumpWidget,
   });
 
-  /// Generates an image of the widget at the given [finder] with all text
-  /// represented as colored rectangles.
-  ///
-  /// See [BlockedTextPaintingContext] for more details.
-  Future<ui.Image> getBlockedTextImage({
+  /// Generates an image of the widget at the given [finder].
+  Future<ui.Image> getImage({
     required Finder finder,
     required WidgetTester tester,
+    required bool obscureText,
   });
 }
 
@@ -282,8 +280,11 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     await tester.pump();
   }
 
-  @override
-  Future<ui.Image> getBlockedTextImage({
+  /// Generates an image of the widget at the given [finder] with all text
+  /// represented as colored rectangles.
+  ///
+  /// See [BlockedTextPaintingContext] for more details.
+  Future<ui.Image> _getBlockedTextImage({
     required Finder finder,
     required WidgetTester tester,
   }) async {
@@ -298,5 +299,31 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     ).paintSingleChild(renderObject);
 
     return layer.toImage(renderObject.paintBounds);
+  }
+
+  Future<ui.Image> _getImage({
+    required Finder finder,
+    required WidgetTester tester,
+  }) async {
+    var renderObject = tester.renderObject(finder);
+    while (!renderObject.isRepaintBoundary) {
+      renderObject = renderObject.parent! as RenderObject;
+    }
+    final layer = renderObject.debugLayer! as OffsetLayer;
+
+    return layer.toImage(renderObject.paintBounds);
+  }
+
+  @override
+  Future<ui.Image> getImage({
+    required Finder finder,
+    required WidgetTester tester,
+    required bool obscureText,
+  }) async {
+    if (obscureText) {
+      return _getBlockedTextImage(finder: finder, tester: tester);
+    } else {
+      return _getImage(finder: finder, tester: tester);
+    }
   }
 }

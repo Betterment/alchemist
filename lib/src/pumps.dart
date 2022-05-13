@@ -27,7 +27,7 @@ PumpAction pumpNTimes(int n, [Duration? duration]) {
 /// evaluation.
 ///
 /// See [PumpAction] for more details.
-final pumpOnce = pumpNTimes(1);
+Future<void> pumpOnce(WidgetTester tester) => tester.pump();
 
 /// A custom [PumpAction] that pumps and settles the widget tree before golden
 /// evaluation.
