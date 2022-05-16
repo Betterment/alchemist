@@ -27,7 +27,7 @@ jobs:
         run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
 
       - name: Archive golden failures
-        if: {{ always() }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: golden-failures
