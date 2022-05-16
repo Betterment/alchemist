@@ -26,6 +26,13 @@ jobs:
       - name: Run tests
         run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
 
+      - name: Archive golden failures
+        uses: actions/upload-artifact@v3
+        with:
+          name: golden-failures
+          path: test/**/failures
+          retention-days: 2
+
       - uses: codecov/codecov-action@v2
         with:
           files: coverage/lcov.info
