@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _SmokeTest extends StatelessWidget {
-  _SmokeTest({Key? key})
-      : _link = LayerLink(),
-        super(key: key);
+  _SmokeTest({super.key}) : _link = LayerLink();
 
   final LayerLink _link;
 
