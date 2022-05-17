@@ -1,5 +1,6 @@
 # 0.4.0
 
+- docs: update simulating gestures snippet
 - chore: upgrade to very_good_analysis 3.0.0
 - chore: upgrade to flutter 3.0.0
 - ci: fix the title of the semantic PR job
