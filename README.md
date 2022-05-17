@@ -386,7 +386,7 @@ void main() {
     'ElevatedButton renders tap indicator when pressed',
     fileName: 'elevated_button_pressed',
     whilePerforming: press(find.byType(ElevatedButton)),
-    widget: GoldenTestGroup(
+    builder: () => GoldenTestGroup(
       children: [
         GoldenTestScenario(
           name: 'pressed',
