@@ -1,3 +1,9 @@
+# 0.4.0
+
+- chore: upgrade to very_good_analysis 3.0.0
+- chore: upgrade to flutter 3.0.0
+- ci: fix the title of the semantic PR job
+
 # 0.3.3
 
 - chore: upgrade flutter to 2.10.4
