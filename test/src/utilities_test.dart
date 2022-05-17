@@ -162,14 +162,14 @@ to avoid unnecessary overhead.''',
 
   group('TestAssetBundle', () {
     setUp(() {
-      ServicesBinding.instance!.defaultBinaryMessenger.setMockMessageHandler(
+      ServicesBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
         'flutter/assets',
         (message) async => message,
       );
     });
 
     tearDown(() {
-      ServicesBinding.instance!.defaultBinaryMessenger.setMockMessageHandler(
+      ServicesBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
         'flutter/assets',
         null,
       );

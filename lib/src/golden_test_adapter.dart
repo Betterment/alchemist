@@ -234,7 +234,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     tester.binding.window.physicalSizeTestValue = initialSize;
 
     tester.binding.window.devicePixelRatioTestValue = 1.0;
-    tester.binding.window.textScaleFactorTestValue = textScaleFactor;
+    tester.binding.window.platformDispatcher.textScaleFactorTestValue =
+        textScaleFactor;
 
     await pumpWidget(
       tester,
