@@ -88,7 +88,7 @@ void main() {
     test('drawAtlas delegates to parent implementation', () {
       final atlas = FakeImage();
       final transforms = [
-        ui.RSTransform.new(0, 0, 0, 0),
+        ui.RSTransform(0, 0, 0, 0),
       ];
       const rects = [
         ui.Rect.zero,

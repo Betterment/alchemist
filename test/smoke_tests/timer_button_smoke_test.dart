@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class TimerButton extends StatelessWidget {
-  const TimerButton({Key? key}) : super(key: key);
+  const TimerButton({super.key});
 
   @override
   Widget build(BuildContext context) {
