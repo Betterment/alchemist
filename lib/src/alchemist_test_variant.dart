@@ -36,7 +36,7 @@ class AlchemistTestVariant extends TestVariant<GoldensConfig> {
     GoldensConfig value,
     covariant AlchemistTestVariant? memento,
   ) async {
-    imageCache?.clear();
+    imageCache.clear();
   }
 
   @override

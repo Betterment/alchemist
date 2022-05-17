@@ -50,10 +50,10 @@ void main() {
 
       test('tearDown clears the image cache', () async {
         TestWidgetsFlutterBinding.ensureInitialized();
-        imageCache?.putIfAbsent('key', FakeImageStreamCompleter.new);
-        expect(imageCache?.containsKey('key'), isTrue);
+        imageCache.putIfAbsent('key', FakeImageStreamCompleter.new);
+        expect(imageCache.containsKey('key'), isTrue);
         await variant.tearDown(MockCiGoldensConfig(), null);
-        expect(imageCache?.containsKey('key'), isFalse);
+        expect(imageCache.containsKey('key'), isFalse);
       });
 
       test('setUp sets current value', () async {
