@@ -7,7 +7,7 @@ void main() {
     goldenTestAnimation(
       'circular animation',
       fileName: 'animation_circular',
-      timeout: const Duration(seconds: 15),
+      timeout: const Duration(seconds: 45),
       builder: () => const CircularProgressIndicator(),
     );
 
@@ -24,7 +24,7 @@ void main() {
       builder: () => TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: 1),
         duration: const Duration(seconds: 2),
-        builder: (context, value, child) => Container(
+        builder: (context, value, child) => DecoratedBox(
           decoration: BoxDecoration(
             color: Color.lerp(Colors.red, Colors.blue, value),
             borderRadius: BorderRadius.lerp(
