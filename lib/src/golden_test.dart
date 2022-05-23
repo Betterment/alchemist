@@ -35,7 +35,7 @@ Future<void> loadFonts() async {
       .map((dynamic x) => x as Map<String, dynamic>);
 
   for (final entry in fontManifest) {
-    final family = entry['family'] as String;
+    final family = _truncateFontPackageName(entry['family'] as String);
 
     final fontAssets = [
       for (final fontAssetEntry in entry['fonts'] as List<dynamic>)
@@ -49,6 +49,19 @@ Future<void> loadFonts() async {
 
     await loader.load();
   }
+}
+
+/// Truncates the 'packages/.../' prefix from the font package name. This is
+/// needed to properly load fonts from other packages, such as Alchemist's
+/// included Roboto fonts.
+///
+/// If no prefix is found, the original string is returned.
+String _truncateFontPackageName(String fontFamily) {
+  if (!fontFamily.startsWith('packages/')) {
+    return fontFamily;
+  }
+
+  return fontFamily.split('/').skip(2).join('/');
 }
 
 /// Performs a Flutter widget test that compares against golden image.

@@ -1,3 +1,7 @@
+# 0.3.4
+
+- fix: load fonts from other packages correctly
+
 # 0.3.3
 
 - chore: upgrade flutter to 2.10.4
