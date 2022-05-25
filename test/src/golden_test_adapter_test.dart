@@ -23,6 +23,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(MockRenderObject());
   });
+
   group('overrides', () {
     group('goldenFileExpectationFn', () {
       MatchesGoldenFileInvocation<void> customExpectation(Object a, Object b) =>
@@ -362,52 +363,38 @@ void main() {
       });
 
       testWidgets(
-        'sets theme to provided value '
-        'with package names stripped',
+        'renders FlutterGoldenTestWrapper with provided '
+        'theme and child',
         (tester) async {
-          final theme = ThemeData(
-            primaryColor: Colors.blue,
-            textTheme: const TextTheme(
-              bodyText2: TextStyle(
-                fontFamily: 'packages/some_package/Roboto',
-              ),
-            ),
+          // Used as a marker to identify the right ThemeData object.
+          const visualDensity = VisualDensity(
+            horizontal: 1.234,
+            vertical: 1.234,
           );
 
           await adapter.pumpGoldenTest(
             tester: tester,
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
-            theme: theme,
+            theme: ThemeData(
+              visualDensity: visualDensity,
+            ),
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
           );
 
+          expect(find.byType(FlutterGoldenTestWrapper), findsOneWidget);
           expect(
-            tester.widget(find.byType(MaterialApp)),
-            isA<MaterialApp>().having(
+            tester.widget(find.byType(FlutterGoldenTestWrapper)),
+            isA<FlutterGoldenTestWrapper>().having(
               (w) => w.theme,
               'theme',
-              isA<ThemeData>()
-                  .having(
-                    (t) => t.primaryColor,
-                    'primaryColor',
-                    Colors.blue,
-                  )
-                  .having(
-                    (t) => t.textTheme,
-                    'textTheme',
-                    isA<TextTheme>().having(
-                      (t) => t.bodyText2,
-                      'bodyText2',
-                      isA<TextStyle>().having(
-                        (t) => t.fontFamily,
-                        'fontFamily',
-                        'Roboto',
-                      ),
-                    ),
-                  ),
+              isA<ThemeData>().having(
+                (t) => t.visualDensity,
+                'visualDensity',
+                same(visualDensity),
+              ),
             ),
           );
         },
@@ -446,5 +433,120 @@ void main() {
         expect(pumpWidgetCalled, isTrue);
       });
     });
+  });
+
+  group('FlutterGoldenTestWrapper', () {
+    testWidgets('renders child', (tester) async {
+      const key = Key('child');
+
+      await tester.pumpWidget(
+        const FlutterGoldenTestWrapper(
+          child: Text(
+            'test',
+            key: key,
+          ),
+        ),
+      );
+
+      expect(find.byKey(key), findsOneWidget);
+    });
+
+    testWidgets(
+      'renders a MediaQuery '
+      'based on the current window',
+      (tester) async {
+        await tester.pumpWidget(
+          const FlutterGoldenTestWrapper(
+            child: Text('test'),
+          ),
+        );
+
+        final windowMediaQuery =
+            MediaQueryData.fromWindow(tester.binding.window);
+
+        expect(find.byType(MediaQuery), findsOneWidget);
+        expect(
+          tester.widget(find.byType(MediaQuery)),
+          isA<MediaQuery>().having(
+            (m) => m.data,
+            'data',
+            isA<MediaQueryData>().having(
+              (m) => m.size,
+              'size',
+              windowMediaQuery.size,
+            ),
+          ),
+        );
+      },
+    );
+
+    testWidgets(
+        'renders a Directionality '
+        'with text direction set to LTR', (tester) async {
+      await tester.pumpWidget(
+        const FlutterGoldenTestWrapper(
+          child: Text('test'),
+        ),
+      );
+
+      expect(find.byType(Directionality), findsOneWidget);
+      expect(
+        tester.widget(find.byType(Directionality)),
+        isA<Directionality>().having(
+          (d) => d.textDirection,
+          'textDirection',
+          TextDirection.ltr,
+        ),
+      );
+    });
+
+    testWidgets(
+      'sets theme to provided value '
+      'with package names stripped',
+      (tester) async {
+        final theme = ThemeData(
+          primaryColor: Colors.blue,
+          textTheme: const TextTheme(
+            bodyText2: TextStyle(
+              fontFamily: 'packages/some_package/Roboto',
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(
+          FlutterGoldenTestWrapper(
+            theme: theme,
+            child: const Text('test'),
+          ),
+        );
+
+        expect(
+          tester.widget(find.byType(Theme)),
+          isA<Theme>().having(
+            (w) => w.data,
+            'theme',
+            isA<ThemeData>()
+                .having(
+                  (t) => t.primaryColor,
+                  'primaryColor',
+                  Colors.blue,
+                )
+                .having(
+                  (t) => t.textTheme,
+                  'textTheme',
+                  isA<TextTheme>().having(
+                    (t) => t.bodyText2,
+                    'bodyText2',
+                    isA<TextStyle>().having(
+                      (t) => t.fontFamily,
+                      'fontFamily',
+                      'Roboto',
+                    ),
+                  ),
+                ),
+          ),
+        );
+      },
+    );
   });
 }

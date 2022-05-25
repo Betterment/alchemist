@@ -239,12 +239,10 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
     await pumpWidget(
       tester,
-      MaterialApp(
+      FlutterGoldenTestWrapper(
         key: rootKey,
         theme: theme.stripTextPackages(),
-        debugShowCheckedModeBanner: false,
-        supportedLocales: const [Locale('en')],
-        home: DefaultAssetBundle(
+        child: DefaultAssetBundle(
           bundle: TestAssetBundle(),
           child: Material(
             type: MaterialType.transparency,
@@ -299,5 +297,51 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     ).paintSingleChild(renderObject);
 
     return layer.toImage(renderObject.paintBounds);
+  }
+}
+
+/// {@template _flutter_golden_test_wrapper}
+/// Similar to [MaterialApp], this widget is used to bootstrap a basic Flutter
+/// application for use in golden tests.
+///
+/// Using [MaterialApp] may introduce unexpected behavior in tests, and can
+/// cause localizations to not be loaded properly. This widget sets up the bare
+/// minimum to get the test to run.
+///
+/// Exposed for internal testing. Do not use this explicitly.
+/// {@endtemplate}
+@protected
+@visibleForTesting
+class FlutterGoldenTestWrapper extends StatelessWidget {
+  /// {@macro _flutter_golden_test_wrapper}
+  const FlutterGoldenTestWrapper({
+    super.key,
+    this.theme,
+    required this.child,
+  });
+
+  /// The default theme to apply to the application.
+  ///
+  /// See [MaterialApp.theme] for more details.
+  final ThemeData? theme;
+
+  /// The root widget to wrap.
+  ///
+  /// See [MaterialApp.home] for more details.
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveTheme = (theme ?? ThemeData.fallback()).stripTextPackages();
+
+    return MediaQuery.fromWindow(
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Theme(
+          data: effectiveTheme,
+          child: child,
+        ),
+      ),
+    );
   }
 }
