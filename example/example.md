@@ -61,4 +61,15 @@ Then, simply run Flutter test and pass the `--update-goldens` flag to generate t
 flutter test --update-goldens
 ```
 
+## gitignore
+
+We recommend adding the following lines to your project's `.gitignore` file to prevent platform-specific artifacts from being included in your git repository.
+
+```gitignore
+# Ignore platform-specific goldens
+**/goldens/macos
+**/goldens/linux
+**/goldens/windows
+```
+
 [setup-guide]: https://github.com/Betterment/alchemist/blob/main/RECOMMENDED_SETUP_GUIDE.md

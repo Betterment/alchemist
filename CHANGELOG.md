@@ -1,3 +1,7 @@
+# x.x.x
+
+- feat: add improved example project
+
 # 0.3.3
 
 - chore: upgrade flutter to 2.10.4
