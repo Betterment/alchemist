@@ -1,4 +1,6 @@
-# example
+# Alchemist Example Project
+
+> For a quick explanation on how to get started with Alchemist, read the [example.md][example_markdown] file or the [Recommended Setup Guide][setup_guide].
 
 This is an example app that showcases the Alchemist golden testing package.
 
@@ -18,3 +20,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+[example_markdown]: ./example.md
+[setup_guide]: ../RECOMMENDED_SETUP_GUIDE.md

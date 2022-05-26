@@ -4,6 +4,10 @@
 
 For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide][setup-guide].
 
+## Full Example Project
+
+A full project containing an application containing exemplary widgets and golden tests is included in the [example][example_dir] folder.
+
 ## Basic usage
 
 In your project's `test/` directory, add a file for your widget's tests. Then, write and run golden tests by using the `goldenTest` function.
@@ -73,3 +77,4 @@ We recommend adding the following lines to your project's `.gitignore` file to p
 ```
 
 [setup-guide]: https://github.com/Betterment/alchemist/blob/main/RECOMMENDED_SETUP_GUIDE.md
+[example_dir]: https://github.com/Betterment/alchemist/tree/main/example

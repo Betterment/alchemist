@@ -133,7 +133,7 @@ flutter test --update-goldens
 
 #### Recommended Setup Guide
 
-For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide](./RECOMMENDED_SETUP_GUIDE.md).
+For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide][setup_guide].
 
 #### Test groups
 
@@ -451,6 +451,7 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 [alchemist_pull_request]: https://github.com/Betterment/alchemist/compare
 [platform_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/macos_list_tile_golden_file.png
 [ci_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/ci_list_tile_golden_file.png
-[example_markdown]: https://github.com/Betterment/alchemist/blob/main/example/example.md
+[example_markdown]: ./example/example.md
 [example_pub]: https://pub.dev/packages/alchemist/example
-[example_dir]: https://github.com/Betterment/alchemist/tree/main/example
+[example_dir]: ./example/
+[setup_guide]: ./RECOMMENDED_SETUP_GUIDE.md
