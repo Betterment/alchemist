@@ -156,20 +156,21 @@ Future<void> goldenTest(
   await goldenTestAdapter.testWidgets(
     description,
     (tester) async {
-      final goldensConfig = variant.currentConfig;
+      final variantConfig = variant.currentConfig;
       await goldenTestRunner.run(
         tester: tester,
-        goldenPath: await goldensConfig.filePathResolver(
+        goldenPath: await variantConfig.filePathResolver(
           fileName,
-          goldensConfig.environmentName,
+          variantConfig.environmentName,
         ),
         widget: builder(),
+        globalConfigTheme: config.theme,
+        variantConfigTheme: variantConfig.theme,
         forceUpdate: config.forceUpdateGoldenFiles,
-        obscureText: goldensConfig.obscureText,
-        renderShadows: goldensConfig.renderShadows,
+        obscureText: variantConfig.obscureText,
+        renderShadows: variantConfig.renderShadows,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
-        theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
         pumpBeforeTest: pumpBeforeTest,
         pumpWidget: pumpWidget,
         whilePerforming: whilePerforming,
