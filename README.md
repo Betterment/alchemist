@@ -92,9 +92,8 @@ void main() {
     goldenTest(
       'renders correctly',
       fileName: 'list_tile',
-      constraints: const BoxConstraints(maxWidth: 600),
       builder: () => GoldenTestGroup(
-        columnWidthBuilder: (_) => const FlexColumnWidth(),
+        scenarioConstraints: const BoxConstraints(maxWidth: 600),
         children: [
           GoldenTestScenario(
             name: 'with title',

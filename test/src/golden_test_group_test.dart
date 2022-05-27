@@ -1,5 +1,6 @@
 import 'package:alchemist/src/golden_test_group.dart';
 import 'package:alchemist/src/golden_test_scenario.dart';
+import 'package:alchemist/src/golden_test_scenario_constraints.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -57,7 +58,8 @@ void main() {
       Key? key,
       int? columns,
       ColumnWidthBuilder? columnWidthBuilder,
-      List<GoldenTestScenario>? scenarios,
+      BoxConstraints? scenarioConstraints,
+      List<Widget>? children,
     }) {
       return MaterialApp(
         home: Scaffold(
@@ -65,7 +67,8 @@ void main() {
             key: key,
             columns: columns,
             columnWidthBuilder: columnWidthBuilder,
-            children: scenarios ?? buildScenarios(4),
+            scenarioConstraints: scenarioConstraints,
+            children: children ?? buildScenarios(4),
           ),
         ),
       );
@@ -73,7 +76,7 @@ void main() {
 
     testWidgets('renders table with scenarios', (tester) async {
       final subject = buildSubject(
-        scenarios: buildScenarios(4),
+        children: buildScenarios(4),
       );
 
       await tester.pumpWidget(subject);
@@ -93,7 +96,7 @@ void main() {
         'is 1 when 1 scenario is provided',
         (tester) async {
           final subject = buildSubject(
-            scenarios: buildScenarios(1),
+            children: buildScenarios(1),
           );
           await tester.pumpWidget(subject);
 
@@ -108,7 +111,7 @@ void main() {
         'is 2 when 4 scenarios are provided',
         (tester) async {
           final subject = buildSubject(
-            scenarios: buildScenarios(4),
+            children: buildScenarios(4),
           );
           await tester.pumpWidget(subject);
 
@@ -122,7 +125,7 @@ void main() {
         'is 3 when 6 scenarios are provided',
         (tester) async {
           final subject = buildSubject(
-            scenarios: buildScenarios(6),
+            children: buildScenarios(6),
           );
           await tester.pumpWidget(subject);
 
@@ -137,7 +140,7 @@ void main() {
         'is 4 when 10 scenarios are provided',
         (tester) async {
           final subject = buildSubject(
-            scenarios: buildScenarios(10),
+            children: buildScenarios(10),
           );
           await tester.pumpWidget(subject);
 
@@ -155,7 +158,7 @@ void main() {
       (tester) async {
         final subject = buildSubject(
           columns: 2,
-          scenarios: buildScenarios(10),
+          children: buildScenarios(10),
         );
         await tester.pumpWidget(subject);
 
@@ -178,7 +181,7 @@ void main() {
             callArguments.add(i);
             return FixedColumnWidth(i * 100 + 100);
           },
-          scenarios: buildScenarios(3),
+          children: buildScenarios(3),
         );
         await tester.pumpWidget(subject);
 
@@ -197,6 +200,33 @@ void main() {
                 .having((m) => m[1], 'second element', isAFixedColumnWidth(200))
                 .having((m) => m[2], 'third element', isAFixedColumnWidth(300)),
           ),
+        );
+      },
+    );
+
+    testWidgets(
+      'passes on scenario constraints if provided',
+      (tester) async {
+        const constraints = BoxConstraints(
+          minWidth: 100,
+          minHeight: 100,
+          maxWidth: 200,
+          maxHeight: 200,
+        );
+
+        final subject = buildSubject(
+          scenarioConstraints: constraints,
+          children: buildScenarios(3),
+        );
+        await tester.pumpWidget(subject);
+
+        expect(
+          tester
+              .widget<GoldenTestScenarioConstraints>(
+                find.byType(GoldenTestScenarioConstraints),
+              )
+              .constraints,
+          constraints,
         );
       },
     );

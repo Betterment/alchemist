@@ -88,16 +88,13 @@ Future<void> loadFonts() async {
 /// The [textScaleFactor], if provided, sets the text scale size (usually in
 /// a range from 1 to 3).
 ///
-/// The [constraints] tell the builder how large the total surface of the
-/// widget should be. Commonly set to
-/// `BoxConstraints.loose(Size(maxWidth, maxHeight))` to limit the maximum
-/// size of the widget, while allowing it to be smaller if the content allows
-/// for it.
+/// The [constraints] tell the builder how large the rendered widget should be.
+/// Commonly set to `BoxConstraints.loose(Size(maxWidth, maxHeight))` to limit
+/// the maximum size of the widget, while allowing it to be smaller if the
+/// content allows for it.
 ///
 /// By default, no constraints are passed, but this can be
-/// adjusted to allow for more precise rendering of golden files. If the
-/// max width is unbounded, a default width value will be used as initial
-/// surface size. The same applies to the max height.
+/// adjusted to allow for more precise rendering of golden files.
 ///
 /// The [pumpBeforeTest] function will be called with the [WidgetTester] to
 /// prime the widget tree before golden evaluation. By default, it is set to

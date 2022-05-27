@@ -224,40 +224,12 @@ void main() {
       );
 
       testWidgets(
-        'sets surface size to constraints '
-        'when constraints are tight',
+        'resizes surface to fit the tested widget',
         (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
-          const providedSize = Size(1000, 1000);
-
-          await adapter.pumpGoldenTest(
-            tester: tester,
-            rootKey: rootKey,
-            textScaleFactor: 1,
-            constraints: BoxConstraints.tight(providedSize),
-            theme: ThemeData.light(),
-            pumpBeforeTest: onlyPumpAndSettle,
-            pumpWidget: onlyPumpWidget,
-            widget: buildGroup(),
-          );
-
-          expect(tester.binding.window.physicalSize, providedSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, providedSize);
-        },
-      );
-
-      testWidgets(
-        'attempts to resize surface to fit '
-        'the group when constraints are loose',
-        (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
           final groupKey = FlutterGoldenTestAdapter.childKey;
 
           await adapter.pumpGoldenTest(
             tester: tester,
-            rootKey: rootKey,
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
             theme: ThemeData.light(),
@@ -269,81 +241,6 @@ void main() {
           final targetSize = tester.getSize(find.byKey(groupKey));
 
           expect(tester.binding.window.physicalSize, targetSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, targetSize);
-        },
-      );
-
-      testWidgets(
-        'does not resize surface to a '
-        'smaller size than the minimum size',
-        (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
-          final groupKey = FlutterGoldenTestAdapter.childKey;
-
-          const minSize = Size(1000, 1000);
-
-          await adapter.pumpGoldenTest(
-            tester: tester,
-            rootKey: rootKey,
-            textScaleFactor: 1,
-            constraints: BoxConstraints(
-              minWidth: minSize.width,
-              minHeight: minSize.height,
-            ),
-            theme: ThemeData.light(),
-            pumpBeforeTest: onlyPumpAndSettle,
-            pumpWidget: onlyPumpWidget,
-            widget: buildGroup(),
-          );
-
-          final groupSize = tester.getSize(find.byKey(groupKey));
-          // Make sure the test is set up properly so that the logic can be
-          // asserted correctly. This test is useless if the group's size is
-          // larger than the minimum size.
-          if (groupSize.width > minSize.width ||
-              groupSize.height > minSize.height) {
-            fail(
-              'The size of the rendered group is larger than the minimum '
-              'size constraint passed to the pumpGoldenTest function, '
-              'making this test useless.',
-            );
-          }
-
-          expect(tester.binding.window.physicalSize, minSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, minSize);
-        },
-      );
-
-      testWidgets(
-        'does not resize surface to a '
-        'larger size than the maximum size',
-        (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
-
-          const maxSize = Size(150, 150);
-
-          await adapter.pumpGoldenTest(
-            tester: tester,
-            rootKey: rootKey,
-            textScaleFactor: 1,
-            constraints: BoxConstraints(
-              maxWidth: maxSize.width,
-              maxHeight: maxSize.height,
-            ),
-            theme: ThemeData.light(),
-            pumpBeforeTest: onlyPumpAndSettle,
-            pumpWidget: onlyPumpWidget,
-            widget: buildGroup(),
-          );
-
-          expect(tester.binding.window.physicalSize, maxSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, maxSize);
         },
       );
 

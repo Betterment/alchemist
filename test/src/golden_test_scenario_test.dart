@@ -1,4 +1,5 @@
 import 'package:alchemist/src/golden_test_scenario.dart';
+import 'package:alchemist/src/golden_test_scenario_constraints.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,12 +9,14 @@ void main() {
       Key? key,
       String name = 'name',
       Widget child = const Text('child'),
+      BoxConstraints? constraints,
     }) {
       return MaterialApp(
         home: Scaffold(
           body: GoldenTestScenario(
             key: key,
             name: name,
+            constraints: constraints,
             child: child,
           ),
         ),
@@ -34,6 +37,71 @@ void main() {
       await tester.pumpWidget(subject);
 
       expect(find.text('child'), findsOneWidget);
+    });
+
+    group('constraints', () {
+      testWidgets('when null defaults to inherited constraints',
+          (tester) async {
+        const constraints = BoxConstraints(maxWidth: 400);
+        final subject = buildSubject();
+
+        await tester.pumpWidget(
+          GoldenTestScenarioConstraints(
+            constraints: constraints,
+            child: subject,
+          ),
+        );
+
+        final findConstraints = find.ancestor(
+          of: find.text('child'),
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is ConstrainedBox && widget.constraints == constraints,
+          ),
+        );
+
+        expect(findConstraints, findsOneWidget);
+      });
+
+      testWidgets('constrains the child', (tester) async {
+        const constraints = BoxConstraints(maxWidth: 400);
+        final subject = buildSubject(constraints: constraints);
+
+        await tester.pumpWidget(subject);
+
+        final findConstraints = find.ancestor(
+          of: find.text('child'),
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is ConstrainedBox && widget.constraints == constraints,
+          ),
+        );
+
+        expect(findConstraints, findsOneWidget);
+      });
+
+      testWidgets('takes precedence over inherited constraints',
+          (tester) async {
+        const constraints = BoxConstraints(maxWidth: 400);
+        final subject = buildSubject(constraints: constraints);
+
+        await tester.pumpWidget(
+          GoldenTestScenarioConstraints(
+            constraints: const BoxConstraints(maxHeight: 400),
+            child: subject,
+          ),
+        );
+
+        final findConstraints = find.ancestor(
+          of: find.text('child'),
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is ConstrainedBox && widget.constraints == constraints,
+          ),
+        );
+
+        expect(findConstraints, findsOneWidget);
+      });
     });
 
     testWidgets('.builder constructor provides builder', (tester) async {

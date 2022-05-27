@@ -75,15 +75,15 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     );
 
     final themeData = theme ?? ThemeData.light();
-    final rootKey = FlutterGoldenTestAdapter.rootKey;
+    final childKey = FlutterGoldenTestAdapter.childKey;
 
+    final originalSize = tester.binding.window.physicalSize;
     final mementoDebugDisableShadows = debugDisableShadows;
     debugDisableShadows = !renderShadows;
 
     try {
       await goldenTestAdapter.pumpGoldenTest(
         tester: tester,
-        rootKey: rootKey,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
         pumpBeforeTest: pumpBeforeTest,
@@ -103,14 +103,14 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
         cleanup = await whilePerforming(tester);
       }
 
-      final root = find.byKey(rootKey);
+      final finder = find.byKey(childKey);
 
       final toMatch = obscureText
           ? goldenTestAdapter.getBlockedTextImage(
-              finder: root,
+              finder: finder,
               tester: tester,
             )
-          : root;
+          : finder;
 
       try {
         await goldenTestAdapter.withForceUpdateGoldenFiles(
@@ -124,6 +124,9 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       }
     } finally {
       debugDisableShadows = mementoDebugDisableShadows;
+
+      await tester.binding.setSurfaceSize(originalSize);
+      tester.binding.window.physicalSizeTestValue = originalSize;
     }
   }
 }

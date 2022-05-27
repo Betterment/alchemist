@@ -81,7 +81,6 @@ void main() {
 
       when(
         () => goldenTestAdapter.pumpGoldenTest(
-          rootKey: any(named: 'rootKey'),
           tester: any(named: 'tester'),
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
@@ -147,7 +146,6 @@ void main() {
 
       final capturedTheme = verify(
         () => adapter.pumpGoldenTest(
-          rootKey: any(named: 'rootKey'),
           tester: any(named: 'tester'),
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
@@ -191,7 +189,6 @@ void main() {
 
       final capturedTheme = verify(
         () => adapter.pumpGoldenTest(
-          rootKey: any(named: 'rootKey'),
           tester: any(named: 'tester'),
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
@@ -256,6 +253,42 @@ void main() {
 
       expect(debugDisableShadows, isTrue);
       expect(debugDisableShadowsDuringTestRun, isFalse);
+    });
+
+    testWidgets('resets window size after the test has run', (tester) async {
+      late final Size sizeDuringTestRun;
+      final originalSize = tester.binding.window.physicalSize;
+      when(
+        () => goldenTestAdapter.pumpGoldenTest(
+          tester: any(named: 'tester'),
+          textScaleFactor: any(named: 'textScaleFactor'),
+          theme: any(named: 'theme'),
+          constraints: any(named: 'constraints'),
+          pumpBeforeTest: any(named: 'pumpBeforeTest'),
+          pumpWidget: any(named: 'pumpWidget'),
+          widget: any(named: 'widget'),
+        ),
+      ).thenAnswer((_) async {
+        tester.binding.window.physicalSizeTestValue = Size.zero;
+      });
+
+      final givenException = Exception();
+      await expectLater(
+        goldenTestRunner.run(
+          tester: tester,
+          goldenPath: 'path/to/golden',
+          renderShadows: true,
+          widget: const SizedBox.square(dimension: 200),
+          whilePerforming: (testerDuringTestRun) {
+            sizeDuringTestRun = testerDuringTestRun.binding.window.physicalSize;
+            throw givenException;
+          },
+        ),
+        throwsA(same(givenException)),
+      );
+
+      expect(tester.binding.window.physicalSize, originalSize);
+      expect(sizeDuringTestRun, Size.zero);
     });
 
     tearDownAll(() {

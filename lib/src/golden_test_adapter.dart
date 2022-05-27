@@ -136,9 +136,6 @@ abstract class GoldenTestAdapter {
 
   /// Pumps the given [widget] with the given [tester] for use in golden tests.
   ///
-  /// The [rootKey], if provided, will be attached to the top-most [Widget] in
-  /// the tree.
-  ///
   /// The [textScaleFactor], if provided, sets the text scale size (usually in
   /// a range from 1 to 3).
   ///
@@ -156,7 +153,6 @@ abstract class GoldenTestAdapter {
   /// max width is unbounded, a default width value will be used as initial
   /// surface size. The same applies to the max height.
   Future<void> pumpGoldenTest({
-    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -181,9 +177,6 @@ abstract class GoldenTestAdapter {
 class FlutterGoldenTestAdapter extends GoldenTestAdapter {
   /// Create a new [FlutterGoldenTestAdapter].
   const FlutterGoldenTestAdapter() : super();
-
-  /// Key for the root of the golden test.
-  static final rootKey = UniqueKey();
 
   /// Key for the child container in the golden test.
   static final childKey = UniqueKey();
@@ -217,7 +210,6 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
   @override
   Future<void> pumpGoldenTest({
-    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -226,13 +218,6 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
   }) async {
-    final initialSize = Size(
-      constraints.hasBoundedWidth ? constraints.maxWidth : 2000,
-      constraints.hasBoundedHeight ? constraints.maxHeight : 2000,
-    );
-    await tester.binding.setSurfaceSize(initialSize);
-    tester.binding.window.physicalSizeTestValue = initialSize;
-
     tester.binding.window.devicePixelRatioTestValue = 1.0;
     tester.binding.window.platformDispatcher.textScaleFactorTestValue =
         textScaleFactor;
@@ -240,45 +225,45 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     await pumpWidget(
       tester,
       MaterialApp(
-        key: rootKey,
         theme: theme.stripTextPackages(),
         debugShowCheckedModeBanner: false,
         supportedLocales: const [Locale('en')],
-        home: DefaultAssetBundle(
-          bundle: TestAssetBundle(),
-          child: Material(
-            type: MaterialType.transparency,
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: ColoredBox(
-                color: theme.colorScheme.background,
-                child: Padding(
-                  key: childKey,
-                  padding: const EdgeInsets.all(8),
-                  child: widget,
+        builder: (context, _) {
+          return DefaultAssetBundle(
+            bundle: TestAssetBundle(),
+            child: Material(
+              type: MaterialType.transparency,
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: ColoredBox(
+                  color: theme.colorScheme.background,
+                  child: OverflowBox(
+                    alignment: Alignment.topLeft,
+                    minWidth: constraints.minWidth,
+                    minHeight: constraints.minHeight,
+                    maxWidth: constraints.maxWidth,
+                    maxHeight: constraints.maxHeight,
+                    child: Center(
+                      child: Padding(
+                        key: childKey,
+                        padding: const EdgeInsets.all(8),
+                        child: widget,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
-
-    final shouldTryResize = !constraints.isTight;
-
     await pumpBeforeTest(tester);
 
-    if (shouldTryResize) {
-      final childSize = tester.getSize(find.byKey(childKey));
-      final newSize = Size(
-        childSize.width.clamp(constraints.minWidth, constraints.maxWidth),
-        childSize.height.clamp(constraints.minHeight, constraints.maxHeight),
-      );
-      if (newSize != initialSize) {
-        await tester.binding.setSurfaceSize(newSize);
-        tester.binding.window.physicalSizeTestValue = newSize;
-      }
-    }
+    final childSize = tester.getSize(find.byKey(childKey));
+
+    await tester.binding.setSurfaceSize(childSize);
+    tester.binding.window.physicalSizeTestValue = childSize;
 
     await tester.pump();
   }
