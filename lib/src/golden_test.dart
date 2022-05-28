@@ -106,6 +106,11 @@ Future<void> loadFonts() async {
 /// See [pumpOnce], [pumpNTimes], [onlyPumpAndSettle], and [precacheImages] for
 /// more details.
 ///
+/// A custom [pumpWidget] function can be provided, which will override the
+/// default behavior and allow the widget being tested to be wrapped in any
+/// number of widgets, and then pumped. By default, it is set to simply pump the
+/// provided widget once. See [onlyPumpWidget] for more details.
+///
 /// The [whilePerforming] interaction, if provided, will be called with the
 /// [WidgetTester] to perform a desired interaction during the golden test.
 /// Built-in actions, such as [press] and [longPress] are available, which
