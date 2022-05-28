@@ -81,7 +81,7 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
 void main() {
   setUpAll(() {
     registerFallbackValue(MockWidgetTester());
-    registerFallbackValue(Container());
+    registerFallbackValue(const SizedBox());
     registerFallbackValue(const BoxConstraints());
   });
 

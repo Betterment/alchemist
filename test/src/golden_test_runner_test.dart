@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
-import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -19,7 +18,7 @@ void main() {
     registerFallbackValue(MockWidgetTester());
     registerFallbackValue(const BoxConstraints());
     registerFallbackValue(ThemeData.light());
-    registerFallbackValue(const SizedBox.square());
+    registerFallbackValue(const SizedBox());
     registerFallbackValue(find.byType(Widget));
   });
 
@@ -45,40 +44,10 @@ void main() {
   group('GoldenTestRunner', () {
     const goldenTestRunner = FlutterGoldenTestRunner();
     late MockAdapter adapter;
-    var cleanupCalled = false;
-    var interactionCalled = false;
-    var goldenFileExpectationCalled = false;
-    var matcherInvocationCalled = false;
-
-    Future<void> cleanup() async {
-      cleanupCalled = true;
-    }
-
-    Future<Future<void> Function()> interaction(WidgetTester tester) async {
-      interactionCalled = true;
-      return cleanup;
-    }
-
-    FutureOr<void> matcherInvocation() {
-      matcherInvocationCalled = true;
-    }
-
-    MatchesGoldenFileInvocation<void> goldenFileExpectation(
-      Object a,
-      Object b,
-    ) {
-      goldenFileExpectationCalled = true;
-      return matcherInvocation;
-    }
 
     setUp(() {
       adapter = MockAdapter();
       goldenTestAdapter = adapter;
-
-      cleanupCalled = false;
-      interactionCalled = false;
-      goldenFileExpectationCalled = false;
-      matcherInvocationCalled = false;
 
       when(
         () => goldenTestAdapter.pumpGoldenTest(
@@ -104,7 +73,7 @@ void main() {
 
       when(
         () => goldenTestAdapter.goldenFileExpectation,
-      ).thenReturn(goldenFileExpectation);
+      ).thenReturn((_, __) => () async {});
 
       when(
         () => goldenTestAdapter.withForceUpdateGoldenFiles<void>(
