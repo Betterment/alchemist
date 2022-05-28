@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
+import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -85,7 +86,9 @@ void main() {
           tester: any(named: 'tester'),
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
-          theme: any(named: 'theme'),
+          obscureFont: any(named: 'obscureFont'),
+          variantConfigTheme: any(named: 'variantConfigTheme'),
+          globalConfigTheme: any(named: 'globalConfigTheme'),
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
@@ -120,89 +123,10 @@ void main() {
         goldenTestRunner.run(
           tester: tester,
           goldenPath: 1,
-          widget: Container(),
+          widget: const SizedBox(),
         ),
         throwsAssertionError,
       );
-    });
-
-    testWidgets('invokes everything correctly', (tester) async {
-      const themeColor = Colors.blue;
-      final theme = ThemeData.light().copyWith(
-        primaryColor: themeColor,
-      );
-      await goldenTestRunner.run(
-        tester: tester,
-        goldenPath: 'path/to/golden',
-        widget: Container(),
-        theme: theme,
-        whilePerforming: interaction,
-        obscureText: true,
-      );
-
-      expect(interactionCalled, isTrue);
-      expect(cleanupCalled, isTrue);
-      expect(goldenFileExpectationCalled, isTrue);
-      expect(matcherInvocationCalled, isTrue);
-
-      final capturedTheme = verify(
-        () => adapter.pumpGoldenTest(
-          rootKey: any(named: 'rootKey'),
-          tester: any(named: 'tester'),
-          textScaleFactor: any(named: 'textScaleFactor'),
-          constraints: any(named: 'constraints'),
-          theme: captureAny(named: 'theme'),
-          pumpBeforeTest: any(named: 'pumpBeforeTest'),
-          pumpWidget: any(named: 'pumpWidget'),
-          widget: any(named: 'widget'),
-        ),
-      ).captured.first as ThemeData;
-
-      expect(
-        capturedTheme,
-        isA<ThemeData>().having(
-          (theme) => theme.primaryColor,
-          'primaryColor',
-          themeColor,
-        ),
-      );
-
-      expect(
-        capturedTheme,
-        isA<ThemeData>().having(
-          (theme) => theme.textTheme.bodyText1!.fontFamily,
-          'textTheme.bodyText1!.fontFamily',
-          obscuredTextFontFamily,
-        ),
-      );
-    });
-
-    testWidgets('invokes everything with defaults', (tester) async {
-      await goldenTestRunner.run(
-        tester: tester,
-        goldenPath: 'path/to/golden',
-        widget: Container(),
-      );
-
-      expect(interactionCalled, isFalse);
-      expect(cleanupCalled, isFalse);
-      expect(goldenFileExpectationCalled, isTrue);
-      expect(matcherInvocationCalled, isTrue);
-
-      final capturedTheme = verify(
-        () => adapter.pumpGoldenTest(
-          rootKey: any(named: 'rootKey'),
-          tester: any(named: 'tester'),
-          textScaleFactor: any(named: 'textScaleFactor'),
-          constraints: any(named: 'constraints'),
-          theme: captureAny(named: 'theme'),
-          pumpBeforeTest: any(named: 'pumpBeforeTest'),
-          pumpWidget: any(named: 'pumpWidget'),
-          widget: any(named: 'widget'),
-        ),
-      ).captured.first as ThemeData;
-
-      expect(capturedTheme, equals(ThemeData.light()));
     });
 
     testWidgets('throws when matcher fails', (tester) async {
@@ -226,7 +150,7 @@ void main() {
         await goldenTestRunner.run(
           tester: tester,
           goldenPath: 'path/to/golden',
-          widget: Container(),
+          widget: const SizedBox(),
         );
         fail('Expected goldenTestRunner.run to throw TestFailure');
       } catch (e) {
@@ -245,7 +169,7 @@ void main() {
           tester: tester,
           goldenPath: 'path/to/golden',
           renderShadows: true,
-          widget: Container(),
+          widget: const SizedBox(),
           whilePerforming: (_) {
             debugDisableShadowsDuringTestRun = debugDisableShadows;
             throw givenException;

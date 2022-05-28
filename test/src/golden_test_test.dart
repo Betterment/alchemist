@@ -25,8 +25,8 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
   Future<ui.Image> getBlockedTextImage({
     required Finder finder,
     required WidgetTester tester,
-  }) {
-    return Future.value(MockImage());
+  }) async {
+    return MockImage();
   }
 
   @override
@@ -38,13 +38,13 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
-    required ThemeData theme,
+    required bool obscureFont,
+    required ThemeData? globalConfigTheme,
+    required ThemeData? variantConfigTheme,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
-  }) {
-    return Future.value();
-  }
+  }) async {}
 
   @override
   TestLifecycleFn get setUp => (dynamic Function() body) => body();
@@ -102,12 +102,13 @@ void main() {
           tester: any(named: 'tester'),
           goldenPath: any(named: 'goldenPath'),
           widget: any(named: 'widget'),
+          globalConfigTheme: any(named: 'globalConfigTheme'),
+          variantConfigTheme: any(named: 'variantConfigTheme'),
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
           renderShadows: any(named: 'renderShadows'),
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
-          theme: any(named: 'theme'),
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
@@ -135,7 +136,9 @@ void main() {
       final alchemistTheme = ThemeData.light().copyWith(
         primaryColor: Colors.red,
       );
-      final ciTheme = ThemeData.light().copyWith(primaryColor: Colors.blue);
+      final ciTheme = ThemeData.light().copyWith(primaryColor: Colors.green);
+      final platformTheme =
+          ThemeData.light().copyWith(primaryColor: Colors.yellow);
       const ciRenderShadows = true;
       final config = AlchemistConfig(
         forceUpdateGoldenFiles: false,
@@ -148,9 +151,13 @@ void main() {
             return 'myGoldenFile';
           },
         ),
-        platformGoldensConfig: const PlatformGoldensConfig(enabled: false),
+        platformGoldensConfig: PlatformGoldensConfig(
+          enabled: false,
+          theme: platformTheme,
+        ),
       );
-      final widget = Container();
+      const widget = SizedBox();
+
       await AlchemistConfig.runWithConfig(
         config: config,
         run: () async => goldenTest(
@@ -159,35 +166,40 @@ void main() {
           builder: () => widget,
         ),
       );
+
       expect(filePathResolverCalled, isTrue);
+
       // Verify [GoldenTestRunner.run] was called for the CI config.
       verify(
         () => runner.run(
           tester: any(named: 'tester'),
           goldenPath: 'myGoldenFile',
           widget: widget,
+          globalConfigTheme: alchemistTheme,
+          variantConfigTheme: ciTheme,
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
           renderShadows: ciRenderShadows,
           textScaleFactor: any(named: 'textScaleFactor'),
-          theme: ciTheme,
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
         ),
       ).called(1);
+
       // Verify [GoldenTestRunner.run] was not called for the platform config.
       verifyNever(
         () => runner.run(
           tester: any(named: 'tester'),
           goldenPath: 'goldens/linux/test_golden_test.png',
           widget: widget,
+          globalConfigTheme: alchemistTheme,
+          variantConfigTheme: platformTheme,
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
           renderShadows: any(named: 'renderShadows'),
           textScaleFactor: any(named: 'textScaleFactor'),
           constraints: any(named: 'constraints'),
-          theme: alchemistTheme,
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),

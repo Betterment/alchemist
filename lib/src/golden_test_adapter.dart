@@ -160,7 +160,7 @@ abstract class GoldenTestAdapter {
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
-    required bool obscureText,
+    required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
     required PumpAction pumpBeforeTest,
@@ -223,7 +223,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
-    required bool obscureText,
+    required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
     required PumpAction pumpBeforeTest,
@@ -245,6 +245,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
       tester,
       FlutterGoldenTestWrapper(
         key: rootKey,
+        obscureFont: obscureFont,
         globalConfigTheme: globalConfigTheme,
         variantConfigTheme: variantConfigTheme,
         child: DefaultAssetBundle(
@@ -327,7 +328,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
     super.key,
     this.globalConfigTheme,
     this.variantConfigTheme,
-    this.obscureText = false,
+    this.obscureFont = false,
     required this.child,
   });
 
@@ -346,7 +347,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
   ///
   /// See [GoldenTestThemeDataExtensions.applyObscuredFontFamily] for more
   /// details.
-  final bool obscureText;
+  final bool obscureFont;
 
   /// The root widget to wrap.
   ///
@@ -355,7 +356,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
 
   /// Resolves the appropriate theme to use for the current test.
   ///
-  /// If [obscureText] is true, the default font family of the resolved theme
+  /// If [obscureFont] is true, the default font family of the resolved theme
   /// will be set to an obscured font. (See
   /// [GoldenTestThemeDataExtensions.applyObscuredFontFamily] for more details.)
   ///
@@ -381,7 +382,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
         globalConfigTheme ??
         fallbackTheme;
 
-    if (obscureText) {
+    if (obscureFont) {
       resolvedTheme = resolvedTheme.applyObscuredFontFamily();
     }
 
