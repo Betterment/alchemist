@@ -374,13 +374,12 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
   ThemeData _resolveThemeOf(BuildContext context) {
     final hasInheritedTheme =
         context.findAncestorWidgetOfExactType<Theme>() != null;
-    final inheritedTheme = !hasInheritedTheme ? null : Theme.of(context);
-    final fallbackTheme = ThemeData.fallback();
+    final inheritedTheme = hasInheritedTheme ? Theme.of(context) : null;
 
     var resolvedTheme = variantConfigTheme ??
         inheritedTheme ??
         globalConfigTheme ??
-        fallbackTheme;
+        ThemeData.fallback();
 
     if (obscureFont) {
       resolvedTheme = resolvedTheme.applyObscuredFontFamily();
