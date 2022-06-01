@@ -154,10 +154,18 @@ extension GoldenTestTextStyleExtensions on TextStyle {
       decorationStyle: decorationStyle,
       decorationThickness: decorationThickness,
       debugLabel: debugLabel,
-      fontFamily: fontFamily?.replaceAll(RegExp(r'packages\/[^\/]*\/'), ''),
+      fontFamily: fontFamily?.stripFontFamilyPackageName(),
       fontFamilyFallback: fontFamilyFallback,
       overflow: overflow,
     );
+  }
+}
+
+/// Strips the package name from the given font family for use in golden tests.
+extension FontFamilyStringExtensions on String {
+  /// Strips the package name from this font family for use in golden tests.
+  String stripFontFamilyPackageName() {
+    return replaceAll(RegExp(r'packages\/[^\/]*\/'), '');
   }
 }
 

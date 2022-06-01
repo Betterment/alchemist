@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
+import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,7 +36,7 @@ Future<void> loadFonts() async {
       .map((dynamic x) => x as Map<String, dynamic>);
 
   for (final entry in fontManifest) {
-    final family = entry['family'] as String;
+    final family = (entry['family'] as String).stripFontFamilyPackageName();
 
     final fontAssets = [
       for (final fontAssetEntry in entry['fonts'] as List<dynamic>)
