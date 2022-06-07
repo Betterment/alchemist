@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:alchemist/src/blocked_text_image.dart';
-import 'package:alchemist/src/pumps.dart';
+import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -148,8 +147,9 @@ abstract class GoldenTestAdapter {
   /// size of the widget, while allowing it to be smaller if the content allows
   /// for it.
   ///
-  /// The provided [theme] will be given to the [MaterialApp] at the top of the
-  /// widget tree.
+  /// The provided [globalConfigTheme] and [variantConfigTheme] are used to
+  /// determine the appropriate [Theme] to set for the widget being tested. See
+  /// [FlutterGoldenTestWrapper] for more details.
   ///
   /// By default, no constraints are passed, but this can be
   /// adjusted to allow for more precise rendering of golden files. If the
@@ -160,10 +160,12 @@ abstract class GoldenTestAdapter {
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
-    required ThemeData theme,
-    required Widget widget,
+    required bool obscureFont,
+    required ThemeData? globalConfigTheme,
+    required ThemeData? variantConfigTheme,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
+    required Widget widget,
   });
 
   /// Generates an image of the widget at the given [finder] with all text
@@ -221,10 +223,12 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
-    required ThemeData theme,
-    required Widget widget,
+    required bool obscureFont,
+    required ThemeData? globalConfigTheme,
+    required ThemeData? variantConfigTheme,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
+    required Widget widget,
   }) async {
     final initialSize = Size(
       constraints.hasBoundedWidth ? constraints.maxWidth : 2000,
@@ -239,24 +243,28 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
     await pumpWidget(
       tester,
-      MaterialApp(
+      FlutterGoldenTestWrapper(
         key: rootKey,
-        theme: theme.stripTextPackages(),
-        debugShowCheckedModeBanner: false,
-        supportedLocales: const [Locale('en')],
-        home: DefaultAssetBundle(
+        obscureFont: obscureFont,
+        globalConfigTheme: globalConfigTheme,
+        variantConfigTheme: variantConfigTheme,
+        child: DefaultAssetBundle(
           bundle: TestAssetBundle(),
           child: Material(
             type: MaterialType.transparency,
             child: Align(
               alignment: Alignment.topLeft,
-              child: ColoredBox(
-                color: theme.colorScheme.background,
-                child: Padding(
-                  key: childKey,
-                  padding: const EdgeInsets.all(8),
-                  child: widget,
-                ),
+              child: Builder(
+                builder: (context) {
+                  return ColoredBox(
+                    color: Theme.of(context).colorScheme.background,
+                    child: Padding(
+                      key: childKey,
+                      padding: const EdgeInsets.all(8),
+                      child: widget,
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -299,5 +307,99 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     ).paintSingleChild(renderObject);
 
     return layer.toImage(renderObject.paintBounds);
+  }
+}
+
+/// {@template _flutter_golden_test_wrapper}
+/// Similar to [MaterialApp], this widget is used to bootstrap a basic Flutter
+/// application for use in golden tests.
+///
+/// Using [MaterialApp] may introduce unexpected behavior in tests, and can
+/// cause localizations to not be loaded properly. This widget sets up the bare
+/// minimum to get the test to run.
+///
+/// Exposed for internal testing. Do not use this explicitly.
+/// {@endtemplate}
+@protected
+@visibleForTesting
+class FlutterGoldenTestWrapper extends StatelessWidget {
+  /// {@macro _flutter_golden_test_wrapper}
+  const FlutterGoldenTestWrapper({
+    super.key,
+    this.globalConfigTheme,
+    this.variantConfigTheme,
+    this.obscureFont = false,
+    required this.child,
+  });
+
+  /// The theme provided by the global [AlchemistConfig], if any.
+  ///
+  /// See [MaterialApp.theme] for more details.
+  final ThemeData? globalConfigTheme;
+
+  /// The theme provided by the current variant's [GoldensConfig], if any.
+  ///
+  /// See [MaterialApp.theme] for more details.
+  final ThemeData? variantConfigTheme;
+
+  /// Whether the default font family of the resolved theme should be set to an
+  /// obscured font.
+  ///
+  /// See [GoldenTestThemeDataExtensions.applyObscuredFontFamily] for more
+  /// details.
+  final bool obscureFont;
+
+  /// The root widget to wrap.
+  ///
+  /// See [MaterialApp.home] for more details.
+  final Widget child;
+
+  /// Resolves the appropriate theme to use for the current test.
+  ///
+  /// If [obscureFont] is true, the default font family of the resolved theme
+  /// will be set to an obscured font. (See
+  /// [GoldenTestThemeDataExtensions.applyObscuredFontFamily] for more details.)
+  ///
+  /// The returned theme will have its text packages stripped. (See
+  /// [GoldenTestThemeDataExtensions.stripTextPackages] for more details.)
+  ///
+  /// The algorithm is as follows:
+  /// - If a [variantConfigTheme] is provided (through a [GoldensConfig]), use
+  ///   it.
+  /// - Otherwise, if a theme is provided through an [InheritedTheme] (such as
+  ///   through an ancestor [MaterialApp] or [Theme] widget), use it.
+  /// - Otherwise, if a [globalConfigTheme] is provided through an
+  ///   [AlchemistConfig], use it.
+  /// - Otherwise, use the [ThemeData.fallback].
+  ThemeData _resolveThemeOf(BuildContext context) {
+    final hasInheritedTheme =
+        context.findAncestorWidgetOfExactType<Theme>() != null;
+    final inheritedTheme = hasInheritedTheme ? Theme.of(context) : null;
+
+    var resolvedTheme = variantConfigTheme ??
+        inheritedTheme ??
+        globalConfigTheme ??
+        ThemeData.fallback();
+
+    if (obscureFont) {
+      resolvedTheme = resolvedTheme.applyObscuredFontFamily();
+    }
+
+    return resolvedTheme.stripTextPackages();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery(
+      data: MediaQuery.maybeOf(context) ??
+          MediaQueryData.fromWindow(WidgetsBinding.instance.window),
+      child: Directionality(
+        textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
+        child: Theme(
+          data: _resolveThemeOf(context),
+          child: child,
+        ),
+      ),
+    );
   }
 }
