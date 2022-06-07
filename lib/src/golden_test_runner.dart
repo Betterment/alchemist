@@ -15,13 +15,6 @@ GoldenTestAdapter _goldenTestAdapter = defaultGoldenTestAdapter;
 GoldenTestAdapter get goldenTestAdapter => _goldenTestAdapter;
 set goldenTestAdapter(GoldenTestAdapter value) => _goldenTestAdapter = value;
 
-/// Font family used to render blocked/obscured text.
-///
-/// Even when replacing text with black rectangles, the same font
-/// must be used across the widget to avoid issues with different fonts
-/// having different character dimensions.
-const obscuredTextFontFamily = 'Ahem';
-
 /// {@template golden_test_runner}
 /// A utility class for running an individual golden test.
 /// {@endtemplate}
@@ -34,12 +27,13 @@ abstract class GoldenTestRunner {
     required WidgetTester tester,
     required Object goldenPath,
     required Widget widget,
+    required ThemeData? globalConfigTheme,
+    required ThemeData? variantConfigTheme,
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
-    ThemeData? theme,
     PumpAction pumpBeforeTest = onlyPumpAndSettle,
     PumpWidget pumpWidget = onlyPumpWidget,
     Interaction? whilePerforming,
@@ -59,12 +53,13 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     required WidgetTester tester,
     required Object goldenPath,
     required Widget widget,
+    ThemeData? globalConfigTheme,
+    ThemeData? variantConfigTheme,
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
-    ThemeData? theme,
     PumpAction pumpBeforeTest = onlyPumpAndSettle,
     PumpWidget pumpWidget = onlyPumpWidget,
     Interaction? whilePerforming,
@@ -74,7 +69,6 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       'Golden path must be a String or Uri.',
     );
 
-    final themeData = theme ?? ThemeData.light();
     final rootKey = FlutterGoldenTestAdapter.rootKey;
 
     final mementoDebugDisableShadows = debugDisableShadows;
@@ -82,20 +76,16 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
 
     try {
       await goldenTestAdapter.pumpGoldenTest(
-        tester: tester,
         rootKey: rootKey,
+        tester: tester,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
+        obscureFont: obscureText,
+        globalConfigTheme: globalConfigTheme,
+        variantConfigTheme: variantConfigTheme,
         pumpBeforeTest: pumpBeforeTest,
         pumpWidget: pumpWidget,
         widget: widget,
-        theme: themeData.copyWith(
-          textTheme: obscureText
-              ? themeData.textTheme.apply(
-                  fontFamily: obscuredTextFontFamily,
-                )
-              : themeData.textTheme,
-        ),
       );
 
       AsyncCallback? cleanup;

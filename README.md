@@ -46,6 +46,7 @@ Heavily inspired by [Ebay Motor's `golden_toolkit` package][golden_toolkit_pub],
   - [Testing and comparing](#testing-and-comparing)
 - [Advanced usage](#advanced-usage)
   - [About `AlchemistConfig`](#about-alchemistconfig)
+    - [Advanced theming](#advanced-theming)
   - [Using a custom config](#using-a-custom-config)
     - [For all tests](#for-all-tests)
     - [For single tests or groups](#for-single-tests-or-groups)
@@ -53,6 +54,8 @@ Heavily inspired by [Ebay Motor's `golden_toolkit` package][golden_toolkit_pub],
   - [Simulating gestures](#simulating-gestures)
   - [Automatic/custom image sizing](#automaticcustom-image-sizing)
   - [Custom pumping behavior](#custom-pumping-behavior)
+    - [Before tests](#before-tests)
+    - [Pumping widgets](#pumping-widgets)
   - [Custom text scale factor](#custom-text-scale-factor)
 - [Resources](#resources)
 
@@ -226,6 +229,17 @@ Alongside these arguments, the `PlatformGoldensConfig` contains an additional se
 | Field                         | Default       | Description                                                                                                                                                                                                       |
 | ----------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Set<HostPlatform> platforms` | All platforms | The platforms that platform golden tests should run on. By default, this is set to all platforms, meaning that a golden file will be generated if the current platform matches any platforms in the provided set. |
+
+##### Advanced theming
+
+In addition to the `theme` property on the `AlchemistConfig`, `CiGoldensConfig` and `PlatformGoldensConfig` classes, Alchemist also supports inherited theming. This means that any theme provided through a custom `pumpWidget` callback given to `goldenTest` will be used instead of the `theme` property on the `AlchemistConfig`.
+
+The theme resolver works as follows:
+
+1. If a theme is given to the platform-specific test (using `CiGoldensConfig` or `PlatformGoldensConfig`), it is used.
+2. Otherwise, if an inherited theme is provided by the `pumpWidget` callback (for example, through a `MaterialApp`), it is used.
+3. Otherwise, if a theme is provided in the `AlchemistConfig`, it is used.
+4. Otherwise, a default `ThemeData.fallback()` is used.
 
 #### Using a custom config
 
@@ -417,11 +431,19 @@ If the passed in constraints are tight, meaning the minimum width and height are
 
 #### Custom pumping behavior
 
+##### Before tests
+
 Before running every golden test, the `goldenTest` function will call its `pumpBeforeTest` function. This function is used to prime the widget tree prior to generating the golden test image. By default, the tree is pumped and settled (using `tester.pumpAndSettle()`), but in some scenarios, custom pumping behavior may be required.
 
 In these cases, a different `pumpBeforeTest` function can be provided to the `goldenTest` function. A set of predefined functions are included in this package, including `pumpOnce`, `pumpNTimes(n)`, and `onlyPumpAndSettle`, but custom functions can be created as well.
 
 Additionally, there is a `precacheImages` function, which can be passed to `pumpBeforeTest` in order to preload all images in the tree, so that they will appear in the generated golden files.
+
+##### Pumping widgets
+
+If desired, a custom `pumpWidget` function can be provided to any `goldenTest` call. This will override the default behavior and allow the widget being tested to be wrapped in any number of widgets, and then pumped.
+
+By default, Alchemist will simply pump the widget being tested using `tester.pumpWidget`. Note that the widget under test will always be wrapped in a set of bootstrapping widgets, regardless of the `pumpWidget` callback provided.
 
 #### Custom text scale factor
 
