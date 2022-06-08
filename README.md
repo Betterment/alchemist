@@ -19,6 +19,8 @@ Alchemist is a Flutter package that provides functions, extensions and documenta
 
 Heavily inspired by [Ebay Motor's `golden_toolkit` package][golden_toolkit_pub], Alchemist attempts to make writing and running golden tests in Flutter easier.
 
+> A short guide can be found in [example.md][example_markdown] file (or the [example tab on pub.dev][example_pub]). A full example project is available in the [example][example_dir] directory.
+
 ### Feature Overview
 
 - 🤖 [Separate local & CI tests](#about-readable-tests-vs-ci-tests)
@@ -134,7 +136,7 @@ flutter test --update-goldens
 
 #### Recommended Setup Guide
 
-For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide](./RECOMMENDED_SETUP_GUIDE.md).
+For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide][setup_guide].
 
 #### Test groups
 
@@ -471,3 +473,7 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 [alchemist_pull_request]: https://github.com/Betterment/alchemist/compare
 [platform_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/macos_list_tile_golden_file.png
 [ci_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/ci_list_tile_golden_file.png
+[example_markdown]: ./example/example.md
+[example_pub]: https://pub.dev/packages/alchemist/example
+[example_dir]: ./example/
+[setup_guide]: ./RECOMMENDED_SETUP_GUIDE.md
