@@ -1,0 +1,27 @@
+name: post-merge
+
+on:
+  push:
+    - branches: 'main'
+
+jobs:
+  upload_coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.0.0
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter packages get
+
+      - name: Run tests
+        run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: coverage/lcov.info
