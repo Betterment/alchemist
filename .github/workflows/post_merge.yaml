@@ -2,7 +2,8 @@ name: post-merge
 
 on:
   push:
-    - branches: 'main'
+    branches:
+      - 'main'
 
 jobs:
   upload_coverage:
