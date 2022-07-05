@@ -104,6 +104,11 @@ Future<void> loadFonts() async {
 /// See [pumpOnce], [pumpNTimes], [onlyPumpAndSettle], and [precacheImages] for
 /// more details.
 ///
+/// A custom [pumpWidget] function can be provided, which will override the
+/// default behavior and allow the widget being tested to be wrapped in any
+/// number of widgets, and then pumped. By default, it is set to simply pump the
+/// provided widget once. See [onlyPumpWidget] for more details.
+///
 /// The [whilePerforming] interaction, if provided, will be called with the
 /// [WidgetTester] to perform a desired interaction during the golden test.
 /// Built-in actions, such as [press] and [longPress] are available, which
@@ -154,20 +159,21 @@ Future<void> goldenTest(
   await goldenTestAdapter.testWidgets(
     description,
     (tester) async {
-      final goldensConfig = variant.currentConfig;
+      final variantConfig = variant.currentConfig;
       await goldenTestRunner.run(
         tester: tester,
-        goldenPath: await goldensConfig.filePathResolver(
+        goldenPath: await variantConfig.filePathResolver(
           fileName,
-          goldensConfig.environmentName,
+          variantConfig.environmentName,
         ),
         widget: builder(),
+        globalConfigTheme: config.theme,
+        variantConfigTheme: variantConfig.theme,
         forceUpdate: config.forceUpdateGoldenFiles,
-        obscureText: goldensConfig.obscureText,
-        renderShadows: goldensConfig.renderShadows,
+        obscureText: variantConfig.obscureText,
+        renderShadows: variantConfig.renderShadows,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
-        theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
         pumpBeforeTest: pumpBeforeTest,
         pumpWidget: pumpWidget,
         whilePerforming: whilePerforming,

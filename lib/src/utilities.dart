@@ -72,6 +72,13 @@ to avoid unnecessary overhead.''',
 /// Used internally by [goldenTest].
 @protected
 extension GoldenTestThemeDataExtensions on ThemeData {
+  /// Font family used to render blocked/obscured text.
+  ///
+  /// Even when replacing text with black rectangles, the same font
+  /// must be used across the widget to avoid issues with different fonts
+  /// having different character dimensions.
+  static const obscuredTextFontFamily = 'Ahem';
+
   /// Strips all text packages from this theme's [ThemeData.textTheme] for use
   /// in golden tests using [GoldenTestTextStyleExtensions.stripPackage].
   ///
@@ -101,6 +108,20 @@ extension GoldenTestThemeDataExtensions on ThemeData {
       dialogTheme: dialogTheme.copyWith(
         titleTextStyle: dialogTheme.titleTextStyle?.stripPackage(),
         contentTextStyle: dialogTheme.contentTextStyle?.stripPackage(),
+      ),
+    );
+  }
+
+  /// Replaces all fonts in the [textTheme] with an obscured font family.
+  ///
+  /// See [obscuredTextFontFamily] for more details.
+  ///
+  /// Only used internally and should not be used by consumers.
+  @protected
+  ThemeData applyObscuredFontFamily() {
+    return copyWith(
+      textTheme: textTheme.apply(
+        fontFamily: obscuredTextFontFamily,
       ),
     );
   }
