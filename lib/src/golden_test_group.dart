@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:alchemist/alchemist.dart';
+import 'package:alchemist/src/golden_test_scenario_constraints.dart';
 import 'package:flutter/material.dart';
 
 /// A function that receives the index of a column in a table and returns the
@@ -29,6 +30,12 @@ typedef ColumnWidthBuilder = TableColumnWidth? Function(int columns);
 /// Returning `null` will tell the table to use the default column width for the
 /// column at the given index.
 ///
+/// The [scenarioConstraints] parameter, if provided, will be applied to
+/// the children of each [GoldenTestScenario] in [children]. Otherwise, the
+/// children will only be constrained based on each column's width according
+/// to the [columnWidthBuilder], and unconstrained vertically. Note: the
+/// constraints will not apply to children that aren't [GoldenTestScenario]s.
+///
 /// See also:
 /// * [GoldenTestScenario], which describes a single test scenario or state of
 ///   widget that should be included in a golden test group.
@@ -40,6 +47,7 @@ class GoldenTestGroup extends StatelessWidget {
     super.key,
     this.columns,
     this.columnWidthBuilder,
+    this.scenarioConstraints,
     required this.children,
   });
 
@@ -63,6 +71,17 @@ class GoldenTestGroup extends StatelessWidget {
   ///
   /// See [Table.columnWidths] for details.
   final ColumnWidthBuilder? columnWidthBuilder;
+
+  /// An optional set of constraints that will be applied to the child of each
+  /// [GoldenTestScenario] in the [children].
+  ///
+  /// If set, every child will be constrained according to these constraints.
+  /// Otherwise, the children will only be constrained based on each column's
+  /// width according to the [columnWidthBuilder].
+  ///
+  /// Note: the constraints will not apply to any child that isn't a
+  /// [GoldenTestScenario].
+  final BoxConstraints? scenarioConstraints;
 
   /// The scenarios to display in this test group.
   ///
@@ -93,26 +112,29 @@ class GoldenTestGroup extends StatelessWidget {
       }
     }
 
-    return Table(
-      defaultColumnWidth: const IntrinsicColumnWidth(),
-      columnWidths: columnWidths,
-      border: TableBorder.symmetric(
-        inside: BorderSide(
-          color: Colors.black.withOpacity(0.3),
-        ),
-      ),
-      children: [
-        for (int i = 0; i < _effectiveRows; i++)
-          TableRow(
-            children: [
-              for (int j = 0; j < _effectiveColumns; j++)
-                if (i * _effectiveColumns + j < children.length)
-                  children[i * _effectiveColumns + j]
-                else
-                  const SizedBox.shrink(),
-            ],
+    return GoldenTestScenarioConstraints(
+      constraints: scenarioConstraints,
+      child: Table(
+        defaultColumnWidth: const IntrinsicColumnWidth(),
+        columnWidths: columnWidths,
+        border: TableBorder.symmetric(
+          inside: BorderSide(
+            color: Colors.black.withOpacity(0.3),
           ),
-      ],
+        ),
+        children: [
+          for (int i = 0; i < _effectiveRows; i++)
+            TableRow(
+              children: [
+                for (int j = 0; j < _effectiveColumns; j++)
+                  if (i * _effectiveColumns + j < children.length)
+                    children[i * _effectiveColumns + j]
+                  else
+                    const SizedBox.shrink(),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }

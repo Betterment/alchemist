@@ -105,6 +105,10 @@ extension GoldenTestThemeDataExtensions on ThemeData {
         extendedTextStyle:
             floatingActionButtonTheme.extendedTextStyle?.stripPackage(),
       ),
+      dialogTheme: dialogTheme.copyWith(
+        titleTextStyle: dialogTheme.titleTextStyle?.stripPackage(),
+        contentTextStyle: dialogTheme.contentTextStyle?.stripPackage(),
+      ),
     );
   }
 
