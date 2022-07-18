@@ -19,6 +19,8 @@ Alchemist is a Flutter package that provides functions, extensions and documenta
 
 Heavily inspired by [Ebay Motor's `golden_toolkit` package][golden_toolkit_pub], Alchemist attempts to make writing and running golden tests in Flutter easier.
 
+> A short guide can be found in [example.md][example_markdown] file (or the [example tab on pub.dev][example_pub]). A full example project is available in the [example][example_dir] directory.
+
 ### Feature Overview
 
 - 🤖 [Separate local & CI tests](#about-readable-tests-vs-ci-tests)
@@ -44,6 +46,7 @@ Heavily inspired by [Ebay Motor's `golden_toolkit` package][golden_toolkit_pub],
   - [Testing and comparing](#testing-and-comparing)
 - [Advanced usage](#advanced-usage)
   - [About `AlchemistConfig`](#about-alchemistconfig)
+    - [Advanced theming](#advanced-theming)
   - [Using a custom config](#using-a-custom-config)
     - [For all tests](#for-all-tests)
     - [For single tests or groups](#for-single-tests-or-groups)
@@ -51,6 +54,8 @@ Heavily inspired by [Ebay Motor's `golden_toolkit` package][golden_toolkit_pub],
   - [Simulating gestures](#simulating-gestures)
   - [Automatic/custom image sizing](#automaticcustom-image-sizing)
   - [Custom pumping behavior](#custom-pumping-behavior)
+    - [Before tests](#before-tests)
+    - [Pumping widgets](#pumping-widgets)
   - [Custom text scale factor](#custom-text-scale-factor)
 - [Resources](#resources)
 
@@ -92,9 +97,8 @@ void main() {
     goldenTest(
       'renders correctly',
       fileName: 'list_tile',
-      constraints: const BoxConstraints(maxWidth: 600),
       builder: () => GoldenTestGroup(
-        columnWidthBuilder: (_) => const FlexColumnWidth(),
+        scenarioConstraints: const BoxConstraints(maxWidth: 600),
         children: [
           GoldenTestScenario(
             name: 'with title',
@@ -131,7 +135,7 @@ flutter test --update-goldens
 
 #### Recommended Setup Guide
 
-For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide](./RECOMMENDED_SETUP_GUIDE.md).
+For a more detailed explanation on how Betterment uses Alchemist, read the included [Recommended Setup Guide][setup_guide].
 
 #### Test groups
 
@@ -140,7 +144,7 @@ While the `goldenTest` function can take in and performs tests on any arbitrary 
 Alongside the `children` parameter, `GoldenTestGroup` contains two additional properties that can be used to customize the resulting table view:
 
 | Field                                    | Default | Description                                                                                                                                                |
-|------------------------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `int? columns`                           | `null`  | The amount of columns in the grid. If left unset, this will be determined based on the amount of children.                                                 |
 | `ColumnWidthBuilder? columnWidthBuilder` | `null`  | A function that returns the width for each column. If left unset, the width of each column is determined by the width of the widest widget in that column. |
 
@@ -203,7 +207,7 @@ All tests make use of the `AlchemistConfig` class. This configuration object con
 A default `AlchemistConfig` is provided for you, and contains the following settings:
 
 | Field                                         | Default                         | Description                                                                                        |
-|-----------------------------------------------|---------------------------------|----------------------------------------------------------------------------------------------------|
+| --------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `bool forceUpdateGoldenFiles`                 | `false`                         | If `true`, the golden files will always be regenerated, regardless of the `--update-goldens` flag. |
 | `ThemeData? theme`                            | `null`                          | The theme to use for all tests. If `null`, the default `ThemeData.light()` will be used.           |
 | `PlatformGoldensConfig platformGoldensConfig` | `const PlatformGoldensConfig()` | The configuration to use when running readable golden tests on a non-CI host.                      |
@@ -211,19 +215,30 @@ A default `AlchemistConfig` is provided for you, and contains the following sett
 
 Both the `PlatformGoldensConfig` and `CiGoldensConfig` classes contain a number of settings that can be used to customize the behavior of the tests. These are the settings both of these objects allow you to customize:
 
-| Field                                      | Default                      | Description                                                                                                                                                                                                                                                                                                                                                   |
-|--------------------------------------------|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `bool enabled`                             | `true`                       | Indicates if this type of test should run. If set to `false`, this type of test is never allowed to run. Defaults to `true`.                                                                                                                                                                                                                                  |
-| `bool obscureText` | `true` for CI, `false` for platform | Indicates if the text in the rendered widget should be obscured by colored rectangles. This is useful for circumventing issues with Flutter's font rendering between host platforms. |
-| `bool renderShadows` | `false` for CI, `true` for platform | Indicates if shadows should actually be rendered, or if they should be replaced by opaque colors. This is useful because shadow rendering can be inconsistent between test runs. |
-| `FilePathResolver filePathResolver`        | `<_defaultFilePathResolver>` | A function that resolves the path to the golden file, relative to the test that generates it. By default, CI golden test files are placed in `goldens/ci/`, and readable golden test files are placed in `goldens/`.                                                                                                                                          |
-| `ThemeData? theme`                         | `null`                       | The theme to use for this type of test. If `null`, the enclosing `AlchemistConfig`'s `theme` will be used, or `ThemeData.light()` if that is also `null`. _Note that CI tests are always run using the Ahem font family, which is a font that solely renders square characters. This is done to ensure that CI tests are always consistent across platforms._ |
+| Field                               | Default                             | Description                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bool enabled`                      | `true`                              | Indicates if this type of test should run. If set to `false`, this type of test is never allowed to run. Defaults to `true`.                                                                                                                                                                                                                                  |
+| `bool obscureText`                  | `true` for CI, `false` for platform | Indicates if the text in the rendered widget should be obscured by colored rectangles. This is useful for circumventing issues with Flutter's font rendering between host platforms.                                                                                                                                                                          |
+| `bool renderShadows`                | `false` for CI, `true` for platform | Indicates if shadows should actually be rendered, or if they should be replaced by opaque colors. This is useful because shadow rendering can be inconsistent between test runs.                                                                                                                                                                              |
+| `FilePathResolver filePathResolver` | `<_defaultFilePathResolver>`        | A function that resolves the path to the golden file, relative to the test that generates it. By default, CI golden test files are placed in `goldens/ci/`, and readable golden test files are placed in `goldens/`.                                                                                                                                          |
+| `ThemeData? theme`                  | `null`                              | The theme to use for this type of test. If `null`, the enclosing `AlchemistConfig`'s `theme` will be used, or `ThemeData.light()` if that is also `null`. _Note that CI tests are always run using the Ahem font family, which is a font that solely renders square characters. This is done to ensure that CI tests are always consistent across platforms._ |
 
 Alongside these arguments, the `PlatformGoldensConfig` contains an additional setting:
 
 | Field                         | Default       | Description                                                                                                                                                                                                       |
-|-------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Set<HostPlatform> platforms` | All platforms | The platforms that platform golden tests should run on. By default, this is set to all platforms, meaning that a golden file will be generated if the current platform matches any platforms in the provided set. |
+
+##### Advanced theming
+
+In addition to the `theme` property on the `AlchemistConfig`, `CiGoldensConfig` and `PlatformGoldensConfig` classes, Alchemist also supports inherited theming. This means that any theme provided through a custom `pumpWidget` callback given to `goldenTest` will be used instead of the `theme` property on the `AlchemistConfig`.
+
+The theme resolver works as follows:
+
+1. If a theme is given to the platform-specific test (using `CiGoldensConfig` or `PlatformGoldensConfig`), it is used.
+2. Otherwise, if an inherited theme is provided by the `pumpWidget` callback (for example, through a `MaterialApp`), it is used.
+3. Otherwise, if a theme is provided in the `AlchemistConfig`, it is used.
+4. Otherwise, a default `ThemeData.fallback()` is used.
 
 #### Using a custom config
 
@@ -415,11 +430,19 @@ If the passed in constraints are tight, meaning the minimum width and height are
 
 #### Custom pumping behavior
 
+##### Before tests
+
 Before running every golden test, the `goldenTest` function will call its `pumpBeforeTest` function. This function is used to prime the widget tree prior to generating the golden test image. By default, the tree is pumped and settled (using `tester.pumpAndSettle()`), but in some scenarios, custom pumping behavior may be required.
 
 In these cases, a different `pumpBeforeTest` function can be provided to the `goldenTest` function. A set of predefined functions are included in this package, including `pumpOnce`, `pumpNTimes(n)`, and `onlyPumpAndSettle`, but custom functions can be created as well.
 
 Additionally, there is a `precacheImages` function, which can be passed to `pumpBeforeTest` in order to preload all images in the tree, so that they will appear in the generated golden files.
+
+##### Pumping widgets
+
+If desired, a custom `pumpWidget` function can be provided to any `goldenTest` call. This will override the default behavior and allow the widget being tested to be wrapped in any number of widgets, and then pumped.
+
+By default, Alchemist will simply pump the widget being tested using `tester.pumpWidget`. Note that the widget under test will always be wrapped in a set of bootstrapping widgets, regardless of the `pumpWidget` callback provided.
 
 #### Custom text scale factor
 
@@ -449,3 +472,7 @@ To set a default scale factor for all scenarios within a test, the `goldenTest` 
 [alchemist_pull_request]: https://github.com/Betterment/alchemist/compare
 [platform_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/macos_list_tile_golden_file.png
 [ci_test_image]: https://raw.githubusercontent.com/Betterment/alchemist/main/assets/readme/ci_list_tile_golden_file.png
+[example_markdown]: ./example/example.md
+[example_pub]: https://pub.dev/packages/alchemist/example
+[example_dir]: ./example/
+[setup_guide]: ./RECOMMENDED_SETUP_GUIDE.md

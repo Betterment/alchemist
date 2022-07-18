@@ -5,6 +5,7 @@ import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_group.dart';
 import 'package:alchemist/src/golden_test_scenario.dart';
 import 'package:alchemist/src/pumps.dart';
+import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,6 +24,32 @@ void main() {
   setUpAll(() {
     registerFallbackValue(MockRenderObject());
   });
+
+  ThemeData createIdentifiableTheme(String key) {
+    final base = ThemeData.fallback();
+    return base.copyWith(
+      textTheme: base.textTheme.copyWith(
+        bodyMedium: base.textTheme.bodyMedium!.copyWith(
+          debugLabel: '<!$key!>',
+        ),
+      ),
+    );
+  }
+
+  String? identifyTheme(ThemeData theme) {
+    final label = theme.textTheme.bodyMedium!.debugLabel!;
+    final keyStartIndex = label.indexOf('<!');
+    if (keyStartIndex == -1) {
+      return null;
+    }
+    final keyEndIndex = label.indexOf('!>');
+    return label.substring(keyStartIndex + 2, keyEndIndex);
+  }
+
+  final variantConfigTheme = createIdentifiableTheme('variantTheme');
+  final globalConfigTheme = createIdentifiableTheme('globalTheme');
+  final contextProvidedTheme = createIdentifiableTheme('contextTheme');
+
   group('overrides', () {
     group('goldenFileExpectationFn', () {
       MatchesGoldenFileInvocation<void> customExpectation(Object a, Object b) =>
@@ -216,7 +243,9 @@ void main() {
             tester: tester,
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
-            theme: ThemeData.light(),
+            obscureFont: false,
+            globalConfigTheme: null,
+            variantConfigTheme: null,
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
@@ -227,43 +256,17 @@ void main() {
       );
 
       testWidgets(
-        'sets surface size to constraints '
-        'when constraints are tight',
+        'resizes surface to fit the tested widget',
         (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
-          const providedSize = Size(1000, 1000);
-
-          await adapter.pumpGoldenTest(
-            tester: tester,
-            rootKey: rootKey,
-            textScaleFactor: 1,
-            constraints: BoxConstraints.tight(providedSize),
-            theme: ThemeData.light(),
-            pumpBeforeTest: onlyPumpAndSettle,
-            pumpWidget: onlyPumpWidget,
-            widget: buildGroup(),
-          );
-
-          expect(tester.binding.window.physicalSize, providedSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, providedSize);
-        },
-      );
-
-      testWidgets(
-        'attempts to resize surface to fit '
-        'the group when constraints are loose',
-        (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
           final groupKey = FlutterGoldenTestAdapter.childKey;
 
           await adapter.pumpGoldenTest(
             tester: tester,
-            rootKey: rootKey,
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
-            theme: ThemeData.light(),
+            obscureFont: false,
+            globalConfigTheme: null,
+            variantConfigTheme: null,
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
@@ -272,81 +275,6 @@ void main() {
           final targetSize = tester.getSize(find.byKey(groupKey));
 
           expect(tester.binding.window.physicalSize, targetSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, targetSize);
-        },
-      );
-
-      testWidgets(
-        'does not resize surface to a '
-        'smaller size than the minimum size',
-        (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
-          final groupKey = FlutterGoldenTestAdapter.childKey;
-
-          const minSize = Size(1000, 1000);
-
-          await adapter.pumpGoldenTest(
-            tester: tester,
-            rootKey: rootKey,
-            textScaleFactor: 1,
-            constraints: BoxConstraints(
-              minWidth: minSize.width,
-              minHeight: minSize.height,
-            ),
-            theme: ThemeData.light(),
-            pumpBeforeTest: onlyPumpAndSettle,
-            pumpWidget: onlyPumpWidget,
-            widget: buildGroup(),
-          );
-
-          final groupSize = tester.getSize(find.byKey(groupKey));
-          // Make sure the test is set up properly so that the logic can be
-          // asserted correctly. This test is useless if the group's size is
-          // larger than the minimum size.
-          if (groupSize.width > minSize.width ||
-              groupSize.height > minSize.height) {
-            fail(
-              'The size of the rendered group is larger than the minimum '
-              'size constraint passed to the pumpGoldenTest function, '
-              'making this test useless.',
-            );
-          }
-
-          expect(tester.binding.window.physicalSize, minSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, minSize);
-        },
-      );
-
-      testWidgets(
-        'does not resize surface to a '
-        'larger size than the maximum size',
-        (tester) async {
-          final rootKey = FlutterGoldenTestAdapter.rootKey;
-
-          const maxSize = Size(150, 150);
-
-          await adapter.pumpGoldenTest(
-            tester: tester,
-            rootKey: rootKey,
-            textScaleFactor: 1,
-            constraints: BoxConstraints(
-              maxWidth: maxSize.width,
-              maxHeight: maxSize.height,
-            ),
-            theme: ThemeData.light(),
-            pumpBeforeTest: onlyPumpAndSettle,
-            pumpWidget: onlyPumpWidget,
-            widget: buildGroup(),
-          );
-
-          expect(tester.binding.window.physicalSize, maxSize);
-
-          final rootWidgetSize = tester.getSize(find.byKey(rootKey));
-          expect(rootWidgetSize, maxSize);
         },
       );
 
@@ -355,7 +283,9 @@ void main() {
           tester: tester,
           textScaleFactor: 2,
           constraints: const BoxConstraints(),
-          theme: ThemeData.light(),
+          obscureFont: false,
+          globalConfigTheme: null,
+          variantConfigTheme: null,
           pumpBeforeTest: onlyPumpAndSettle,
           pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
@@ -365,53 +295,44 @@ void main() {
       });
 
       testWidgets(
-        'sets theme to provided value '
-        'with package names stripped',
+        'renders FlutterGoldenTestWrapper with provided '
+        'obscure font, themes and child arguments',
         (tester) async {
-          final theme = ThemeData(
-            primaryColor: Colors.blue,
-            textTheme: const TextTheme(
-              bodyText2: TextStyle(
-                fontFamily: 'packages/some_package/Roboto',
-              ),
-            ),
-          );
-
           await adapter.pumpGoldenTest(
             tester: tester,
             textScaleFactor: 1,
             constraints: const BoxConstraints(),
-            theme: theme,
+            obscureFont: true,
+            globalConfigTheme: globalConfigTheme,
+            variantConfigTheme: variantConfigTheme,
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
           );
 
+          expect(find.byType(FlutterGoldenTestWrapper), findsOneWidget);
           expect(
-            tester.widget(find.byType(MaterialApp)),
-            isA<MaterialApp>().having(
-              (w) => w.theme,
-              'theme',
-              isA<ThemeData>()
-                  .having(
-                    (t) => t.primaryColor,
-                    'primaryColor',
-                    Colors.blue,
-                  )
-                  .having(
-                    (t) => t.textTheme,
-                    'textTheme',
-                    isA<TextTheme>().having(
-                      (t) => t.bodyText2,
-                      'bodyText2',
-                      isA<TextStyle>().having(
-                        (t) => t.fontFamily,
-                        'fontFamily',
-                        'Roboto',
-                      ),
-                    ),
+            tester.widget(find.byType(FlutterGoldenTestWrapper)),
+            isA<FlutterGoldenTestWrapper>()
+                .having((w) => w.obscureFont, 'obscureFont', isTrue)
+                .having(
+                  (w) => w.globalConfigTheme,
+                  'globalConfigTheme',
+                  isA<ThemeData>().having(
+                    identifyTheme,
+                    'theme key',
+                    equals(identifyTheme(globalConfigTheme)),
                   ),
-            ),
+                )
+                .having(
+                  (w) => w.variantConfigTheme,
+                  'variantConfigTheme',
+                  isA<ThemeData>().having(
+                    identifyTheme,
+                    'theme key',
+                    equals(identifyTheme(variantConfigTheme)),
+                  ),
+                ),
           );
         },
       );
@@ -422,7 +343,9 @@ void main() {
           tester: tester,
           textScaleFactor: 2,
           constraints: const BoxConstraints(),
-          theme: ThemeData.light(),
+          obscureFont: false,
+          globalConfigTheme: null,
+          variantConfigTheme: null,
           pumpBeforeTest: (_) async => pumpBeforeTestCalled = true,
           pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
@@ -437,7 +360,9 @@ void main() {
           tester: tester,
           textScaleFactor: 2,
           constraints: const BoxConstraints(),
-          theme: ThemeData.light(),
+          obscureFont: false,
+          globalConfigTheme: null,
+          variantConfigTheme: null,
           pumpBeforeTest: onlyPumpAndSettle,
           pumpWidget: (tester, widget) async {
             await onlyPumpWidget(tester, widget);
@@ -448,6 +373,256 @@ void main() {
 
         expect(pumpWidgetCalled, isTrue);
       });
+    });
+  });
+
+  group('FlutterGoldenTestWrapper', () {
+    testWidgets('renders child', (tester) async {
+      const key = Key('child');
+
+      await tester.pumpWidget(
+        const FlutterGoldenTestWrapper(
+          child: Text(
+            'test',
+            key: key,
+          ),
+        ),
+      );
+
+      expect(find.byKey(key), findsOneWidget);
+    });
+
+    testWidgets(
+      'renders a MediaQuery '
+      'based on the current window',
+      (tester) async {
+        await tester.pumpWidget(
+          const FlutterGoldenTestWrapper(
+            child: Text('test'),
+          ),
+        );
+
+        final windowMediaQuery =
+            MediaQueryData.fromWindow(tester.binding.window);
+
+        expect(find.byType(MediaQuery), findsOneWidget);
+        expect(
+          tester.widget(find.byType(MediaQuery)),
+          isA<MediaQuery>().having(
+            (m) => m.data,
+            'data',
+            isA<MediaQueryData>().having(
+              (m) => m.size,
+              'size',
+              windowMediaQuery.size,
+            ),
+          ),
+        );
+      },
+    );
+
+    testWidgets(
+        'renders a Directionality '
+        'with text direction set to LTR', (tester) async {
+      await tester.pumpWidget(
+        const FlutterGoldenTestWrapper(
+          child: Text('test'),
+        ),
+      );
+
+      expect(find.byType(Directionality), findsOneWidget);
+      expect(
+        tester.widget(find.byType(Directionality)),
+        isA<Directionality>().having(
+          (d) => d.textDirection,
+          'textDirection',
+          TextDirection.ltr,
+        ),
+      );
+    });
+
+    group('provides theme to child that', () {
+      Finder findWrapperTheme() {
+        return find.descendant(
+          of: find.byType(FlutterGoldenTestWrapper),
+          matching: find.byType(Theme),
+        );
+      }
+
+      testWidgets(
+        'is set to variant theme when provided',
+        (tester) async {
+          await tester.pumpWidget(
+            Theme(
+              data: contextProvidedTheme,
+              child: FlutterGoldenTestWrapper(
+                variantConfigTheme: variantConfigTheme,
+                globalConfigTheme: globalConfigTheme,
+                child: const Text('test'),
+              ),
+            ),
+          );
+
+          expect(
+            tester.widget(findWrapperTheme()),
+            isA<Theme>().having(
+              (w) => w.data,
+              'data',
+              isA<ThemeData>().having(
+                identifyTheme,
+                'theme key',
+                equals(identifyTheme(variantConfigTheme)),
+              ),
+            ),
+          );
+        },
+      );
+
+      testWidgets(
+        'is set to inherited theme when provided',
+        (tester) async {
+          await tester.pumpWidget(
+            Theme(
+              data: contextProvidedTheme,
+              child: FlutterGoldenTestWrapper(
+                // Do not provide a variant theme.
+                globalConfigTheme: globalConfigTheme,
+                child: const Text('test'),
+              ),
+            ),
+          );
+
+          expect(
+            tester.widget(findWrapperTheme()),
+            isA<Theme>().having(
+              (w) => w.data,
+              'data',
+              isA<ThemeData>().having(
+                identifyTheme,
+                'theme key',
+                equals(identifyTheme(contextProvidedTheme)),
+              ),
+            ),
+          );
+        },
+      );
+
+      testWidgets(
+        'is set to global theme when provided',
+        (tester) async {
+          await tester.pumpWidget(
+            // Do not provide an inherited theme.
+            FlutterGoldenTestWrapper(
+              // Do not provide a variant theme.
+              globalConfigTheme: globalConfigTheme,
+              child: const Text('test'),
+            ),
+          );
+
+          expect(
+            tester.widget(findWrapperTheme()),
+            isA<Theme>().having(
+              (w) => w.data,
+              'data',
+              isA<ThemeData>().having(
+                identifyTheme,
+                'theme key',
+                equals(identifyTheme(globalConfigTheme)),
+              ),
+            ),
+          );
+        },
+      );
+
+      testWidgets(
+        'is set to fallback when no theme is provided',
+        (tester) async {
+          await tester.pumpWidget(
+            // Do not provide an inherited theme.
+            const FlutterGoldenTestWrapper(
+              // Do not provide a variant theme.
+              // Do not provide a global theme.
+              child: Text('test'),
+            ),
+          );
+
+          expect(
+            tester.widget(findWrapperTheme()),
+            isA<Theme>().having(
+              (w) => w.data,
+              'data',
+              equals(ThemeData.fallback()),
+            ),
+          );
+        },
+      );
+
+      testWidgets(
+        'has its text obscured '
+        'when obscureFont is true',
+        (tester) async {
+          const providedFontFamily = 'providedFontFamily';
+          const expectedFontFamily =
+              GoldenTestThemeDataExtensions.obscuredTextFontFamily;
+
+          await tester.pumpWidget(
+            Theme(
+              data: ThemeData(
+                fontFamily: providedFontFamily,
+              ),
+              child: const FlutterGoldenTestWrapper(
+                obscureFont: true,
+                child: Text('test'),
+              ),
+            ),
+          );
+
+          expect(
+            tester.widget(findWrapperTheme()),
+            isA<Theme>().having(
+              (w) => w.data,
+              'data',
+              isA<ThemeData>().having(
+                (theme) => theme.textTheme.bodyMedium!.fontFamily,
+                'textTheme.bodyMedium.fontFamily',
+                equals(expectedFontFamily),
+              ),
+            ),
+          );
+        },
+      );
+
+      testWidgets(
+        'has its text packages stripped',
+        (tester) async {
+          const fontFamilyName = 'fontFamilyName';
+          const providedFontFamily = 'packages/test_package/$fontFamilyName';
+
+          await tester.pumpWidget(
+            Theme(
+              data: ThemeData(
+                fontFamily: providedFontFamily,
+              ),
+              child: const FlutterGoldenTestWrapper(
+                child: Text('test'),
+              ),
+            ),
+          );
+
+          expect(
+            tester.widget(findWrapperTheme()),
+            isA<Theme>().having(
+              (w) => w.data,
+              'data',
+              isA<ThemeData>().having(
+                (theme) => theme.textTheme.bodyMedium!.fontFamily,
+                'textTheme.bodyMedium.fontFamily',
+                equals(fontFamilyName),
+              ),
+            ),
+          );
+        },
+      );
     });
   });
 }

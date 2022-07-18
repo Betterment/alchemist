@@ -4,6 +4,7 @@ import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
 import 'package:alchemist/src/capture_animation.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
+import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,7 +37,7 @@ Future<void> loadFonts() async {
       .map((dynamic x) => x as Map<String, dynamic>);
 
   for (final entry in fontManifest) {
-    final family = entry['family'] as String;
+    final family = (entry['family'] as String).stripFontFamilyPackageName();
 
     final fontAssets = [
       for (final fontAssetEntry in entry['fonts'] as List<dynamic>)
@@ -88,21 +89,22 @@ Future<void> _runGoldenTest(
   await goldenTestAdapter.testWidgets(
     description,
     (tester) async {
-      final goldensConfig = variant.currentConfig;
+      final variantConfig = variant.currentConfig;
       await goldenTestRunner.run(
         tester: tester,
-        goldenPath: await goldensConfig.filePathResolver(
+        goldenPath: await variantConfig.filePathResolver(
           fileName,
-          goldensConfig.environmentName,
+          variantConfig.environmentName,
         ),
         widget: builder(),
         getImage: getImageFn,
+        globalConfigTheme: config.theme,
+        variantConfigTheme: variantConfig.theme,
         forceUpdate: config.forceUpdateGoldenFiles,
-        obscureText: goldensConfig.obscureText,
-        renderShadows: goldensConfig.renderShadows,
+        obscureText: variantConfig.obscureText,
+        renderShadows: variantConfig.renderShadows,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
-        theme: goldensConfig.theme ?? config.theme ?? ThemeData.light(),
         pumpBeforeTest: pumpBeforeTest,
         pumpWidget: pumpWidget,
         whilePerforming: whilePerforming,
@@ -150,16 +152,13 @@ Future<void> _runGoldenTest(
 /// The [textScaleFactor], if provided, sets the text scale size (usually in
 /// a range from 1 to 3).
 ///
-/// The [constraints] tell the builder how large the total surface of the
-/// widget should be. Commonly set to
-/// `BoxConstraints.loose(Size(maxWidth, maxHeight))` to limit the maximum
-/// size of the widget, while allowing it to be smaller if the content allows
-/// for it.
+/// The [constraints] tell the builder how large the rendered widget should be.
+/// Commonly set to `BoxConstraints.loose(Size(maxWidth, maxHeight))` to limit
+/// the maximum size of the widget, while allowing it to be smaller if the
+/// content allows for it.
 ///
 /// By default, no constraints are passed, but this can be
-/// adjusted to allow for more precise rendering of golden files. If the
-/// max width is unbounded, a default width value will be used as initial
-/// surface size. The same applies to the max height.
+/// adjusted to allow for more precise rendering of golden files.
 ///
 /// The [pumpBeforeTest] function will be called with the [WidgetTester] to
 /// prime the widget tree before golden evaluation. By default, it is set to
@@ -168,6 +167,11 @@ Future<void> _runGoldenTest(
 /// pump behavior.
 /// See [pumpOnce], [pumpNTimes], [onlyPumpAndSettle], and [precacheImages] for
 /// more details.
+///
+/// A custom [pumpWidget] function can be provided, which will override the
+/// default behavior and allow the widget being tested to be wrapped in any
+/// number of widgets, and then pumped. By default, it is set to simply pump the
+/// provided widget once. See [onlyPumpWidget] for more details.
 ///
 /// The [whilePerforming] interaction, if provided, will be called with the
 /// [WidgetTester] to perform a desired interaction during the golden test.

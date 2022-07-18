@@ -1,4 +1,5 @@
 import 'package:alchemist/alchemist.dart';
+import 'package:alchemist/src/golden_test_scenario_constraints.dart';
 import 'package:flutter/material.dart';
 
 /// An internal [WidgetBuilder] that builds the widget it's given.
@@ -25,6 +26,7 @@ class GoldenTestScenario extends StatelessWidget {
     super.key,
     required this.name,
     required Widget child,
+    this.constraints,
   }) : builder = _build(child);
 
   /// Creates a [GoldenTestScenario] with a [builder] function that allows
@@ -33,6 +35,7 @@ class GoldenTestScenario extends StatelessWidget {
     super.key,
     required this.name,
     required this.builder,
+    this.constraints,
   });
 
   /// Creates a [GoldenTestScenario] with a custom [textScaleFactor] that
@@ -42,6 +45,7 @@ class GoldenTestScenario extends StatelessWidget {
     required this.name,
     required double textScaleFactor,
     required Widget child,
+    this.constraints,
   }) : builder = _build(
           _CustomTextScaleFactor(
             textScaleFactor: textScaleFactor,
@@ -61,6 +65,9 @@ class GoldenTestScenario extends StatelessWidget {
   /// The builder function that builds the widget to be displayed.
   final WidgetBuilder builder;
 
+  /// Constraints to apply to the widget built by [builder]
+  final BoxConstraints? constraints;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -77,8 +84,13 @@ class GoldenTestScenario extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Builder(
-            builder: builder,
+          ConstrainedBox(
+            constraints: constraints ??
+                GoldenTestScenarioConstraints.maybeOf(context) ??
+                const BoxConstraints(),
+            child: Builder(
+              builder: builder,
+            ),
           ),
         ],
       ),

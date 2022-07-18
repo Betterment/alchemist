@@ -67,7 +67,7 @@ Future<void> precacheImages(WidgetTester tester) async {
 }
 
 /// A custom [PumpWidget] that pumps the widget tree before golden
-/// evaluation.
+/// evaluation, analogous to [WidgetTester.pumpWidget].
 ///
 /// See [PumpWidget] for more details.
 Future<void> onlyPumpWidget(WidgetTester tester, Widget widget) {
