@@ -6,6 +6,8 @@ import 'package:alchemist/src/golden_test_group.dart';
 import 'package:alchemist/src/golden_test_scenario.dart';
 import 'package:alchemist/src/pumps.dart';
 import 'package:alchemist/src/utilities.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -18,6 +20,26 @@ class MockRenderObject extends Mock implements RenderObject {
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'FakeRenderObject';
   }
+}
+
+class FakeWidgetsLocalizations extends DefaultWidgetsLocalizations {}
+
+class FakeLocalizationsDelegate
+    extends LocalizationsDelegate<WidgetsLocalizations> {
+  @override
+  Future<WidgetsLocalizations> load(ui.Locale locale) {
+    return SynchronousFuture(FakeWidgetsLocalizations());
+  }
+
+  @override
+  bool shouldReload(
+    covariant LocalizationsDelegate<WidgetsLocalizations> old,
+  ) {
+    return false;
+  }
+
+  @override
+  bool isSupported(ui.Locale locale) => true;
 }
 
 void main() {
@@ -418,23 +440,54 @@ void main() {
       },
     );
 
-    testWidgets(
-        'renders a Directionality '
-        'with text direction set to LTR', (tester) async {
-      await tester.pumpWidget(
-        const FlutterGoldenTestWrapper(
-          child: Text('test'),
-        ),
+    group('localizations', () {
+      testWidgets(
+        'includes default material, widgets, and cupertino localizations',
+        (tester) async {
+          await tester.pumpWidget(
+            FlutterGoldenTestWrapper(
+              variantConfigTheme: variantConfigTheme,
+              globalConfigTheme: globalConfigTheme,
+              child: const Text('test'),
+            ),
+          );
+
+          final context = tester.element(find.text('test'));
+          expect(MaterialLocalizations.of(context), isNotNull);
+          expect(WidgetsLocalizations.of(context), isNotNull);
+          expect(CupertinoLocalizations.of(context), isNotNull);
+        },
       );
 
-      expect(find.byType(Directionality), findsOneWidget);
-      expect(
-        tester.widget(find.byType(Directionality)),
-        isA<Directionality>().having(
-          (d) => d.textDirection,
-          'textDirection',
-          TextDirection.ltr,
-        ),
+      testWidgets(
+        'does not override inherited locale or localizations',
+        (tester) async {
+          // ignore: prefer_const_constructors
+          final locale = Locale('en', 'US');
+
+          await tester.pumpWidget(
+            Localizations(
+              locale: locale,
+              delegates: [
+                FakeLocalizationsDelegate(),
+              ],
+              child: FlutterGoldenTestWrapper(
+                variantConfigTheme: variantConfigTheme,
+                globalConfigTheme: globalConfigTheme,
+                child: const Text('test'),
+              ),
+            ),
+          );
+
+          final context = tester.element(find.text('test'));
+          expect(
+            WidgetsLocalizations.of(context),
+            isA<FakeWidgetsLocalizations>(),
+          );
+          expect(Localizations.localeOf(context), same(locale));
+          expect(MaterialLocalizations.of(context), isNotNull);
+          expect(CupertinoLocalizations.of(context), isNotNull);
+        },
       );
     });
 
