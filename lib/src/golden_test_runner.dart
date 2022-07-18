@@ -1,9 +1,18 @@
+import 'dart:ui' as ui;
+
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/interactions.dart';
 import 'package:alchemist/src/pumps.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// A function to capture an image of the widget found with the given [Finder].
+typedef GetImageFn = Future<ui.Image> Function({
+  required Finder finder,
+  required WidgetTester tester,
+  required bool obscureText,
+});
 
 /// Default golden test adapter used to interface with Flutter's testing
 /// framework.
@@ -27,6 +36,7 @@ abstract class GoldenTestRunner {
     required WidgetTester tester,
     required Object goldenPath,
     required Widget widget,
+    required GetImageFn getImage,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
     bool forceUpdate = false,
@@ -53,6 +63,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     required WidgetTester tester,
     required Object goldenPath,
     required Widget widget,
+    required GetImageFn getImage,
     ThemeData? globalConfigTheme,
     ThemeData? variantConfigTheme,
     bool forceUpdate = false,
@@ -95,18 +106,19 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
 
       final finder = find.byKey(childKey);
 
-      final toMatch = obscureText
-          ? goldenTestAdapter.getBlockedTextImage(
-              finder: finder,
-              tester: tester,
-            )
-          : finder;
+      final toMatch = await getImage(
+        finder: finder,
+        tester: tester,
+        obscureText: obscureText,
+      );
 
       try {
         await goldenTestAdapter.withForceUpdateGoldenFiles(
           forceUpdate: forceUpdate,
-          callback:
-              goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
+          callback: goldenTestAdapter.goldenFileExpectation(
+            toMatch,
+            goldenPath,
+          ),
         );
         await cleanup?.call();
       } on TestFailure {

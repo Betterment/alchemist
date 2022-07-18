@@ -87,9 +87,10 @@ void main() {
         ),
       );
 
-      final image = await goldenTestAdapter.getBlockedTextImage(
+      final image = await goldenTestAdapter.getImage(
         finder: find.byKey(rootKey),
         tester: tester,
+        obscureText: true,
       );
 
       await expectLater(
