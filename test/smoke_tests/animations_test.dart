@@ -14,7 +14,10 @@ void main() {
     goldenTestAnimation(
       'linear animation',
       fileName: 'animation_linear',
-      builder: () => const LinearProgressIndicator(),
+      builder: () => const SizedBox(
+        width: 300,
+        child: LinearProgressIndicator(),
+      ),
     );
 
     goldenTestAnimation(

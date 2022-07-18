@@ -180,6 +180,7 @@ void main() {
           goldenPath: 'path/to/golden',
           renderShadows: true,
           widget: const SizedBox.square(dimension: 200),
+          getImage: goldenTestAdapter.getImage,
           whilePerforming: (testerDuringTestRun) {
             sizeDuringTestRun = testerDuringTestRun.binding.window.physicalSize;
             throw givenException;
