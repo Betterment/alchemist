@@ -380,12 +380,8 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
       child: _LocalizationWrapper(
         child: Theme(
           data: _resolveThemeOf(context),
-          child: Overlay(
-            initialEntries: [
-              OverlayEntry(
-                builder: (context) => child,
-              ),
-            ],
+          child: _NavigatorWrapper(
+            child: child,
           ),
         ),
       ),
@@ -429,5 +425,22 @@ class _LocalizationWrapper extends StatelessWidget {
         child: child,
       );
     }
+  }
+}
+
+class _NavigatorWrapper extends StatelessWidget {
+  const _NavigatorWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(
+      onGenerateInitialRoutes: (_, __) => [
+        MaterialPageRoute<void>(
+          builder: (context) => child,
+        ),
+      ],
+    );
   }
 }
