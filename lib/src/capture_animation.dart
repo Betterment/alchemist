@@ -20,6 +20,7 @@ class CaptureAnimation {
     required this.frameInterval,
     required this.timeout,
     required this.captureImage,
+    required this.rootFinder,
   });
 
   /// The amount of time in between each frame.
@@ -31,6 +32,9 @@ class CaptureAnimation {
 
   /// Delegate to this function for actually capturing the image.
   final GetImageFn captureImage;
+
+  /// Finder to get the root widget of the golden test.
+  final Finder rootFinder;
 
   /// Use this as a [GetImageFn] for capturing all frames of the animated widget
   /// and outputting an image of them layed out in a grid.
@@ -54,7 +58,7 @@ class CaptureAnimation {
         );
       }
 
-      await tester.pump(frameInterval);
+      await tester.pumpFrames(tester.widget(rootFinder), frameInterval);
     }
 
     return _makeGrid(await Future.wait(frames));

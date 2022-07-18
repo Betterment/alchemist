@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
 import 'package:alchemist/src/capture_animation.dart';
+import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
@@ -246,6 +247,7 @@ Future<void> goldenTestAnimation(
         frameInterval: frameInterval,
         timeout: timeout,
         captureImage: goldenTestAdapter.getImage,
+        rootFinder: find.byKey(FlutterGoldenTestAdapter.rootKey),
       ).getFrames,
       fileName: fileName,
       builder: builder,

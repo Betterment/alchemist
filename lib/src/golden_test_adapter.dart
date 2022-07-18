@@ -181,6 +181,9 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
   /// Key for the child container in the golden test.
   static final childKey = UniqueKey();
 
+  /// Key for the root widget of the golden test.
+  static final rootKey = UniqueKey();
+
   @override
   Future<T> withForceUpdateGoldenFiles<T>({
     bool forceUpdate = false,
@@ -227,6 +230,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     await pumpWidget(
       tester,
       FlutterGoldenTestWrapper(
+        key: rootKey,
         obscureFont: obscureFont,
         globalConfigTheme: globalConfigTheme,
         variantConfigTheme: variantConfigTheme,
