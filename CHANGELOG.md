@@ -4,6 +4,8 @@
 - chore: upgrade to very_good_analysis 3.0.0
 - chore: upgrade to flutter 3.0.0
 - ci: fix the title of the semantic PR job
+- feat: add improved example project
+- fix: fix bug where localizations were not resolved correctly due to nested `MaterialApp`s
 
 # 0.3.3
 

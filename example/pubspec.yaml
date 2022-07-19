@@ -1,0 +1,23 @@
+name: example
+description: An example project showcasing Alchemist's testing functionality.
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  alchemist:
+    path: ../
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^3.0.0
+
+flutter:
+  uses-material-design: true
