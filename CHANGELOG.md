@@ -1,3 +1,7 @@
+# 0.4.1
+
+- chore: downgrade min sdk to 2.16.2
+
 # 0.4.0
 
 - fix: add default localizations
