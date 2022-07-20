@@ -1,7 +1,15 @@
-# x.x.x
+# 0.4.0
 
-- feat: add improved example project
+- fix: add default localizations
+- refactor: move constraints to golden test group and scenario
+- ci: add workflow that will upload code coverage after a merge to main
+- refactor: move constraints to golden test group and scenario
 - fix: fix bug where localizations were not resolved correctly due to nested `MaterialApp`s
+- feat: add improved example project
+- docs: update simulating gestures snippet
+- chore: upgrade to very_good_analysis 3.0.0
+- chore: upgrade to flutter 3.0.0
+- ci: fix the title of the semantic PR job
 
 # 0.3.3
 
