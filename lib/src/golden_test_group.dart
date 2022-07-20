@@ -44,12 +44,12 @@ typedef ColumnWidthBuilder = TableColumnWidth? Function(int columns);
 class GoldenTestGroup extends StatelessWidget {
   /// {@macro golden_test_group}
   const GoldenTestGroup({
-    super.key,
+    Key? key,
     this.columns,
     this.columnWidthBuilder,
     this.scenarioConstraints,
     required this.children,
-  });
+  }) : super(key: key);
 
   /// The number of columns in the grid.
   ///
