@@ -309,12 +309,12 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 class FlutterGoldenTestWrapper extends StatelessWidget {
   /// {@macro _flutter_golden_test_wrapper}
   const FlutterGoldenTestWrapper({
-    super.key,
+    Key? key,
     this.globalConfigTheme,
     this.variantConfigTheme,
     this.obscureFont = false,
     required this.child,
-  });
+  }) : super(key: key);
 
   /// The theme provided by the global [AlchemistConfig], if any.
   ///

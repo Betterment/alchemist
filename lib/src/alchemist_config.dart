@@ -384,12 +384,19 @@ class PlatformGoldensConfig extends GoldensConfig {
   /// {@macro platform_goldens_config}
   const PlatformGoldensConfig({
     Set<HostPlatform>? platforms,
-    super.enabled = true,
-    super.obscureText = false,
-    super.renderShadows = true,
-    super.filePathResolver,
-    super.theme,
-  }) : _platforms = platforms;
+    bool enabled = true,
+    bool obscureText = false,
+    bool renderShadows = true,
+    FilePathResolver? filePathResolver,
+    ThemeData? theme,
+  })  : _platforms = platforms,
+        super(
+          enabled: enabled,
+          obscureText: obscureText,
+          renderShadows: renderShadows,
+          filePathResolver: filePathResolver,
+          theme: theme,
+        );
 
   @override
   String get environmentName => HostPlatform.current().operatingSystem;
@@ -471,12 +478,18 @@ class PlatformGoldensConfig extends GoldensConfig {
 class CiGoldensConfig extends GoldensConfig {
   /// {@macro ci_goldens_config}
   const CiGoldensConfig({
-    super.enabled = true,
-    super.obscureText = true,
-    super.renderShadows = false,
-    super.filePathResolver,
-    super.theme,
-  });
+    bool enabled = true,
+    bool obscureText = true,
+    bool renderShadows = false,
+    FilePathResolver? filePathResolver,
+    ThemeData? theme,
+  }) : super(
+          enabled: enabled,
+          obscureText: obscureText,
+          renderShadows: renderShadows,
+          filePathResolver: filePathResolver,
+          theme: theme,
+        );
 
   @override
   String get environmentName => 'CI';
