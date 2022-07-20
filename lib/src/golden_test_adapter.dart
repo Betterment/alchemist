@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/utilities.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -376,13 +377,70 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
     return MediaQuery(
       data: MediaQuery.maybeOf(context) ??
           MediaQueryData.fromWindow(WidgetsBinding.instance.window),
-      child: Directionality(
-        textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
+      child: _LocalizationWrapper(
         child: Theme(
           data: _resolveThemeOf(context),
-          child: child,
+          child: _NavigatorWrapper(
+            child: child,
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _LocalizationWrapper extends StatelessWidget {
+  const _LocalizationWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = Localizations.maybeLocaleOf(context);
+    final widgetsLocalizations =
+        Localizations.of<WidgetsLocalizations>(context, WidgetsLocalizations);
+    final materialLocalizations =
+        Localizations.of<MaterialLocalizations>(context, MaterialLocalizations);
+    final cupertinoLocalizations = Localizations.of<CupertinoLocalizations>(
+      context,
+      CupertinoLocalizations,
+    );
+    final delegates = [
+      if (widgetsLocalizations == null) DefaultWidgetsLocalizations.delegate,
+      if (materialLocalizations == null) DefaultMaterialLocalizations.delegate,
+      if (cupertinoLocalizations == null)
+        DefaultCupertinoLocalizations.delegate,
+    ];
+
+    if (locale != null) {
+      return Localizations.override(
+        context: context,
+        delegates: delegates,
+        child: child,
+      );
+    } else {
+      return Localizations(
+        locale: const Locale('en', 'US'),
+        delegates: delegates,
+        child: child,
+      );
+    }
+  }
+}
+
+class _NavigatorWrapper extends StatelessWidget {
+  const _NavigatorWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(
+      onGenerateInitialRoutes: (_, __) => [
+        MaterialPageRoute<void>(
+          builder: (context) => child,
+        ),
+      ],
     );
   }
 }
