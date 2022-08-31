@@ -51,6 +51,29 @@ void main() {
       );
     });
 
+    group('compareTo', () {
+      test('is correct when compared to self', () {
+        expect(HostPlatform.macOS.compareTo(HostPlatform.macOS), 0);
+        expect(HostPlatform.linux.compareTo(HostPlatform.linux), 0);
+        expect(HostPlatform.windows.compareTo(HostPlatform.windows), 0);
+      });
+
+      test('is consistent', () {
+        expect(
+          HostPlatform.macOS.compareTo(HostPlatform.linux),
+          -1 * HostPlatform.linux.compareTo(HostPlatform.macOS),
+        );
+        expect(
+          HostPlatform.macOS.compareTo(HostPlatform.windows),
+          -1 * HostPlatform.windows.compareTo(HostPlatform.macOS),
+        );
+        expect(
+          HostPlatform.windows.compareTo(HostPlatform.linux),
+          -1 * HostPlatform.linux.compareTo(HostPlatform.windows),
+        );
+      });
+    });
+
     group('macOS', () {
       test('returns true for platform check', () {
         expect(HostPlatform.macOS.isMacOS, isTrue);
