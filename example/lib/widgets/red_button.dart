@@ -15,8 +15,8 @@ class RedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = ElevatedButton.styleFrom(
-      primary: Colors.red,
-      onPrimary: Colors.white,
+      backgroundColor: Colors.red,
+      foregroundColor: Colors.white,
     );
     if (icon != null) {
       return ElevatedButton.icon(

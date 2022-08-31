@@ -17,7 +17,7 @@ set hostPlatform(HostPlatform value) => _hostPlatform = value;
 /// The current platform can be retrieved using [HostPlatform.current], and
 /// checks against this value are available using [isMacOS], [isLinux] and so
 /// on.
-class HostPlatform extends Equatable {
+class HostPlatform extends Equatable implements Comparable<HostPlatform> {
   const HostPlatform._(this._value);
 
   /// An internal factory used to retrieve a [HostPlatform] based on the current
@@ -87,4 +87,7 @@ class HostPlatform extends Equatable {
 
   @override
   List<Object?> get props => [_value];
+
+  @override
+  int compareTo(covariant HostPlatform other) => _value.compareTo(other._value);
 }

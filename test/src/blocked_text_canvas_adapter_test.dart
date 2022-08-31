@@ -343,5 +343,23 @@ void main() {
       subject.translate(dx, dy);
       verify(() => parent.translate(dx, dy)).called(1);
     });
+
+    test('getDestinationClipBounds delegates to parent implementation', () {
+      when(parent.getDestinationClipBounds).thenReturn(ui.Rect.zero);
+      subject.getDestinationClipBounds();
+      verify(parent.getDestinationClipBounds).called(1);
+    });
+
+    test('getLocalClipBounds delegates to parent implementation', () {
+      when(parent.getLocalClipBounds).thenReturn(ui.Rect.zero);
+      subject.getLocalClipBounds();
+      verify(parent.getLocalClipBounds).called(1);
+    });
+
+    test('getTransform delegates to parent implementation', () {
+      when(parent.getTransform).thenReturn(Float64List(0));
+      subject.getTransform();
+      verify(parent.getTransform).called(1);
+    });
   });
 }
