@@ -1,3 +1,7 @@
+# 0.5.0
+
+- chore: upgrade to flutter 3.3.0
+
 # 0.4.1
 
 - chore: downgrade min sdk to 2.16.2
