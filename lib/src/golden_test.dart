@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
@@ -21,6 +23,10 @@ set goldenTestRunner(GoldenTestRunner value) => _goldenTestRunner = value;
 /// golden tests.
 Future<void> _setUpGoldenTests() async {
   await loadFonts();
+
+  RenderErrorBox.textStyle = ui.TextStyle(
+    fontFamily: 'Roboto',
+  );
 }
 
 /// Loads a font for use in golden tests.
