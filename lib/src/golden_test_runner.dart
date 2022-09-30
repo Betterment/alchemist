@@ -103,11 +103,15 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
           : finder;
 
       try {
+        FlutterError.onError = (FlutterErrorDetails errorDetails) {
+          throw TestFailure(errorDetails.exception.toString());
+        };
         await goldenTestAdapter.withForceUpdateGoldenFiles(
           forceUpdate: forceUpdate,
           callback:
               goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
         );
+        FlutterError.onError = null;
         await cleanup?.call();
       } on TestFailure {
         rethrow;
