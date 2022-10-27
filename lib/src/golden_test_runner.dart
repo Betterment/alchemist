@@ -71,7 +71,6 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
 
     final childKey = FlutterGoldenTestAdapter.childKey;
 
-    final originalSize = tester.binding.window.physicalSize;
     final mementoDebugDisableShadows = debugDisableShadows;
     debugDisableShadows = !renderShadows;
 
@@ -115,8 +114,9 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     } finally {
       debugDisableShadows = mementoDebugDisableShadows;
 
-      await tester.binding.setSurfaceSize(originalSize);
-      tester.binding.window.physicalSizeTestValue = originalSize;
+      await tester.binding.setSurfaceSize(null);
+      tester.binding.window.clearPhysicalSizeTestValue();
+      tester.binding.window.clearDevicePixelRatioTestValue();
     }
   }
 }
