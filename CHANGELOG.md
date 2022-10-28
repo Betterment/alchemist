@@ -1,3 +1,7 @@
+# 0.5.1
+- fix: properly clear window size overrides after test run (#81)
+- fix: ensure that error messages are always legible (#78)
+
 # 0.5.0
 
 - chore: upgrade to flutter 3.3.0
