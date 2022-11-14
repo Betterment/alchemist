@@ -89,7 +89,7 @@ class _ExampleScenario extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         DefaultTextStyle.merge(
-          style: Theme.of(context).textTheme.subtitle2,
+          style: Theme.of(context).textTheme.titleSmall,
           child: title,
         ),
         const SizedBox(height: 8),

@@ -194,7 +194,7 @@ void main() {
           isA<Table>().having(
             (t) => t.columnWidths,
             'column widths map',
-            isA<Map>()
+            isA<Map<int, TableColumnWidth>>()
                 .having((m) => m.length, 'length', 3)
                 .having((m) => m[0], 'first element', isAFixedColumnWidth(100))
                 .having((m) => m[1], 'second element', isAFixedColumnWidth(200))

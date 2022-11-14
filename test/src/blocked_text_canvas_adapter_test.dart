@@ -361,5 +361,10 @@ void main() {
       subject.getTransform();
       verify(parent.getTransform).called(1);
     });
+
+    test('restoreToCount delegates to parent implementation', () {
+      subject.restoreToCount(0);
+      verify(() => parent.restoreToCount(0)).called(1);
+    });
   });
 }
