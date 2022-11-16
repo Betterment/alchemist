@@ -87,19 +87,19 @@ extension GoldenTestThemeDataExtensions on ThemeData {
   ThemeData stripTextPackages() {
     return copyWith(
       textTheme: textTheme.copyWith(
-        headline1: textTheme.headline1?.stripPackage(),
-        headline2: textTheme.headline2?.stripPackage(),
-        headline3: textTheme.headline3?.stripPackage(),
-        headline4: textTheme.headline4?.stripPackage(),
-        headline5: textTheme.headline5?.stripPackage(),
-        headline6: textTheme.headline6?.stripPackage(),
-        subtitle1: textTheme.subtitle1?.stripPackage(),
-        subtitle2: textTheme.subtitle2?.stripPackage(),
-        bodyText1: textTheme.bodyText1?.stripPackage(),
-        bodyText2: textTheme.bodyText2?.stripPackage(),
-        caption: textTheme.caption?.stripPackage(),
-        button: textTheme.button?.stripPackage(),
-        overline: textTheme.overline?.stripPackage(),
+        displayLarge: textTheme.displayLarge?.stripPackage(),
+        displayMedium: textTheme.displayMedium?.stripPackage(),
+        displaySmall: textTheme.displaySmall?.stripPackage(),
+        headlineMedium: textTheme.headlineMedium?.stripPackage(),
+        headlineSmall: textTheme.headlineSmall?.stripPackage(),
+        titleLarge: textTheme.titleLarge?.stripPackage(),
+        titleMedium: textTheme.titleMedium?.stripPackage(),
+        titleSmall: textTheme.titleSmall?.stripPackage(),
+        bodyLarge: textTheme.bodyLarge?.stripPackage(),
+        bodyMedium: textTheme.bodyMedium?.stripPackage(),
+        bodySmall: textTheme.bodySmall?.stripPackage(),
+        labelLarge: textTheme.labelLarge?.stripPackage(),
+        labelSmall: textTheme.labelSmall?.stripPackage(),
       ),
       floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
         extendedTextStyle:
