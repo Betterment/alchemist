@@ -1,6 +1,6 @@
 # 0.6.0
 
-- chore: upgrade to flutter 3.7.0
+- chore: upgrade to flutter 3.7.0 (#87)
 
 # 0.6.0-dev.1
 
