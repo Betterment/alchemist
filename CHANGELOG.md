@@ -1,7 +1,13 @@
-# 0.6.0-dev.1 (pre-release)
+# 0.6.0
+
+- chore: upgrade to flutter 3.7.0
+
+# 0.6.0-dev.1
+
 - chore: upgrade flutter to beta version (#84)
 
 # 0.5.1
+
 - fix: properly clear window size overrides after test run (#81)
 - fix: ensure that error messages are always legible (#78)
 

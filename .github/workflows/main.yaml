@@ -11,15 +11,15 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.4.0-34.1.pre'
-          channel: 'beta'
+          flutter-version: '3.7.0'
+          channel: 'stable'
           cache: true
 
       - name: Install Dependencies
         run: flutter packages get
 
       - name: Format
-        run: flutter format --set-exit-if-changed .
+        run: dart format --set-exit-if-changed .
 
       - name: Analyze project source
         uses: invertase/github-action-dart-analyzer@v1
@@ -39,8 +39,8 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.4.0-34.1.pre'
-          channel: 'beta'
+          flutter-version: '3.7.0'
+          channel: 'stable'
           cache: true
 
       - name: Install Dependencies
@@ -49,4 +49,4 @@ jobs:
           flutter pub global activate pana
 
       - name: Verify Pub Score
-        run: ./tool/verify_pub_score.sh 110
+        run: ./tool/verify_pub_score.sh 130
