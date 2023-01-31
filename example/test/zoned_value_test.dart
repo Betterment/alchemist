@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const zoneValueKey = #testZoneValueKey;
+const providedValue = 42;
 
 int? getZoneValue() => Zone.current[zoneValueKey] as int?;
 
@@ -15,19 +16,44 @@ void main() {
         goldenTest(
           'zoned value test',
           fileName: 'zoned_value',
+          textScaleFactor: 4,
           builder: () {
-            assert(
-              getZoneValue() == 42,
-              'Expected zone value to be 42, but was ${getZoneValue()}. '
-              'Seems like the zone value was not passed to the golden test '
-              'properly.',
-            );
+            final retrievedValue = getZoneValue();
+            final isCorrect = retrievedValue == providedValue;
 
-            return const SizedBox.shrink();
+            if (!isCorrect) {
+              print(
+                'Expected zone value to be $providedValue, but '
+                'was $retrievedValue instead. '
+                'Seems like the zone value was not passed to the golden test '
+                'properly.',
+              );
+            }
+
+            return Text(
+              '${isCorrect ? 'Correct' : 'Incorrect'}: $retrievedValue',
+            );
+          },
+          pumpWidget: (tester, widget, runInOuterZone) {
+            runInOuterZone(() {
+              print('Zone value in pumpWidget: ${getZoneValue()}');
+            });
+            return onlyPumpWidget(tester, widget, runInOuterZone);
+          },
+          pumpBeforeTest: (tester, runInOuterZone) {
+            runInOuterZone(() {
+              print('Zone value in pumpBeforeTest: ${getZoneValue()}');
+            });
+            return onlyPumpAndSettle(tester, runInOuterZone);
+          },
+          whilePerforming: (tester, runInOuterZone) async {
+            runInOuterZone(() {
+              print('Zone value in whilePerforming: ${getZoneValue()}');
+            });
           },
         );
       });
     },
-    zoneValues: {zoneValueKey: 42},
+    zoneValues: {zoneValueKey: providedValue},
   );
 }
