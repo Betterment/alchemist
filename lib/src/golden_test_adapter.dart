@@ -160,8 +160,8 @@ abstract class GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
-    required PumpAction pumpBeforeTest,
-    required PumpWidget pumpWidget,
+    required PumpActionInternal pumpBeforeTest,
+    required PumpWidgetInternal pumpWidget,
     required Widget widget,
   });
 
@@ -219,8 +219,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
-    required PumpAction pumpBeforeTest,
-    required PumpWidget pumpWidget,
+    required PumpActionInternal pumpBeforeTest,
+    required PumpWidgetInternal pumpWidget,
     required Widget widget,
   }) async {
     tester.binding.window.devicePixelRatioTestValue = 1.0;

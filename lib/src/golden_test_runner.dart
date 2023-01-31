@@ -34,9 +34,9 @@ abstract class GoldenTestRunner {
     bool renderShadows = false,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
-    PumpAction pumpBeforeTest = onlyPumpAndSettle,
-    PumpWidget pumpWidget = onlyPumpWidget,
-    Interaction? whilePerforming,
+    PumpActionInternal pumpBeforeTest = onlyPumpAndSettleInternal,
+    PumpWidgetInternal pumpWidget = onlyPumpWidgetInternal,
+    InteractionInternal? whilePerforming,
   });
 }
 
@@ -60,9 +60,9 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     bool renderShadows = false,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
-    PumpAction pumpBeforeTest = onlyPumpAndSettle,
-    PumpWidget pumpWidget = onlyPumpWidget,
-    Interaction? whilePerforming,
+    PumpActionInternal pumpBeforeTest = onlyPumpAndSettleInternal,
+    PumpWidgetInternal pumpWidget = onlyPumpWidgetInternal,
+    InteractionInternal? whilePerforming,
   }) async {
     assert(
       goldenPath is String || goldenPath is Uri,

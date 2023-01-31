@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
 
@@ -162,9 +163,14 @@ Future<void> goldenTest(
 
   goldenTestAdapter.setUp(_setUpGoldenTests);
 
+  final outerZone = Zone.current;
+
   await goldenTestAdapter.testWidgets(
     description,
     (tester) async {
+      T wrapZone<T>(T Function() fn) =>
+          config.runInOuterZone ? outerZone.run(fn) : fn();
+
       final variantConfig = variant.currentConfig;
       await goldenTestRunner.run(
         tester: tester,
@@ -172,7 +178,7 @@ Future<void> goldenTest(
           fileName,
           variantConfig.environmentName,
         ),
-        widget: builder(),
+        widget: wrapZone(builder),
         globalConfigTheme: config.theme,
         variantConfigTheme: variantConfig.theme,
         forceUpdate: config.forceUpdateGoldenFiles,
@@ -180,9 +186,12 @@ Future<void> goldenTest(
         renderShadows: variantConfig.renderShadows,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
-        pumpBeforeTest: pumpBeforeTest,
-        pumpWidget: pumpWidget,
-        whilePerforming: whilePerforming,
+        pumpBeforeTest: (tester) => pumpBeforeTest(tester, outerZone.run),
+        pumpWidget: (tester, widget) =>
+            pumpWidget(tester, widget, outerZone.run),
+        whilePerforming: whilePerforming == null
+            ? null
+            : (tester) => whilePerforming(tester, outerZone.run),
       );
     },
     tags: tags,

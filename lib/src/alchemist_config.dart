@@ -70,10 +70,12 @@ class AlchemistConfig extends Equatable {
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
+    bool? runInOuterZone,
   })  : _forceUpdateGoldenFiles = forceUpdateGoldenFiles,
         _theme = theme,
         _platformGoldensConfig = platformGoldensConfig,
-        _ciGoldensConfig = ciGoldensConfig;
+        _ciGoldensConfig = ciGoldensConfig,
+        _runInOuterZone = runInOuterZone;
 
   /// The instance of the [AlchemistConfig] in the current zone used by the
   /// `alchemist` package.
@@ -198,18 +200,35 @@ class AlchemistConfig extends Equatable {
       _ciGoldensConfig ?? const CiGoldensConfig();
   final CiGoldensConfig? _ciGoldensConfig;
 
+  /// Whether to run certain functions passed to [goldenTest] calls in the zone
+  /// where the test was defined, instead of the zone created by Dart's `test`
+  /// function.
+  ///
+  /// This helps circumvent issues with retrieving values defined in a specific
+  /// zone within arguments such as [goldenTest]'s `builder` or `pumpWidget`.
+  ///
+  /// Should usually be turned on (the default). Turn off for specific tests if
+  /// you are experiencing issues.
+  ///
+  /// See also:
+  /// - [Relevant GitHub issue (#86)](https://github.com/Betterment/alchemist/issues/86)
+  bool get runInOuterZone => _runInOuterZone ?? true;
+  final bool? _runInOuterZone;
+
   /// Creates a copy of this [AlchemistConfig] and replaces the given fields.
   AlchemistConfig copyWith({
     bool? forceUpdateGoldenFiles,
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
+    bool? runInOuterZone,
   }) {
     return AlchemistConfig(
       forceUpdateGoldenFiles: forceUpdateGoldenFiles ?? _forceUpdateGoldenFiles,
       theme: theme ?? _theme,
       platformGoldensConfig: platformGoldensConfig ?? _platformGoldensConfig,
       ciGoldensConfig: ciGoldensConfig ?? _ciGoldensConfig,
+      runInOuterZone: runInOuterZone ?? _runInOuterZone,
     );
   }
 
@@ -227,6 +246,7 @@ class AlchemistConfig extends Equatable {
       platformGoldensConfig:
           platformGoldensConfig.merge(other?._platformGoldensConfig),
       ciGoldensConfig: ciGoldensConfig.merge(other?._ciGoldensConfig),
+      runInOuterZone: other?._runInOuterZone,
     );
   }
 
@@ -236,6 +256,7 @@ class AlchemistConfig extends Equatable {
         theme,
         platformGoldensConfig,
         ciGoldensConfig,
+        runInOuterZone,
       ];
 }
 

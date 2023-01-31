@@ -1,19 +1,32 @@
+import 'package:alchemist/src/pumps.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:meta/meta.dart';
 
 /// An interaction to perform while rendering a golden test. Returns
 /// an asynchronous callback that should be called to cleanup when
 /// the golden test completes.
-typedef Interaction = Future<AsyncCallback?> Function(WidgetTester);
+///
+/// {@macro run_in_outer_zone_arg}
+typedef Interaction = Future<AsyncCallback?> Function(
+  WidgetTester tester,
+  GenericBuilder runInOuterZone,
+);
+
+/// The equivalent of [Interaction] for internal use.
+@internal
+typedef InteractionInternal = Future<AsyncCallback?> Function(
+  WidgetTester tester,
+);
 
 /// Presses all widgets matching `finder`.
 Interaction press(
   Finder finder, {
   Duration? holdFor = const Duration(milliseconds: 300),
 }) =>
-    (WidgetTester tester) async {
+    (tester, _) async {
       final gestures = await tester.pressAll(finder);
       await tester.pump(kPressTimeout);
       await tester.pump(holdFor);
@@ -21,7 +34,7 @@ Interaction press(
     };
 
 /// Long-presses all widgets matching [finder].
-Interaction longPress(Finder finder) => (WidgetTester tester) async {
+Interaction longPress(Finder finder) => (tester, _) async {
       final gestures = await tester.pressAll(finder);
       await tester.pump(kLongPressTimeout);
       return gestures.releaseAll;
@@ -33,7 +46,7 @@ Interaction scroll(
   required Offset offset,
   double speed = kMinFlingVelocity,
 }) =>
-    (WidgetTester tester) async {
+    (tester, _) async {
       final elements = finder.evaluate();
       for (final element in elements) {
         await tester.fling(find.byWidget(element.widget), offset, speed);
