@@ -87,6 +87,10 @@ void main() {
       });
     });
 
+    tearDownAll(() {
+      goldenTestAdapter = defaultGoldenTestAdapter;
+    });
+
     testWidgets('throws on invalid golden path type', (tester) async {
       await expectLater(
         goldenTestRunner.run(
@@ -190,8 +194,26 @@ void main() {
       expect(sizeDuringTestRun, Size.zero);
     });
 
-    tearDownAll(() {
-      goldenTestAdapter = defaultGoldenTestAdapter;
+    group('attempts to set file comparator and', () {
+      test(
+        'succeeds when existing comparator is a '
+        'LocalFileComparator',
+        () {
+          // TODO(jeroen-meijer): Write test.
+        },
+      );
+
+      test(
+        'succeeds when existing comparator is a '
+        'AlchemistFileComparator',
+        () {
+          // TODO(jeroen-meijer): Write test.
+        },
+      );
+
+      test('fails when existing comparator is not recognized', () {
+        // TODO(jeroen-meijer): Write test.
+      });
     });
   });
 }

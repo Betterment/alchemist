@@ -19,7 +19,7 @@ class AlchemistTestVariant extends TestVariant<GoldensConfig> {
   final AlchemistConfig _config;
   final HostPlatform _currentPlatform;
 
-  /// The [GoldensConfig] to use for the current variant
+  /// The [GoldensConfig] to use for the current variant.
   GoldensConfig get currentConfig => _currentConfig;
   late GoldensConfig _currentConfig;
 
