@@ -16,6 +16,8 @@ dependencies:
   flutter_test:
     sdk: flutter
   meta: ^1.7.0
+  path: ^1.8.2
+  universal_io: ^2.0.4
 
 dev_dependencies:
   mocktail: ^0.3.0

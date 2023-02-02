@@ -1,3 +1,4 @@
+import 'package:alchemist/src/alchemist_file_comparator.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/interactions.dart';
 import 'package:alchemist/src/pumps.dart';
@@ -32,6 +33,7 @@ abstract class GoldenTestRunner {
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
+    double tolerance = 0.0,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
     PumpAction pumpBeforeTest = onlyPumpAndSettle,
@@ -58,6 +60,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
+    double tolerance = 0.0,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
     PumpAction pumpBeforeTest = onlyPumpAndSettle,
@@ -103,6 +106,8 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
           : finder;
 
       try {
+        _attemptSetComparator(tolerance);
+
         await goldenTestAdapter.withForceUpdateGoldenFiles(
           forceUpdate: forceUpdate,
           callback:
@@ -118,6 +123,38 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       await tester.binding.setSurfaceSize(null);
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
+    }
+  }
+
+  void _attemptSetComparator(double tolerance) {
+    if (goldenFileComparator is LocalFileComparator) {
+      goldenFileComparator = AlchemistFileComparator.fromLocalFileComparator(
+        goldenFileComparator as LocalFileComparator,
+        tolerance: tolerance,
+      );
+    } else if (goldenFileComparator is AlchemistFileComparator) {
+      goldenFileComparator = AlchemistFileComparator(
+        basedir: (goldenFileComparator as AlchemistFileComparator).basedir,
+        tolerance: tolerance,
+      );
+    } else {
+      throw Exception(
+        '''
+Failed to set AlchemistFileComparator as the goldenFileComparator.
+
+Since this test has a tolerance value above 0.0, Alchemist must set a custom
+comparator to allow for matching goldens with a tolerance value.
+However, the current goldenFileComparator is not a LocalFileComparator or
+AlchemistFileComparator. Instead, it is a ${goldenFileComparator.runtimeType}.
+
+Alchemist can only set a custom comparator if the current comparator is a
+LocalFileComparator or AlchemistFileComparator. User-provided comparators
+are currently not supported.
+
+If you believe this is a bug, please file an issue at
+  https://github.com/Betterment/alchemist/issues
+''',
+      );
     }
   }
 }
