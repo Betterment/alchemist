@@ -5,18 +5,13 @@
       "name": "Update Goldens",
       "request": "launch",
       "type": "dart",
-      "args": [
-        "--update-goldens"
-      ],
+      "args": ["--update-goldens"],
       "program": "${relativeFile}",
       "flutterMode": "debug",
       "console": "debugConsole",
       "codeLens": {
-        "for": [
-          "debug-test",
-          "debug-test-file"
-        ]
+        "for": ["debug-test", "debug-test-file"]
       }
-    },
+    }
   ]
 }

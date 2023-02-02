@@ -13,10 +13,9 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
       theme: ThemeData(
         textTheme: const TextTheme().apply(fontFamily: 'Roboto'),
       ),
-      platformGoldensConfig:
-          AlchemistConfig.current().platformGoldensConfig.copyWith(
-                enabled: enablePlatformTests,
-              ),
+      platformGoldensConfig: PlatformGoldensConfig(
+        enabled: enablePlatformTests,
+      ),
     ),
     run: testMain,
   );
