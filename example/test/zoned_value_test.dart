@@ -22,7 +22,7 @@ void main() {
             final isCorrect = retrievedValue == providedValue;
 
             if (!isCorrect) {
-              print(
+              fail(
                 'Expected zone value to be $providedValue, but '
                 'was $retrievedValue instead. '
                 'Seems like the zone value was not passed to the golden test '
@@ -30,9 +30,7 @@ void main() {
               );
             }
 
-            return Text(
-              '${isCorrect ? 'Correct' : 'Incorrect'}: $retrievedValue',
-            );
+            return Text('$retrievedValue');
           },
           // pumpWidget: (tester, widget, runInOuterZone) {
           //   runInOuterZone(() {
