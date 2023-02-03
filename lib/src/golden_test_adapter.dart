@@ -160,8 +160,8 @@ abstract class GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
-    required PumpActionInternal pumpBeforeTest,
-    required PumpWidgetInternal pumpWidget,
+    required PumpAction pumpBeforeTest,
+    required PumpWidget pumpWidget,
     required Widget widget,
   });
 
@@ -219,8 +219,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
-    required PumpActionInternal pumpBeforeTest,
-    required PumpWidgetInternal pumpWidget,
+    required PumpAction pumpBeforeTest,
+    required PumpWidget pumpWidget,
     required Widget widget,
   }) async {
     tester.binding.window.devicePixelRatioTestValue = 1.0;
@@ -302,7 +302,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 /// cause localizations to not be loaded properly. This widget sets up the bare
 /// minimum to get the test to run.
 ///
-/// Exposed for internal testing. Do not use this explicitly.
+/// Exposed for  testing. Do not use this explicitly.
 /// {@endtemplate}
 @protected
 @visibleForTesting

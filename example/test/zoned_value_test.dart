@@ -34,23 +34,23 @@ void main() {
               '${isCorrect ? 'Correct' : 'Incorrect'}: $retrievedValue',
             );
           },
-          pumpWidget: (tester, widget, runInOuterZone) {
-            runInOuterZone(() {
-              print('Zone value in pumpWidget: ${getZoneValue()}');
-            });
-            return onlyPumpWidget(tester, widget, runInOuterZone);
-          },
-          pumpBeforeTest: (tester, runInOuterZone) {
-            runInOuterZone(() {
-              print('Zone value in pumpBeforeTest: ${getZoneValue()}');
-            });
-            return onlyPumpAndSettle(tester, runInOuterZone);
-          },
-          whilePerforming: (tester, runInOuterZone) async {
-            runInOuterZone(() {
-              print('Zone value in whilePerforming: ${getZoneValue()}');
-            });
-          },
+          // pumpWidget: (tester, widget, runInOuterZone) {
+          //   runInOuterZone(() {
+          //     print('Zone value in pumpWidget: ${getZoneValue()}');
+          //   });
+          //   return onlyPumpWidget(tester, widget, runInOuterZone);
+          // },
+          // pumpBeforeTest: (tester, runInOuterZone) {
+          //   runInOuterZone(() {
+          //     print('Zone value in pumpBeforeTest: ${getZoneValue()}');
+          //   });
+          //   return onlyPumpAndSettle(tester, runInOuterZone);
+          // },
+          // whilePerforming: (tester, runInOuterZone) async {
+          //   runInOuterZone(() {
+          //     print('Zone value in whilePerforming: ${getZoneValue()}');
+          //   });
+          // },
         );
       });
     },

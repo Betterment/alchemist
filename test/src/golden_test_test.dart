@@ -40,8 +40,8 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
-    required PumpActionInternal pumpBeforeTest,
-    required PumpWidgetInternal pumpWidget,
+    required PumpAction pumpBeforeTest,
+    required PumpWidget pumpWidget,
     required Widget widget,
   }) async {}
 

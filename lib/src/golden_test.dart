@@ -186,12 +186,9 @@ Future<void> goldenTest(
         renderShadows: variantConfig.renderShadows,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
-        pumpBeforeTest: (tester) => pumpBeforeTest(tester, outerZone.run),
-        pumpWidget: (tester, widget) =>
-            pumpWidget(tester, widget, outerZone.run),
-        whilePerforming: whilePerforming == null
-            ? null
-            : (tester) => whilePerforming(tester, outerZone.run),
+        pumpBeforeTest: pumpBeforeTest,
+        pumpWidget: pumpWidget,
+        whilePerforming: whilePerforming,
       );
     },
     tags: tags,
