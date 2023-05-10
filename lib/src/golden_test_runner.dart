@@ -69,7 +69,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       'Golden path must be a String or Uri.',
     );
 
-    final childKey = FlutterGoldenTestAdapter.childKey;
+    final rootKey = FlutterGoldenTestAdapter.rootKey;
 
     final mementoDebugDisableShadows = debugDisableShadows;
     debugDisableShadows = !renderShadows;
@@ -77,6 +77,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     try {
       await goldenTestAdapter.pumpGoldenTest(
         tester: tester,
+        rootKey: rootKey,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
         obscureFont: obscureText,
@@ -92,7 +93,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
         cleanup = await whilePerforming(tester);
       }
 
-      final finder = find.byKey(childKey);
+      final finder = find.byKey(rootKey);
 
       final toMatch = obscureText
           ? goldenTestAdapter.getBlockedTextImage(

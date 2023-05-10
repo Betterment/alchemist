@@ -34,6 +34,7 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
 
   @override
   Future<void> pumpGoldenTest({
+    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,

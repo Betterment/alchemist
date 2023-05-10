@@ -136,6 +136,9 @@ abstract class GoldenTestAdapter {
 
   /// Pumps the given [widget] with the given [tester] for use in golden tests.
   ///
+  /// The [rootKey], if provided, will be attached to the top-most [Widget] in
+  /// the tree.
+  ///
   /// The [textScaleFactor], if provided, sets the text scale size (usually in
   /// a range from 1 to 3).
   ///
@@ -154,6 +157,7 @@ abstract class GoldenTestAdapter {
   /// max width is unbounded, a default width value will be used as initial
   /// surface size. The same applies to the max height.
   Future<void> pumpGoldenTest({
+    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -180,6 +184,9 @@ abstract class GoldenTestAdapter {
 class FlutterGoldenTestAdapter extends GoldenTestAdapter {
   /// Create a new [FlutterGoldenTestAdapter].
   const FlutterGoldenTestAdapter() : super();
+
+  /// Key for the root of the golden test.
+  static final rootKey = UniqueKey();
 
   /// Key for the child container in the golden test.
   static final childKey = UniqueKey();
@@ -213,6 +220,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
   @override
   Future<void> pumpGoldenTest({
+    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -230,6 +238,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     await pumpWidget(
       tester,
       FlutterGoldenTestWrapper(
+        key: rootKey,
         obscureFont: obscureFont,
         globalConfigTheme: globalConfigTheme,
         variantConfigTheme: variantConfigTheme,
