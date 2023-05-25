@@ -1,3 +1,7 @@
+# 0.6.1
+
+- fix: dialogs and dropdown menus not being displayed correctly
+
 # 0.6.0
 
 - chore: upgrade to flutter 3.7.0 (#87)
