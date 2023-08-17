@@ -9,8 +9,6 @@ class MockCanvas extends Mock implements ui.Canvas {}
 
 class MockParagraph extends Mock implements ui.Paragraph {}
 
-class FakeVertices extends Fake implements ui.Vertices {}
-
 class FakeImage extends Fake implements ui.Image {}
 
 class FakePicture extends Fake implements ui.Picture {}
@@ -281,7 +279,7 @@ void main() {
     });
 
     test('drawVertices delegates to parent implementation', () {
-      final vertices = FakeVertices();
+      final vertices = ui.Vertices(ui.VertexMode.triangles, [Offset.zero]);
       const blendMode = ui.BlendMode.color;
       final paint = ui.Paint();
       subject.drawVertices(vertices, blendMode, paint);
