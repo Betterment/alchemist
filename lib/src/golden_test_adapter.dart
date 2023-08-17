@@ -14,10 +14,10 @@ typedef TestWidgetsFn = FutureOr<void> Function(
   Future<void> Function(WidgetTester) callback, {
   bool? skip,
   Timeout? timeout,
-  Duration? initialTimeout,
   bool semanticsEnabled,
   TestVariant<Object?> variant,
   dynamic tags,
+  int? retry,
 });
 
 /// The signature of the `tearDown` and `setUp` test functions.

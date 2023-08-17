@@ -106,10 +106,10 @@ void main() {
         Future<void> Function(WidgetTester) callback, {
         bool? skip,
         Timeout? timeout,
-        Duration? initialTimeout,
         bool semanticsEnabled = false,
         TestVariant<Object?> variant = const DefaultTestVariant(),
         dynamic tags,
+        int? retry,
       }) {}
 
       test('overrides value', () {
