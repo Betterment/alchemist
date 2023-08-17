@@ -382,17 +382,11 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      data: MediaQuery.maybeOf(context) ??
-          MediaQueryData.fromView(
-            WidgetsBinding.instance.platformDispatcher.views.first,
-          ),
-      child: _LocalizationWrapper(
-        child: Theme(
-          data: _resolveThemeOf(context),
-          child: _NavigatorWrapper(
-            child: child,
-          ),
+    return _LocalizationWrapper(
+      child: Theme(
+        data: _resolveThemeOf(context),
+        child: _NavigatorWrapper(
+          child: child,
         ),
       ),
     );
