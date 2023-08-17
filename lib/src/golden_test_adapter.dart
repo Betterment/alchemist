@@ -231,9 +231,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required PumpWidget pumpWidget,
     required Widget widget,
   }) async {
-    tester.binding.window.devicePixelRatioTestValue = 1.0;
-    tester.binding.window.platformDispatcher.textScaleFactorTestValue =
-        textScaleFactor;
+    tester.view.devicePixelRatio = 1.0;
+    tester.platformDispatcher.textScaleFactorTestValue = textScaleFactor;
 
     await pumpWidget(
       tester,
@@ -279,7 +278,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     final childSize = tester.getSize(find.byKey(childKey));
 
     await tester.binding.setSurfaceSize(childSize);
-    tester.binding.window.physicalSizeTestValue = childSize;
+    tester.view.physicalSize = childSize;
 
     await tester.pump();
   }
@@ -291,7 +290,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
   }) async {
     var renderObject = tester.renderObject(finder);
     while (!renderObject.isRepaintBoundary) {
-      renderObject = renderObject.parent! as RenderObject;
+      renderObject = renderObject.parent!;
     }
     final layer = renderObject.debugLayer! as OffsetLayer;
     paintingContextBuilder(
@@ -385,7 +384,9 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return MediaQuery(
       data: MediaQuery.maybeOf(context) ??
-          MediaQueryData.fromWindow(WidgetsBinding.instance.window),
+          MediaQueryData.fromView(
+            WidgetsBinding.instance.platformDispatcher.views.first,
+          ),
       child: _LocalizationWrapper(
         child: Theme(
           data: _resolveThemeOf(context),

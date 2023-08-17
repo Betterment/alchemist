@@ -10,11 +10,11 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Alchemist Example App'),
       ),
-      body: SizedBox.expand(
+      body: const SizedBox.expand(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               SizedBox(height: 16),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),

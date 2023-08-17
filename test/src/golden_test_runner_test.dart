@@ -153,7 +153,7 @@ void main() {
 
     testWidgets('resets window size after the test has run', (tester) async {
       late final Size sizeDuringTestRun;
-      final originalSize = tester.binding.window.physicalSize;
+      final originalSize = tester.view.physicalSize;
       when(
         () => goldenTestAdapter.pumpGoldenTest(
           rootKey: any(named: 'rootKey'),
@@ -168,7 +168,7 @@ void main() {
           variantConfigTheme: any(named: 'variantConfigTheme'),
         ),
       ).thenAnswer((_) async {
-        tester.binding.window.physicalSizeTestValue = Size.zero;
+        tester.view.physicalSize = Size.zero;
       });
 
       final givenException = Exception();
@@ -179,14 +179,14 @@ void main() {
           renderShadows: true,
           widget: const SizedBox.square(dimension: 200),
           whilePerforming: (testerDuringTestRun) {
-            sizeDuringTestRun = testerDuringTestRun.binding.window.physicalSize;
+            sizeDuringTestRun = testerDuringTestRun.view.physicalSize;
             throw givenException;
           },
         ),
         throwsA(same(givenException)),
       );
 
-      expect(tester.binding.window.physicalSize, originalSize);
+      expect(tester.view.physicalSize, originalSize);
       expect(sizeDuringTestRun, Size.zero);
     });
 

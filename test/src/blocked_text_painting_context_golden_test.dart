@@ -32,16 +32,16 @@ void main() {
     const goldenFilePath = 'blocked_text_image_reference.png';
 
     Future<void> setUpSurface(WidgetTester tester) async {
-      final originalSize = tester.binding.window.physicalSize;
+      final originalSize = tester.view.physicalSize;
       const adjustedSize = Size(250, 100);
 
-      tester.binding.window.physicalSizeTestValue = adjustedSize;
+      tester.view.physicalSize = adjustedSize;
       await tester.binding.setSurfaceSize(adjustedSize);
-      tester.binding.window.devicePixelRatioTestValue = 1.0;
+      tester.view.devicePixelRatio = 1.0;
 
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      addTearDown(tester.view.resetPhysicalSize);
       addTearDown(() => tester.binding.setSurfaceSize(originalSize));
-      addTearDown(tester.binding.window.clearDevicePixelRatioTestValue);
+      addTearDown(tester.view.resetDevicePixelRatio);
     }
 
     Widget buildSubject({
@@ -50,12 +50,12 @@ void main() {
       return MaterialApp(
         key: key,
         debugShowCheckedModeBanner: false,
-        home: Scaffold(
+        home: const Scaffold(
           body: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   'black text',
                   style: TextStyle(color: Color(0xFF000000)),
