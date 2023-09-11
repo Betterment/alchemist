@@ -106,10 +106,10 @@ void main() {
         Future<void> Function(WidgetTester) callback, {
         bool? skip,
         Timeout? timeout,
-        Duration? initialTimeout,
         bool semanticsEnabled = false,
         TestVariant<Object?> variant = const DefaultTestVariant(),
         dynamic tags,
+        int? retry,
       }) {}
 
       test('overrides value', () {
@@ -293,7 +293,7 @@ void main() {
 
           final targetSize = tester.getSize(find.byKey(groupKey));
 
-          expect(tester.binding.window.physicalSize, targetSize);
+          expect(tester.view.physicalSize, targetSize);
         },
       );
 
@@ -310,7 +310,7 @@ void main() {
           widget: buildGroup(),
         );
 
-        expect(tester.binding.window.textScaleFactor, 2.0);
+        expect(tester.platformDispatcher.textScaleFactor, 2.0);
       });
 
       testWidgets(
@@ -421,8 +421,9 @@ void main() {
           ),
         );
 
-        final windowMediaQuery =
-            MediaQueryData.fromWindow(tester.binding.window);
+        final windowMediaQuery = MediaQueryData.fromView(
+          tester.binding.platformDispatcher.views.first,
+        );
 
         expect(find.byType(MediaQuery), findsOneWidget);
         expect(

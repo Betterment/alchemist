@@ -14,10 +14,10 @@ typedef TestWidgetsFn = FutureOr<void> Function(
   Future<void> Function(WidgetTester) callback, {
   bool? skip,
   Timeout? timeout,
-  Duration? initialTimeout,
   bool semanticsEnabled,
   TestVariant<Object?> variant,
   dynamic tags,
+  int? retry,
 });
 
 /// The signature of the `tearDown` and `setUp` test functions.
@@ -231,9 +231,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required PumpWidget pumpWidget,
     required Widget widget,
   }) async {
-    tester.binding.window.devicePixelRatioTestValue = 1.0;
-    tester.binding.window.platformDispatcher.textScaleFactorTestValue =
-        textScaleFactor;
+    tester.view.devicePixelRatio = 1.0;
+    tester.platformDispatcher.textScaleFactorTestValue = textScaleFactor;
 
     await pumpWidget(
       tester,
@@ -279,7 +278,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     final childSize = tester.getSize(find.byKey(childKey));
 
     await tester.binding.setSurfaceSize(childSize);
-    tester.binding.window.physicalSizeTestValue = childSize;
+    tester.view.physicalSize = childSize;
 
     await tester.pump();
   }
@@ -291,7 +290,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
   }) async {
     var renderObject = tester.renderObject(finder);
     while (!renderObject.isRepaintBoundary) {
-      renderObject = renderObject.parent! as RenderObject;
+      renderObject = renderObject.parent!;
     }
     final layer = renderObject.debugLayer! as OffsetLayer;
     paintingContextBuilder(
@@ -383,15 +382,11 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      data: MediaQuery.maybeOf(context) ??
-          MediaQueryData.fromWindow(WidgetsBinding.instance.window),
-      child: _LocalizationWrapper(
-        child: Theme(
-          data: _resolveThemeOf(context),
-          child: _NavigatorWrapper(
-            child: child,
-          ),
+    return _LocalizationWrapper(
+      child: Theme(
+        data: _resolveThemeOf(context),
+        child: _NavigatorWrapper(
+          child: child,
         ),
       ),
     );

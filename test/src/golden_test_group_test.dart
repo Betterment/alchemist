@@ -11,7 +11,7 @@ Matcher hasColumns(int amount) {
     (t) => t.children.isEmpty ? null : t.children.first,
     'first row',
     isA<TableRow>().having(
-      (r) => r.children?.length,
+      (r) => r.children.length,
       'column count',
       amount,
     ),

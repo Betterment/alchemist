@@ -58,10 +58,10 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
         Future<void> Function(WidgetTester) callback, {
         bool? skip,
         Timeout? timeout,
-        Duration? initialTimeout,
         bool semanticsEnabled = true,
         TestVariant<Object?> variant = const DefaultTestVariant(),
         dynamic tags,
+        int? retry,
       }) async {
         for (final value in variant.values) {
           await variant.setUp(value);
