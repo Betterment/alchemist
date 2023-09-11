@@ -72,8 +72,17 @@ class BlockedTextCanvasAdapter implements Canvas {
   /// Draws a rectangle on the canvas where the [paragraph]
   /// would otherwise be rendered
   @override
-  void drawParagraph(ui.Paragraph paragraph, ui.Offset offset) => parent
-      .drawRect(offset & Size(paragraph.width, paragraph.height), Paint());
+  void drawParagraph(ui.Paragraph paragraph, ui.Offset offset) =>
+      parent.drawRect(
+        offset &
+            Size(
+              paragraph.width.isFinite
+                  ? paragraph.width
+                  : paragraph.longestLine,
+              paragraph.height,
+            ),
+        Paint(),
+      );
 
   @override
   void clipPath(ui.Path path, {bool doAntiAlias = true}) =>
