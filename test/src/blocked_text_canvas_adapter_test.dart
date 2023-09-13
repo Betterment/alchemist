@@ -18,6 +18,10 @@ void main() {
     late ui.Canvas parent;
     late BlockedTextCanvasAdapter subject;
 
+    setUpAll(() {
+      registerFallbackValue(ui.Paint());
+    });
+
     setUp(() {
       parent = MockCanvas();
       subject = BlockedTextCanvasAdapter(parent);
@@ -31,7 +35,22 @@ void main() {
       subject.drawParagraph(paragraph, offset);
       verify(
         () => parent.drawRect(
-          offset & ui.Size(paragraph.width, paragraph.height),
+          offset & const ui.Size(200, 400),
+          any(that: isA<ui.Paint>()),
+        ),
+      ).called(1);
+    });
+
+    test('drawParagraph draws a rectangle for infinite width', () {
+      const offset = ui.Offset(20, 40);
+      final paragraph = MockParagraph();
+      when(() => paragraph.width).thenReturn(double.infinity);
+      when(() => paragraph.longestLine).thenReturn(400);
+      when(() => paragraph.height).thenReturn(400);
+      subject.drawParagraph(paragraph, offset);
+      verify(
+        () => parent.drawRect(
+          offset & const ui.Size(400, 400),
           any(that: isA<ui.Paint>()),
         ),
       ).called(1);
