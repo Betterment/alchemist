@@ -1,3 +1,7 @@
+# 0.7.0
+- fix: upgrade to flutter 3.13 (#95)
+- fix: render objects not rendering text (#98)
+
 # 0.6.1
 
 - fix: dialogs and dropdown menus not being displayed correctly
