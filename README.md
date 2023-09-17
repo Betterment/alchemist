@@ -23,7 +23,7 @@ Heavily inspired by [Ebay Motor's `golden_toolkit` package][golden_toolkit_pub],
 
 ### Feature Overview
 
-- 🤖 [Separate local & CI tests](#about-readable-tests-vs-ci-tests)
+- 🤖 [Separate local & CI tests](#about-platform-tests-vs-ci-tests)
 - 📝 [Declarative & terse testing API](#writing-the-test)
 - 📐 [Automatic file sizing](#automaticcustom-image-sizing)
 - 🔧 [Advanced configuration](#advanced-usage)
