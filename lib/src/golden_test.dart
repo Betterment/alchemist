@@ -17,12 +17,15 @@ GoldenTestRunner _goldenTestRunner = defaultGoldenTestRunner;
 
 /// Golden test runner. Overriding this makes it easier to unit-test Alchemist.
 GoldenTestRunner get goldenTestRunner => _goldenTestRunner;
+
 set goldenTestRunner(GoldenTestRunner value) => _goldenTestRunner = value;
 
 /// An internal function that executes all necessary setup steps required to run
 /// golden tests.
-Future<void> _setUpGoldenTests() async {
-  await loadFonts();
+Future<void> _setUpGoldenTests({required bool mustLoadFonts}) async {
+  if (mustLoadFonts) {
+    await loadFonts();
+  }
 
   RenderErrorBox.textStyle = ui.TextStyle(
     fontFamily: 'Roboto',
@@ -31,10 +34,10 @@ Future<void> _setUpGoldenTests() async {
 
 /// Loads a font for use in golden tests.
 ///
-/// Do not use this method directly. This method is used internally by the
-/// [goldenTest] method in its setup phase.
-@protected
-@visibleForTesting
+/// You can use this method outside goldenTest in some custom setup phase if
+/// you want to use [goldenTest] with the property loadFonts disabled.
+/// The effect of this method is used internally by the [goldenTest] method in
+/// its setup phase.
 Future<void> loadFonts() async {
   final bundle = rootBundle;
   final fontManifestString = await bundle.loadString('FontManifest.json');
@@ -122,6 +125,9 @@ Future<void> loadFonts() async {
 /// built-in interaction receives a finder indicating all of the widgets
 /// that should be interacted with.
 ///
+/// The [loadFonts] can be disabled if you want to run a lot of golden test
+/// and want to avoid some memory issue loadFonts will be called many times.
+///
 /// **Note**: If a built-in [whilePerforming] interaction is provided, the
 /// widget tree is **always** pumped at least once before the assertion phase
 /// of the test.
@@ -141,6 +147,7 @@ Future<void> goldenTest(
   PumpWidget pumpWidget = onlyPumpWidget,
   Interaction? whilePerforming,
   required ValueGetter<Widget> builder,
+  bool loadFonts = true,
 }) async {
   if (skip) return;
 
@@ -160,7 +167,9 @@ Future<void> goldenTest(
     currentPlatform: currentPlatform,
   );
 
-  goldenTestAdapter.setUp(_setUpGoldenTests);
+  goldenTestAdapter.setUp(
+    () => _setUpGoldenTests(mustLoadFonts: loadFonts),
+  );
 
   await goldenTestAdapter.testWidgets(
     description,
