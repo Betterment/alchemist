@@ -102,7 +102,8 @@ extension GoldenTestThemeDataExtensions on ThemeData {
         labelSmall: textTheme.labelSmall?.stripAlchemistPackage(),
       ),
       floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
-        extendedTextStyle: floatingActionButtonTheme.extendedTextStyle?.stripAlchemistPackage(),
+        extendedTextStyle: floatingActionButtonTheme.extendedTextStyle
+            ?.stripAlchemistPackage(),
       ),
       dialogTheme: dialogTheme.copyWith(
         titleTextStyle: dialogTheme.titleTextStyle?.stripAlchemistPackage(),

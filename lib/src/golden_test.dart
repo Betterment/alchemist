@@ -38,10 +38,12 @@ Future<void> _setUpGoldenTests() async {
 Future<void> loadFonts() async {
   final bundle = rootBundle;
   final fontManifestString = await bundle.loadString('FontManifest.json');
-  final fontManifest = (json.decode(fontManifestString) as List<dynamic>).map((dynamic x) => x as Map<String, dynamic>);
+  final fontManifest = (json.decode(fontManifestString) as List<dynamic>)
+      .map((dynamic x) => x as Map<String, dynamic>);
 
   for (final entry in fontManifest) {
-    final family = (entry['family'] as String).stripFontFamilyAlchemistPackageName();
+    final family =
+        (entry['family'] as String).stripFontFamilyAlchemistPackageName();
 
     final fontAssets = [
       for (final fontAssetEntry in entry['fonts'] as List<dynamic>)

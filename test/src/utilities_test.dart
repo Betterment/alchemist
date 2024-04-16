@@ -93,7 +93,8 @@ to avoid unnecessary overhead.''',
   });
 
   group('GoldenTestThemeDataExtensions', () {
-    test('stripTextPackages remove package prefix from all textTheme styles', () {
+    test('stripTextPackages remove package prefix from all textTheme styles',
+        () {
       const fontFamilyBefore = 'packages/alchemist/dir1/dir2';
       const fontFamilyAfter = 'dir1/dir2';
 
@@ -161,14 +162,16 @@ to avoid unnecessary overhead.''',
 
   group('TestAssetBundle', () {
     setUp(() {
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMessageHandler(
         'flutter/assets',
         (message) async => message,
       );
     });
 
     tearDown(() {
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMessageHandler(
         'flutter/assets',
         null,
       );
