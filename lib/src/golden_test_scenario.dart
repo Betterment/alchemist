@@ -86,14 +86,16 @@ class GoldenTestScenario extends StatelessWidget {
         children: [
           Text(
             name,
-            style: nameTextStyle ?? const TextStyle(fontSize: 18),
+            style: const TextStyle(fontSize: 18).merge(nameTextStyle),
             textHeightBehavior: const TextHeightBehavior(
               applyHeightToFirstAscent: false,
             ),
           ),
           const SizedBox(height: 8),
           ConstrainedBox(
-            constraints: constraints ?? GoldenTestScenarioConstraints.maybeOf(context) ?? const BoxConstraints(),
+            constraints: constraints ??
+                GoldenTestScenarioConstraints.maybeOf(context) ??
+                const BoxConstraints(),
             child: Builder(
               builder: builder,
             ),
