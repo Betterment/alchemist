@@ -42,7 +42,8 @@ Future<void> loadFonts() async {
       .map((dynamic x) => x as Map<String, dynamic>);
 
   for (final entry in fontManifest) {
-    final family = (entry['family'] as String).stripFontFamilyPackageName();
+    final family =
+        (entry['family'] as String).stripFontFamilyAlchemistPackageName();
 
     final fontAssets = [
       for (final fontAssetEntry in entry['fonts'] as List<dynamic>)

@@ -80,34 +80,34 @@ extension GoldenTestThemeDataExtensions on ThemeData {
   static const obscuredTextFontFamily = 'Ahem';
 
   /// Strips all text packages from this theme's [ThemeData.textTheme] for use
-  /// in golden tests using [GoldenTestTextStyleExtensions.stripPackage].
+  /// in golden tests using [GoldenTestTextStyleExtensions.stripAlchemistPackage].
   ///
   /// Only used internally and should not be used by consumers.
   @protected
   ThemeData stripTextPackages() {
     return copyWith(
       textTheme: textTheme.copyWith(
-        displayLarge: textTheme.displayLarge?.stripPackage(),
-        displayMedium: textTheme.displayMedium?.stripPackage(),
-        displaySmall: textTheme.displaySmall?.stripPackage(),
-        headlineMedium: textTheme.headlineMedium?.stripPackage(),
-        headlineSmall: textTheme.headlineSmall?.stripPackage(),
-        titleLarge: textTheme.titleLarge?.stripPackage(),
-        titleMedium: textTheme.titleMedium?.stripPackage(),
-        titleSmall: textTheme.titleSmall?.stripPackage(),
-        bodyLarge: textTheme.bodyLarge?.stripPackage(),
-        bodyMedium: textTheme.bodyMedium?.stripPackage(),
-        bodySmall: textTheme.bodySmall?.stripPackage(),
-        labelLarge: textTheme.labelLarge?.stripPackage(),
-        labelSmall: textTheme.labelSmall?.stripPackage(),
+        displayLarge: textTheme.displayLarge?.stripAlchemistPackage(),
+        displayMedium: textTheme.displayMedium?.stripAlchemistPackage(),
+        displaySmall: textTheme.displaySmall?.stripAlchemistPackage(),
+        headlineMedium: textTheme.headlineMedium?.stripAlchemistPackage(),
+        headlineSmall: textTheme.headlineSmall?.stripAlchemistPackage(),
+        titleLarge: textTheme.titleLarge?.stripAlchemistPackage(),
+        titleMedium: textTheme.titleMedium?.stripAlchemistPackage(),
+        titleSmall: textTheme.titleSmall?.stripAlchemistPackage(),
+        bodyLarge: textTheme.bodyLarge?.stripAlchemistPackage(),
+        bodyMedium: textTheme.bodyMedium?.stripAlchemistPackage(),
+        bodySmall: textTheme.bodySmall?.stripAlchemistPackage(),
+        labelLarge: textTheme.labelLarge?.stripAlchemistPackage(),
+        labelSmall: textTheme.labelSmall?.stripAlchemistPackage(),
       ),
       floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
-        extendedTextStyle:
-            floatingActionButtonTheme.extendedTextStyle?.stripPackage(),
+        extendedTextStyle: floatingActionButtonTheme.extendedTextStyle
+            ?.stripAlchemistPackage(),
       ),
       dialogTheme: dialogTheme.copyWith(
-        titleTextStyle: dialogTheme.titleTextStyle?.stripPackage(),
-        contentTextStyle: dialogTheme.contentTextStyle?.stripPackage(),
+        titleTextStyle: dialogTheme.titleTextStyle?.stripAlchemistPackage(),
+        contentTextStyle: dialogTheme.contentTextStyle?.stripAlchemistPackage(),
       ),
     );
   }
@@ -135,7 +135,7 @@ extension GoldenTestTextStyleExtensions on TextStyle {
   /// Strips the package name from this text style's [TextStyle.fontFamily] for
   /// use in golden tests.
   @protected
-  TextStyle stripPackage() {
+  TextStyle stripAlchemistPackage() {
     return TextStyle(
       inherit: inherit,
       color: color,
@@ -158,7 +158,7 @@ extension GoldenTestTextStyleExtensions on TextStyle {
       decorationStyle: decorationStyle,
       decorationThickness: decorationThickness,
       debugLabel: debugLabel,
-      fontFamily: fontFamily?.stripFontFamilyPackageName(),
+      fontFamily: fontFamily?.stripFontFamilyAlchemistPackageName(),
       fontFamilyFallback: fontFamilyFallback,
       overflow: overflow,
     );
@@ -168,8 +168,8 @@ extension GoldenTestTextStyleExtensions on TextStyle {
 /// Strips the package name from the given font family for use in golden tests.
 extension FontFamilyStringExtensions on String {
   /// Strips the package name from this font family for use in golden tests.
-  String stripFontFamilyPackageName() {
-    return replaceAll(RegExp(r'packages\/[^\/]*\/'), '');
+  String stripFontFamilyAlchemistPackageName() {
+    return replaceAll(RegExp(r'packages\/alchemist\/'), '');
   }
 }
 

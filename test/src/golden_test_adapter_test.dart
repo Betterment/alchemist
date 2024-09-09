@@ -644,10 +644,10 @@ void main() {
       );
 
       testWidgets(
-        'has its text packages stripped',
+        'has alchemist text packages stripped',
         (tester) async {
           const fontFamilyName = 'fontFamilyName';
-          const providedFontFamily = 'packages/test_package/$fontFamilyName';
+          const providedFontFamily = 'packages/alchemist/$fontFamilyName';
 
           await tester.pumpWidget(
             Theme(

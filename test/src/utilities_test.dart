@@ -95,7 +95,7 @@ to avoid unnecessary overhead.''',
   group('GoldenTestThemeDataExtensions', () {
     test('stripTextPackages remove package prefix from all textTheme styles',
         () {
-      const fontFamilyBefore = 'packages/package_name/dir1/dir2';
+      const fontFamilyBefore = 'packages/alchemist/dir1/dir2';
       const fontFamilyAfter = 'dir1/dir2';
 
       final base = ThemeData();
@@ -142,12 +142,12 @@ to avoid unnecessary overhead.''',
   });
 
   group('GoldenTestTextStyleExtensions', () {
-    test('stripPackage removes package prefix from style', () {
-      const fontFamilyBefore = 'packages/package_name/dir1/dir2';
+    test('stripAlchemistPackage removes package prefix from style', () {
+      const fontFamilyBefore = 'packages/alchemist/dir1/dir2';
       const fontFamilyAfter = 'dir1/dir2';
 
       const styleBefore = TextStyle(fontFamily: fontFamilyBefore);
-      final styleAfter = styleBefore.stripPackage();
+      final styleAfter = styleBefore.stripAlchemistPackage();
 
       expect(
         styleAfter,
