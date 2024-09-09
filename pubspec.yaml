@@ -6,8 +6,8 @@ homepage: https://github.com/Betterment/alchemist
 repository: https://github.com/Betterment/alchemist
 
 environment:
-  sdk: ">=3.0.1 <4.0.0"
-  flutter: ">=3.13.0"
+  sdk: ">=3.2.0 <4.0.0"
+  flutter: ">=3.16.0"
 
 dependencies:
   equatable: ^2.0.3

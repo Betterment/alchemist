@@ -151,9 +151,9 @@ void main() {
         expect(
           mediaQuery,
           isA<MediaQueryData>().having(
-            (m) => m.textScaleFactor,
-            'textScaleFactor',
-            2.0,
+            (m) => m.textScaler,
+            'textScalar',
+            const TextScaler.linear(2),
           ),
         );
       },

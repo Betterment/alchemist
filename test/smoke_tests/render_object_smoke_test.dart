@@ -17,7 +17,7 @@ void main() {
 }
 
 class _CustomExampleRenderObject extends LeafRenderObjectWidget {
-  const _CustomExampleRenderObject({Key? key}) : super(key: key);
+  const _CustomExampleRenderObject();
 
   @override
   _CustomExampleRenderBox createRenderObject(BuildContext context) {
