@@ -12,7 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockBlockedPaintingContext extends Mock implements BlockedTextPaintingContext {}
+class MockBlockedPaintingContext extends Mock
+    implements BlockedTextPaintingContext {}
 
 class MockRenderObject extends Mock implements RenderObject {
   @override
@@ -23,7 +24,8 @@ class MockRenderObject extends Mock implements RenderObject {
 
 class FakeWidgetsLocalizations extends DefaultWidgetsLocalizations {}
 
-class FakeLocalizationsDelegate extends LocalizationsDelegate<WidgetsLocalizations> {
+class FakeLocalizationsDelegate
+    extends LocalizationsDelegate<WidgetsLocalizations> {
   @override
   Future<WidgetsLocalizations> load(ui.Locale locale) {
     return SynchronousFuture(FakeWidgetsLocalizations());
@@ -72,7 +74,8 @@ void main() {
 
   group('overrides', () {
     group('goldenFileExpectationFn', () {
-      MatchesGoldenFileInvocation<void> customExpectation(Object a, Object b) => () => null;
+      MatchesGoldenFileInvocation<void> customExpectation(Object a, Object b) =>
+          () => null;
 
       test('overrides value', () {
         goldenFileExpectationFn = customExpectation;
@@ -215,7 +218,8 @@ void main() {
         );
         final finder = find.byKey(key);
 
-        final uiImage = await adapter.getBlockedTextImage(finder: finder, tester: tester);
+        final uiImage =
+            await adapter.getBlockedTextImage(finder: finder, tester: tester);
 
         verify(
           () => paintingContext.paintSingleChild(
@@ -609,7 +613,8 @@ void main() {
         'when obscureFont is true',
         (tester) async {
           const providedFontFamily = 'providedFontFamily';
-          const expectedFontFamily = GoldenTestThemeDataExtensions.obscuredTextFontFamily;
+          const expectedFontFamily =
+              GoldenTestThemeDataExtensions.obscuredTextFontFamily;
 
           await tester.pumpWidget(
             Theme(
