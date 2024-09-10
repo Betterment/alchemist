@@ -152,7 +152,7 @@ void main() {
           mediaQuery,
           isA<MediaQueryData>().having(
             (m) => m.textScaler,
-            'textScalar',
+            'textScaler',
             const TextScaler.linear(2),
           ),
         );
