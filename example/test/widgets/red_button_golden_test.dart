@@ -18,6 +18,18 @@ void main() {
             ),
           ),
           GoldenTestScenario(
+            name: 'enabled with a custom textstyle name label',
+            nameTextStyle: const TextStyle(
+              color: Colors.blue,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+            child: RedButton(
+              onPressed: () {},
+              child: const Text('Red Button'),
+            ),
+          ),
+          GoldenTestScenario(
             name: 'disabled',
             child: const RedButton(
               onPressed: null,
