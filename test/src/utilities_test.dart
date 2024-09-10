@@ -50,7 +50,7 @@ void main() {
           printLogs,
           [
             '''
-No widgets found that match finder: zero widgets with text "does not exist" (ignoring offstage widgets).
+No widgets found that match finder: Found 0 widgets with text "does not exist": [].
 No gestures will be performed.
 
 If this is intentional, consider not calling this method
