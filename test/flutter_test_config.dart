@@ -11,6 +11,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   return AlchemistConfig.runWithConfig(
     config: AlchemistConfig(
       theme: ThemeData(
+        useMaterial3: false,
         textTheme: const TextTheme().apply(fontFamily: 'Roboto'),
       ),
       platformGoldensConfig:

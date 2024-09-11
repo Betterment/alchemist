@@ -80,7 +80,8 @@ extension GoldenTestThemeDataExtensions on ThemeData {
   static const obscuredTextFontFamily = 'Ahem';
 
   /// Strips all text packages from this theme's [ThemeData.textTheme] for use
-  /// in golden tests using [GoldenTestTextStyleExtensions.stripAlchemistPackage].
+  /// in golden tests using
+  /// [GoldenTestTextStyleExtensions.stripAlchemistPackage].
   ///
   /// Only used internally and should not be used by consumers.
   @protected

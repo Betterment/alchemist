@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 class GoldenTestScenarioConstraints extends InheritedWidget {
   /// {@macro golden_test_scenario_constraints}
   const GoldenTestScenarioConstraints({
-    Key? key,
-    required Widget child,
+    super.key,
+    required super.child,
     required this.constraints,
-  }) : super(key: key, child: child);
+  });
 
   /// The constraints to apply to the scenario's child.
   final BoxConstraints? constraints;

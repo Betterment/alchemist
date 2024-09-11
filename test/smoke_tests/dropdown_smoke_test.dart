@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class TestDropdownButton extends StatelessWidget {
-  const TestDropdownButton({Key? key}) : super(key: key);
+  const TestDropdownButton({super.key});
 
   @override
   Widget build(BuildContext context) => Center(
