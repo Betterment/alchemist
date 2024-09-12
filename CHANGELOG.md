@@ -1,3 +1,19 @@
+# 0.8.0
+
+## What's Changed
+* docs: fix readme relative link (Separate local & CI tests) by @FirentisTFW in https://github.com/Betterment/alchemist/pull/100
+* docs: fix a small typo under RECOMMENDED_SETUP_GUIDE.md by @pedromassango in https://github.com/Betterment/alchemist/pull/116
+* fix: loading fonts from other packages by @krispypen in https://github.com/Betterment/alchemist/pull/111
+* feat: allow updating goldens on CI by @btrautmann in https://github.com/Betterment/alchemist/pull/121
+* chore: bump flutter/dart min sdk constraints by @btrautmann in https://github.com/Betterment/alchemist/pull/118
+
+## New Contributors
+* @FirentisTFW made their first contribution in https://github.com/Betterment/alchemist/pull/100
+* @pedromassango made their first contribution in https://github.com/Betterment/alchemist/pull/116
+* @krispypen made their first contribution in https://github.com/Betterment/alchemist/pull/111
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.7.0...v0.8.0
+
 # 0.7.0
 - fix: upgrade to flutter 3.13 (#95)
 - fix: render objects not rendering text (#98)
