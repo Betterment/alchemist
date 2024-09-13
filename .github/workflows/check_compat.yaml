@@ -24,6 +24,9 @@ jobs:
           channel: ${{ matrix.channel }}
           cache: true
 
+      - name: Install Dependencies
+        run: flutter packages get
+
       - name: Run tests
         run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
 
