@@ -58,6 +58,7 @@ void main() {
           obscureFont: any(named: 'obscureFont'),
           variantConfigTheme: any(named: 'variantConfigTheme'),
           globalConfigTheme: any(named: 'globalConfigTheme'),
+          goldenTestTheme: any(named: 'goldenTestTheme'),
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           widget: any(named: 'widget'),
@@ -156,17 +157,17 @@ void main() {
       final originalSize = tester.view.physicalSize;
       when(
         () => goldenTestAdapter.pumpGoldenTest(
-          rootKey: any(named: 'rootKey'),
-          tester: any(named: 'tester'),
-          textScaleFactor: any(named: 'textScaleFactor'),
-          constraints: any(named: 'constraints'),
-          pumpBeforeTest: any(named: 'pumpBeforeTest'),
-          pumpWidget: any(named: 'pumpWidget'),
-          widget: any(named: 'widget'),
-          obscureFont: any(named: 'obscureFont'),
-          globalConfigTheme: any(named: 'globalConfigTheme'),
-          variantConfigTheme: any(named: 'variantConfigTheme'),
-        ),
+            rootKey: any(named: 'rootKey'),
+            tester: any(named: 'tester'),
+            textScaleFactor: any(named: 'textScaleFactor'),
+            constraints: any(named: 'constraints'),
+            pumpBeforeTest: any(named: 'pumpBeforeTest'),
+            pumpWidget: any(named: 'pumpWidget'),
+            widget: any(named: 'widget'),
+            obscureFont: any(named: 'obscureFont'),
+            globalConfigTheme: any(named: 'globalConfigTheme'),
+            variantConfigTheme: any(named: 'variantConfigTheme'),
+            goldenTestTheme: any(named: 'goldenTestTheme')),
       ).thenAnswer((_) async {
         tester.view.physicalSize = Size.zero;
       });

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/golden_test_scenario_constraints.dart';
+import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:flutter/material.dart';
 
 /// A function that receives the index of a column in a table and returns the
@@ -112,15 +113,17 @@ class GoldenTestGroup extends StatelessWidget {
       }
     }
 
+    final alchemistConfig = AlchemistConfig.current();
+    final testTheme =
+        alchemistConfig.goldenTestTheme ?? GoldenTestTheme.standard();
+
     return GoldenTestScenarioConstraints(
       constraints: scenarioConstraints,
       child: Table(
         defaultColumnWidth: const IntrinsicColumnWidth(),
         columnWidths: columnWidths,
         border: TableBorder.symmetric(
-          inside: BorderSide(
-            color: Colors.black.withOpacity(0.3),
-          ),
+          inside: BorderSide(color: testTheme.borderColor),
         ),
         children: [
           for (int i = 0; i < _effectiveRows; i++)
