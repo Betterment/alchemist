@@ -44,7 +44,7 @@ jobs:
         with:
           payload: |
             {
-              "message": "Heads up! Alchemist compatibility check failed for ${{ matrix.channel }} channel."
+              "message": "Heads up! Alchemist compatibility check failed for ${{ matrix.channel }} channel.",
               "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
         env:
