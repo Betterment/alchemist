@@ -1,13 +1,11 @@
 name: Compatibility Check
 
 on:
-    schedule:
-      # Run daily at 00:00 UTC
-      - cron: '0 0 * * *'
+    # Cron disabled for now, because there are broken goldens on latest stable & beta due to color changes
+    # schedule:
+    #   # Run daily at 00:00 UTC
+    #   - cron: '0 0 * * *'
     workflow_dispatch:
-    push:
-      branches:
-        - bt/compat-job
 
 jobs:
   build:
