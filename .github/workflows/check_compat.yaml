@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        channel: ['3.16.9', '3.19.6', '3.22.3', '3.24.3']
+        channel: ['3.22.0', '3.22.1', '3.22.2', '3.22.3']
 
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
