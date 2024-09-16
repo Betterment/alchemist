@@ -13,27 +13,30 @@ void main() {
           ),
           GoldenTestScenario(
             name: 'scenario_button',
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                  const Color(0xFF2196F3),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                    const Color(0xFF2196F3),
+                  ),
+                  foregroundColor: MaterialStateProperty.all(
+                    const Color(0xFFFFFFFF),
+                  ),
+                  shadowColor: MaterialStateProperty.all(
+                    const Color(0xFFFF0000),
+                  ),
+                  surfaceTintColor: MaterialStateProperty.all(
+                    const Color(0xFF00FF00),
+                  ),
+                  overlayColor: MaterialStateProperty.all(
+                    const Color(0xFF0000FF),
+                  ),
                 ),
-                foregroundColor: MaterialStateProperty.all(
-                  const Color(0xFFFFFFFF),
-                ),
-                shadowColor: MaterialStateProperty.all(
-                  const Color(0xFFFF0000),
-                ),
-                surfaceTintColor: MaterialStateProperty.all(
-                  const Color(0xFF00FF00),
-                ),
-                overlayColor: MaterialStateProperty.all(
-                  const Color(0xFF0000FF),
-                ),
+                onPressed: () {},
+                onLongPress: () {},
+                child: const Text('button'),
               ),
-              onPressed: () {},
-              onLongPress: () {},
-              child: const Text('button'),
             ),
           ),
         ],
