@@ -41,9 +41,6 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     final candidates = subDirectories.where((dir) {
       try {
         final parsedVersion = Version.parse(path.basename(dir.path));
-        print('parsedVersion is $parsedVersion');
-        print('inputVersion is $inputVersion');
-        print('isCandidate? ${parsedVersion <= inputVersion}');
         return parsedVersion <= inputVersion;
       } on FormatException {
         return false;
@@ -51,12 +48,15 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     });
 
     // If we're updating golden files, always return the associated directory.
-    if (autoUpdateGoldenFiles) {
+    if (autoUpdateGoldenFiles || candidates.isEmpty) {
       return Directory(path.join('goldens', flutterVersion));
     }
 
     if (candidates.isEmpty) {
-      return Directory('goldens');
+      throw ArgumentError(
+        'No valid directories found in `goldens` for the provided '
+        'flutter version: $flutterVersion',
+      );
     }
 
     // If we have multiple candidates, we want to find the highest version
