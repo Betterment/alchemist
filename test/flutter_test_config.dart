@@ -41,6 +41,9 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     final candidates = subDirectories.where((dir) {
       try {
         final parsedVersion = Version.parse(path.basename(dir.path));
+        print('parsedVersion is $parsedVersion');
+        print('inputVersion is $inputVersion');
+        print('isCandidate? ${parsedVersion <= inputVersion}');
         return parsedVersion <= inputVersion;
       } on FormatException {
         return false;
