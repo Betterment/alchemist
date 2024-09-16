@@ -72,6 +72,7 @@ jobs:
 
       - name: Update Goldens
         run: |
+          flutter --disable-analytics
           flutter test --update-goldens
         continue-on-error: true
 

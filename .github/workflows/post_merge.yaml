@@ -24,7 +24,9 @@ jobs:
         run: flutter packages get
 
       - name: Run tests
-        run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
+        run: |
+          flutter --disable-analytics
+          flutter test --no-pub --coverage --test-randomize-ordering-seed=random
 
       - uses: codecov/codecov-action@v2
         with:
