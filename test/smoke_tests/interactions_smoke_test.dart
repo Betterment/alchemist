@@ -22,8 +22,13 @@ void main() {
                   const Color(0xFFFFFFFF),
                 ),
                 shadowColor: MaterialStateProperty.all(
-                  // Red
                   const Color(0xFFFF0000),
+                ),
+                surfaceTintColor:  MaterialStateProperty.all(
+                  const Color(0xFF00FF00),
+                ),
+                overlayColor: MaterialStateProperty.all(
+                  const Color(0xFF0000FF),
                 ),
               ),
               onPressed: () {},
