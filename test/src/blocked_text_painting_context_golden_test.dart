@@ -50,28 +50,26 @@ void main() {
       return MaterialApp(
         key: key,
         debugShowCheckedModeBanner: false,
-        home: const Scaffold(
-          body: Padding(
-            padding: EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'black text',
-                  style: TextStyle(color: Color(0xFF000000)),
-                ),
-                SizedBox(height: 3),
-                Text(
-                  'red text',
-                  style: TextStyle(color: Color(0xFFFF0000)),
-                ),
-                SizedBox(height: 3),
-                CustomPaint(
-                  painter: _TextCustomPainter(),
-                  size: Size(250, 20),
-                ),
-              ],
-            ),
+        home: const Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'black text',
+                style: TextStyle(color: Color(0xFF000000)),
+              ),
+              SizedBox(height: 3),
+              Text(
+                'red text',
+                style: TextStyle(color: Color(0xFFFF0000)),
+              ),
+              SizedBox(height: 3),
+              CustomPaint(
+                painter: _TextCustomPainter(),
+                size: Size(250, 20),
+              ),
+            ],
           ),
         ),
       );
