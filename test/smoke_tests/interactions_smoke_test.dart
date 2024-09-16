@@ -14,6 +14,18 @@ void main() {
           GoldenTestScenario(
             name: 'scenario_button',
             child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  const Color(0xFF2196F3),
+                ),
+                foregroundColor: MaterialStateProperty.all(
+                  const Color(0xFFFFFFFF),
+                ),
+                shadowColor: MaterialStateProperty.all(
+                  // Red
+                  const Color(0xFFFF0000),
+                ),
+              ),
               onPressed: () {},
               onLongPress: () {},
               child: const Text('button'),
