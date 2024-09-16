@@ -10,7 +10,8 @@ import 'package:version/version.dart';
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   final runningOnCi = Platform.environment.containsKey('GITHUB_ACTIONS');
 
-  final flutterVersionVariable = Platform.environment['ALCHEMIST_FLUTTER_VERSION'];
+  final flutterVersionVariable =
+      Platform.environment['ALCHEMIST_FLUTTER_VERSION'];
 
   /// Returns the goldens directory for the provided flutter version.
   ///
@@ -62,7 +63,8 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     });
   }
 
-  if (flutterVersionVariable != null && !flutterVersionVariable.isValidVersion()) {
+  if (flutterVersionVariable != null &&
+      !flutterVersionVariable.isValidVersion()) {
     throw FormatException(
       'Invalid flutter version provided: $flutterVersionVariable',
     );
