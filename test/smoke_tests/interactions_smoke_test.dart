@@ -24,7 +24,7 @@ void main() {
                 shadowColor: MaterialStateProperty.all(
                   const Color(0xFFFF0000),
                 ),
-                surfaceTintColor:  MaterialStateProperty.all(
+                surfaceTintColor: MaterialStateProperty.all(
                   const Color(0xFF00FF00),
                 ),
                 overlayColor: MaterialStateProperty.all(
