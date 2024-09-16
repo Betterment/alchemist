@@ -47,10 +47,12 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
       }
     });
 
+    // If we're updating golden files, always return the associated directory.
+    if (autoUpdateGoldenFiles) {
+      return Directory(path.join('goldens', flutterVersion));
+    }
+
     if (candidates.isEmpty) {
-      if (autoUpdateGoldenFiles) {
-        return Directory(path.join('goldens', flutterVersion));
-      }
       return Directory('goldens');
     }
 
