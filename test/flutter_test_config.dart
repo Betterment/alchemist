@@ -14,7 +14,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   // Grab the flutter version from the current environment.
   final versionResult = await Process.run(
     'flutter',
-    ['--version', '--machine'],
+    ['--version', '--machine', '--disable-analytics', '--no-animations'],
   );
 
   if (versionResult.exitCode != 0) {
