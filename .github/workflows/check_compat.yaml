@@ -31,9 +31,11 @@ jobs:
       - name: Install Dependencies
         run: flutter packages get
 
+      - name: Disable animations
+        run: flutter config --no-cli-animations
+
       - name: Run tests
         run: |
-          flutter --disable-analytics
           flutter test --no-pub --coverage --test-randomize-ordering-seed=random
 
       - name: Upload failures

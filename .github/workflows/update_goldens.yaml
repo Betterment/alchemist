@@ -70,9 +70,11 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Disable animations
+        run: flutter config --no-cli-animations
+
       - name: Update Goldens
         run: |
-          flutter --disable-analytics
           flutter test --update-goldens
         continue-on-error: true
 
