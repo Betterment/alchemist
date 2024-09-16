@@ -72,7 +72,7 @@ jobs:
 
       - name: Update Goldens
         run: |
-          ALCHEMIST_FLUTTER_VERSION=${{ inputs.flutter_version }} flutter test --update-goldens
+          flutter test --update-goldens
         continue-on-error: true
 
       - name: Commit Changes

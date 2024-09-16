@@ -50,7 +50,7 @@ jobs:
         run: flutter packages get
 
       - name: Run tests
-        run: ALCHEMIST_FLUTTER_VERSION=${{ matrix.flutter-version }} flutter test --no-pub --coverage --test-randomize-ordering-seed=random
+        run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
 
       - name: Upload failures
         if: failure()

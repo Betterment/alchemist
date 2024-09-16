@@ -24,7 +24,7 @@ jobs:
         run: flutter packages get
 
       - name: Run tests
-        run: ALCHEMIST_FLUTTER_VERSION=${{ env.FLUTTER_VERSION }} flutter test --no-pub --coverage --test-randomize-ordering-seed=random
+        run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
 
       - uses: codecov/codecov-action@v2
         with:

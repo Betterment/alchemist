@@ -10,8 +10,21 @@ import 'package:version/version.dart';
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   final runningOnCi = Platform.environment.containsKey('GITHUB_ACTIONS');
 
-  final flutterVersionVariable =
-      Platform.environment['ALCHEMIST_FLUTTER_VERSION'];
+  // Grab the flutter version from the current environment.
+  final versionResult = await Process.run(
+    '/bin/bash',
+    ['-c', r"flutter --version | head -n 1 | awk '{print $2}'"],
+  );
+
+  if (versionResult.exitCode != 0) {
+    throw const ProcessException(
+      'flutter --version',
+      ['/bin/bash', '-c', r"flutter --version | head -n 1 | awk '{print $2}'"],
+      'Failed to get flutter version',
+    );
+  }
+
+  final version = versionResult.stdout.toString().trim();
 
   /// Returns the goldens directory for the provided flutter version.
   ///
@@ -19,7 +32,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   /// - A directory that matches the provided flutter version exactly.
   /// - If no exact match is found, the highest version directory that is less
   /// than or equal to the provided flutter version.
-  /// - If no directories are found, the default `goldens` directory is used.
+  /// - If no directories are found, an error is thrown.
   ///
   /// If `autoUpdateGoldenFiles` is true (meaning we've passed
   /// --update-goldens), a directory matching the provided flutter version will
@@ -48,13 +61,13 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     });
 
     // If we're updating golden files, always return the associated directory.
-    if (autoUpdateGoldenFiles || candidates.isEmpty) {
+    if (autoUpdateGoldenFiles) {
       return Directory(path.join('goldens', flutterVersion));
     }
 
     if (candidates.isEmpty) {
       throw ArgumentError(
-        'No valid directories found in `goldens` for the provided '
+        'No valid directories found in `goldens` for the current '
         'flutter version: $flutterVersion',
       );
     }
@@ -68,10 +81,9 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     });
   }
 
-  if (flutterVersionVariable != null &&
-      !flutterVersionVariable.isValidVersion()) {
+  if (!version.isValidVersion()) {
     throw FormatException(
-      'Invalid flutter version provided: $flutterVersionVariable',
+      'Invalid flutter version provided: $version',
     );
   }
 
@@ -79,20 +91,10 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     String fileName,
     String environmentName,
   ) async {
-    final defaultFilePath = path.join(
-      'goldens',
-      environmentName.toLowerCase(),
-      '$fileName.png',
-    );
-
-    if (flutterVersionVariable == null) {
-      return defaultFilePath;
-    }
-
     // Check all subdirectories of `goldens` for a directory we can use for
     // the provided flutter version, falling back on `defaultFilePath` if none
     // exist.
-    final directory = goldensDirectory(flutterVersionVariable);
+    final directory = goldensDirectory(version);
     return path.join(
       directory.path,
       environmentName.toLowerCase(),
