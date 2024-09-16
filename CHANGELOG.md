@@ -1,3 +1,11 @@
+# 0.9.0
+
+## What's Changed
+* feat: `GoldenTestTheme` by @btrautmann in https://github.com/Betterment/alchemist/pull/124
+
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.8.0...v0.9.0
+
 # 0.8.0
 
 ## What's Changed
