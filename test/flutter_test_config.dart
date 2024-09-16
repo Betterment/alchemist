@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:alchemist/alchemist.dart';
@@ -12,19 +13,21 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 
   // Grab the flutter version from the current environment.
   final versionResult = await Process.run(
-    '/bin/bash',
-    ['-c', r"flutter --version | head -n 1 | awk '{print $2}'"],
+    'flutter',
+    ['--version', '--machine'],
   );
 
   if (versionResult.exitCode != 0) {
     throw const ProcessException(
-      'flutter --version',
-      ['/bin/bash', '-c', r"flutter --version | head -n 1 | awk '{print $2}'"],
+      'flutter',
+      ['--version', '--machine'],
       'Failed to get flutter version',
     );
   }
 
-  final version = versionResult.stdout.toString().trim();
+  final versionJson = versionResult.stdout.toString().trim();
+  final flutterData = json.decode(versionJson) as Map<String, dynamic>;
+  final version = flutterData['flutterVersion'] as String;
 
   /// Returns the goldens directory for the provided flutter version.
   ///
@@ -91,10 +94,8 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     String fileName,
     String environmentName,
   ) async {
-    // Check all subdirectories of `goldens` for a directory we can use for
-    // the provided flutter version, falling back on `defaultFilePath` if none
-    // exist.
     final directory = goldensDirectory(version);
+
     return path.join(
       directory.path,
       environmentName.toLowerCase(),
