@@ -29,6 +29,33 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   final flutterData = json.decode(versionJson) as Map<String, dynamic>;
   final version = flutterData['flutterVersion'] as String;
 
+  if (!version.isValidVersion()) {
+    throw ProcessException(
+      'flutter',
+      ['--version', '--machine'],
+      'Invalid flutter version returned by `flutter version`: $version',
+    );
+  }
+
+  final parsedVersion = Version.parse(version);
+  final subDirectories = Directory(
+    path.join(
+      Directory.current.path,
+      'test',
+      'smoke_tests',
+      'goldens',
+    ),
+  ).listSync().whereType<Directory>().toList();
+
+  final candidates = subDirectories.where((dir) {
+    try {
+      final dirVersion = Version.parse(path.basename(dir.path));
+      return dirVersion <= parsedVersion;
+    } on FormatException {
+      return false;
+    }
+  });
+
   /// Returns the goldens directory for the provided flutter version.
   ///
   /// In order, this attempts to find:
@@ -43,35 +70,16 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   ///
   /// Doing this supports running our smoke tests against specific versions of
   /// Flutter, allowing us to maintain goldens for each version when necessary.
-  Directory goldensDirectory(String flutterVersion) {
-    final inputVersion = Version.parse(flutterVersion);
-    final subDirectories = Directory(
-      path.join(
-        Directory.current.path,
-        'test',
-        'smoke_tests',
-        'goldens',
-      ),
-    ).listSync().whereType<Directory>().toList();
-
-    final candidates = subDirectories.where((dir) {
-      try {
-        final parsedVersion = Version.parse(path.basename(dir.path));
-        return parsedVersion <= inputVersion;
-      } on FormatException {
-        return false;
-      }
-    });
-
+  Directory goldensDirectory() {
     // If we're updating golden files, always return the associated directory.
     if (autoUpdateGoldenFiles) {
-      return Directory(path.join('goldens', flutterVersion));
+      return Directory(path.join('goldens', parsedVersion.toString()));
     }
 
     if (candidates.isEmpty) {
       throw ArgumentError(
         'No valid directories found in `goldens` for the current '
-        'flutter version: $flutterVersion',
+        'flutter version: $parsedVersion',
       );
     }
 
@@ -84,18 +92,12 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
     });
   }
 
-  if (!version.isValidVersion()) {
-    throw FormatException(
-      'Invalid flutter version provided: $version',
-    );
-  }
+  final directory = goldensDirectory();
 
   Future<String> filePathResolver(
     String fileName,
     String environmentName,
   ) async {
-    final directory = goldensDirectory(version);
-
     return path.join(
       directory.path,
       environmentName.toLowerCase(),
