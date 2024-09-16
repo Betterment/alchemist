@@ -5,6 +5,10 @@ on:
       branch:
         description: 'Branch to generate goldens from'
         required: true
+      flutter_version:
+        description: 'Flutter version to use'
+        required: true
+        default: '3.16.0'
 permissions:
   contents: write
 
@@ -14,6 +18,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
       - name: Validate branch input
         run: |
           BRANCH_PATTERN="^[a-zA-Z0-9/_.-]+$"
@@ -32,6 +37,24 @@ jobs:
               exit 1
           fi
 
+      - name: Validate Flutter version input
+        run: |
+          VERSION_PATTERN="^[0-9]+\.[0-9]+\.[0-9]+$"
+
+          # Input string (branch name) to be validated
+          VERSION_INPUT=${{ inputs.flutter_version}}
+
+          echo "Checking version input: $VERSION_INPUT"
+
+          # Validate branch name against the regex pattern
+          if [[ $VERSION_INPUT =~ $VERSION_PATTERN ]]; then
+              echo "Version input is valid."
+              exit 0
+          else
+              echo "Version input is invalid."
+              exit 1
+          fi
+
       - name: Ensure branch is not main
         if: ${{ github.event.inputs.branch == 'main' || github.event.inputs.branch == 'origin/main'}}
         run: exit 1
@@ -43,7 +66,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
+          flutter-version: ${{ github.event.inputs.flutter_version }}
           channel: 'stable'
           cache: true
 
