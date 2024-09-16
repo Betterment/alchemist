@@ -42,7 +42,7 @@ jobs:
           VERSION_PATTERN="^[0-9]+\.[0-9]+\.[0-9]+$"
 
           # Input string (branch name) to be validated
-          VERSION_INPUT=${{ inputs.branch}}
+          VERSION_INPUT=${{ inputs.flutter_version}}
 
           echo "Checking version input: $VERSION_INPUT"
 
