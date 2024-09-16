@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:alchemist/alchemist.dart';
+import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -164,6 +165,7 @@ abstract class GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
+    required GoldenTestTheme? goldenTestTheme,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
@@ -227,12 +229,15 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
+    required GoldenTestTheme? goldenTestTheme,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
   }) async {
     tester.view.devicePixelRatio = 1.0;
     tester.platformDispatcher.textScaleFactorTestValue = textScaleFactor;
+
+    goldenTestTheme ??= GoldenTestTheme.standard();
 
     await pumpWidget(
       tester,
@@ -250,7 +255,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
               child: Builder(
                 builder: (context) {
                   return ColoredBox(
-                    color: Theme.of(context).colorScheme.background,
+                    color: goldenTestTheme!.backgroundColor,
                     child: OverflowBox(
                       alignment: Alignment.topLeft,
                       minWidth: constraints.minWidth,

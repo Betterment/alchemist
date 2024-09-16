@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
+import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -41,6 +42,7 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required bool obscureFont,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
+    required GoldenTestTheme? goldenTestTheme,
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
