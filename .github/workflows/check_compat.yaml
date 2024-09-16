@@ -14,6 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         channel: ['3.16.9', '3.19.6', '3.22.3', '3.24.3']
 
