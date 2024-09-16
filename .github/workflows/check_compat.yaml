@@ -15,14 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        channel: ['stable', 'beta']
+        channel: ['3.16.9', '3.19.6', '3.22.3', '3.24.3']
 
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1 # v2.16.0
         with:
-          channel: ${{ matrix.channel }}
+          channel: stable
+          flutter-version: ${{ matrix.channel }}
           cache: true
 
       - name: Install Dependencies
