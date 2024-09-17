@@ -262,7 +262,10 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
                       minHeight: constraints.minHeight,
                       maxWidth: constraints.maxWidth,
                       maxHeight: constraints.maxHeight,
-                      child: Center(child: widget),
+                      child: Center(
+                        key: childKey,
+                        child: widget,
+                      ),
                     ),
                   );
                 },
