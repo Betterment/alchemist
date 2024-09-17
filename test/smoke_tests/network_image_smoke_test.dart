@@ -11,7 +11,10 @@ void main() {
       pumpWidget: (tester, widget) async {
         await mockNetworkImages(() => tester.pumpWidget(widget));
       },
-      builder: () => Image.network('https://fakeurl.com/image.png'),
+      builder: () => Padding(
+        padding: const EdgeInsets.all(8),
+        child: Image.network('https://fakeurl.com/image.png'),
+      ),
     );
   });
 }
