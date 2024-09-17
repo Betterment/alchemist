@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
-import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 

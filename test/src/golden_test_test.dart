@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
-import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

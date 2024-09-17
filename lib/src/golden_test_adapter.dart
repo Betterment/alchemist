@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:alchemist/alchemist.dart';
-import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
