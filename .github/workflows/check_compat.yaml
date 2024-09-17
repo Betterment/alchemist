@@ -1,14 +1,10 @@
 name: Compatibility Check
 
 on:
-    # Cron disabled for now, because there are broken goldens on latest stable & beta due to color changes
-    # schedule:
-    #   # Run daily at 00:00 UTC
-    #   - cron: '0 0 * * *'
+    schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
     workflow_dispatch:
-    push:
-      branches:
-        - bt/compat-job
 
 jobs:
   build:
@@ -46,14 +42,14 @@ jobs:
           path: |
             **/failures/**/*.png
 
-      # - name: Notify failure
-      #   if: failure()
-      #   uses: slackapi/slack-github-action@37ebaef184d7626c5f204ab8d3baff4262dd30f0 #v1.27.0
-      #   with:
-      #     payload: |
-      #       {
-      #         "message": "Heads up! Alchemist compatibility check failed for ${{ matrix.channel }} channel.",
-      #         "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-      #       }
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.MOBILE_OSS_SLACK_WEBHOOK }}
+      - name: Notify failure
+        if: failure()
+        uses: slackapi/slack-github-action@37ebaef184d7626c5f204ab8d3baff4262dd30f0 #v1.27.0
+        with:
+          payload: |
+            {
+              "message": "Heads up! Alchemist smoke tests failed on the ${{ matrix.channel }} channel. Check them out and determine root cause.",
+              "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.MOBILE_OSS_SLACK_WEBHOOK }}
