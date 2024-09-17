@@ -245,6 +245,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
         obscureFont: obscureFont,
         globalConfigTheme: globalConfigTheme,
         variantConfigTheme: variantConfigTheme,
+        goldenTestTheme: goldenTestTheme,
         child: DefaultAssetBundle(
           bundle: TestAssetBundle(),
           child: Material(
@@ -324,6 +325,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
     super.key,
     this.globalConfigTheme,
     this.variantConfigTheme,
+    this.goldenTestTheme,
     this.obscureFont = false,
     required this.child,
   });
@@ -337,6 +339,12 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
   ///
   /// See [MaterialApp.theme] for more details.
   final ThemeData? variantConfigTheme;
+
+  /// The [GoldenTestTheme] to use when generating golden tests.
+  ///
+  /// If no [GoldenTestTheme] is provided, the default
+  /// [GoldenTestTheme.standard] will be used.
+  final GoldenTestTheme? goldenTestTheme;
 
   /// Whether the default font family of the resolved theme should be set to an
   /// obscured font.
@@ -388,7 +396,12 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return _LocalizationWrapper(
       child: Theme(
-        data: _resolveThemeOf(context),
+        data: _resolveThemeOf(context).copyWith(
+          extensions: [
+            ...Theme.of(context).extensions.values,
+            if (goldenTestTheme != null) goldenTestTheme!,
+          ],
+        ),
         child: _NavigatorWrapper(
           child: child,
         ),
