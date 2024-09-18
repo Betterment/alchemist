@@ -70,30 +70,27 @@ class GoldenTestScenario extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            name,
-            style: const TextStyle(fontSize: 18),
-            textHeightBehavior: const TextHeightBehavior(
-              applyHeightToFirstAscent: false,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          name,
+          style: const TextStyle(fontSize: 18),
+          textHeightBehavior: const TextHeightBehavior(
+            applyHeightToFirstAscent: false,
           ),
-          const SizedBox(height: 8),
-          ConstrainedBox(
-            constraints: constraints ??
-                GoldenTestScenarioConstraints.maybeOf(context) ??
-                const BoxConstraints(),
-            child: Builder(
-              builder: builder,
-            ),
+        ),
+        const SizedBox(height: 8),
+        ConstrainedBox(
+          constraints: constraints ??
+              GoldenTestScenarioConstraints.maybeOf(context) ??
+              const BoxConstraints(),
+          child: Builder(
+            builder: builder,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
