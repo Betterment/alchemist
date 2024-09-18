@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 /// parts of golden tests controlled by Alchemist are consistent across
 /// Flutter SDK versions.
 /// {@endtemplate}
-class GoldenTestTheme {
+class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
   /// {@macro golden_test_theme}
   GoldenTestTheme({
     required this.backgroundColor,
@@ -29,4 +29,30 @@ class GoldenTestTheme {
 
   /// The border color used to separate scenarios in a [GoldenTestGroup].
   final Color borderColor;
+
+  @override
+  ThemeExtension<GoldenTestTheme> copyWith({
+    Color? backgroundColor,
+    Color? borderColor,
+  }) {
+    return GoldenTestTheme(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderColor: borderColor ?? this.borderColor,
+    );
+  }
+
+  @override
+  ThemeExtension<GoldenTestTheme> lerp(
+    covariant ThemeExtension<GoldenTestTheme>? other,
+    double t,
+  ) {
+    if (other is! GoldenTestTheme) {
+      return this;
+    }
+    return GoldenTestTheme(
+      backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t) ??
+          backgroundColor,
+      borderColor: Color.lerp(borderColor, other.borderColor, t) ?? borderColor,
+    );
+  }
 }

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/golden_test_scenario_constraints.dart';
-import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:flutter/material.dart';
 
 /// A function that receives the index of a column in a table and returns the
@@ -113,9 +112,9 @@ class GoldenTestGroup extends StatelessWidget {
       }
     }
 
-    final alchemistConfig = AlchemistConfig.current();
-    final testTheme =
-        alchemistConfig.goldenTestTheme ?? GoldenTestTheme.standard();
+    final testTheme = Theme.of(context).extension<GoldenTestTheme>() ??
+        AlchemistConfig.current().goldenTestTheme ??
+        GoldenTestTheme.standard();
 
     return GoldenTestScenarioConstraints(
       constraints: scenarioConstraints,

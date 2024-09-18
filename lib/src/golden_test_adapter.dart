@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:alchemist/alchemist.dart';
-import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -246,6 +245,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
         obscureFont: obscureFont,
         globalConfigTheme: globalConfigTheme,
         variantConfigTheme: variantConfigTheme,
+        goldenTestTheme: goldenTestTheme,
         child: DefaultAssetBundle(
           bundle: TestAssetBundle(),
           child: Material(
@@ -325,6 +325,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
     super.key,
     this.globalConfigTheme,
     this.variantConfigTheme,
+    this.goldenTestTheme,
     this.obscureFont = false,
     required this.child,
   });
@@ -338,6 +339,12 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
   ///
   /// See [MaterialApp.theme] for more details.
   final ThemeData? variantConfigTheme;
+
+  /// The [GoldenTestTheme] to use when generating golden tests.
+  ///
+  /// If no [GoldenTestTheme] is provided, the default
+  /// [GoldenTestTheme.standard] will be used.
+  final GoldenTestTheme? goldenTestTheme;
 
   /// Whether the default font family of the resolved theme should be set to an
   /// obscured font.
@@ -380,6 +387,15 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
 
     if (obscureFont) {
       resolvedTheme = resolvedTheme.applyObscuredFontFamily();
+    }
+
+    if (goldenTestTheme != null) {
+      resolvedTheme = resolvedTheme.copyWith(
+        extensions: [
+          ...resolvedTheme.extensions.values,
+          goldenTestTheme!,
+        ],
+      );
     }
 
     return resolvedTheme.stripTextPackages();

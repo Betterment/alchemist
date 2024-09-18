@@ -30,6 +30,7 @@ abstract class GoldenTestRunner {
     required Widget widget,
     required ThemeData? globalConfigTheme,
     required ThemeData? variantConfigTheme,
+    required GoldenTestTheme? goldenTestTheme,
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,

@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
-import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -106,6 +105,7 @@ void main() {
           widget: any(named: 'widget'),
           globalConfigTheme: any(named: 'globalConfigTheme'),
           variantConfigTheme: any(named: 'variantConfigTheme'),
+          goldenTestTheme: any(named: 'goldenTestTheme'),
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
           renderShadows: any(named: 'renderShadows'),
@@ -141,10 +141,15 @@ void main() {
       final ciTheme = ThemeData.light().copyWith(primaryColor: Colors.green);
       final platformTheme =
           ThemeData.light().copyWith(primaryColor: Colors.yellow);
+      final goldenTestTheme = GoldenTestTheme(
+        backgroundColor: Colors.blueGrey,
+        borderColor: Colors.orange,
+      );
       const ciRenderShadows = true;
       final config = AlchemistConfig(
         forceUpdateGoldenFiles: false,
         theme: alchemistTheme,
+        goldenTestTheme: goldenTestTheme,
         ciGoldensConfig: CiGoldensConfig(
           theme: ciTheme,
           renderShadows: ciRenderShadows,
@@ -179,6 +184,7 @@ void main() {
           widget: widget,
           globalConfigTheme: alchemistTheme,
           variantConfigTheme: ciTheme,
+          goldenTestTheme: goldenTestTheme,
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
           renderShadows: ciRenderShadows,
@@ -197,6 +203,7 @@ void main() {
           widget: widget,
           globalConfigTheme: alchemistTheme,
           variantConfigTheme: platformTheme,
+          goldenTestTheme: goldenTestTheme,
           forceUpdate: any(named: 'forceUpdate'),
           obscureText: any(named: 'obscureText'),
           renderShadows: any(named: 'renderShadows'),

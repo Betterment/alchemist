@@ -176,6 +176,7 @@ Future<void> goldenTest(
         widget: builder(),
         globalConfigTheme: config.theme,
         variantConfigTheme: variantConfig.theme,
+        goldenTestTheme: config.goldenTestTheme,
         forceUpdate: config.forceUpdateGoldenFiles,
         obscureText: variantConfig.obscureText,
         renderShadows: variantConfig.renderShadows,
