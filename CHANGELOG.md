@@ -1,3 +1,13 @@
+# 0.10.0
+
+## What's Changed
+* feat: break out smoke test goldens into directories based on flutter version by @btrautmann in https://github.com/Betterment/alchemist/pull/126
+* fix: Could not override GoldenTestTheme by @Brainyoo in https://github.com/Betterment/alchemist/pull/127
+* ci: channel compatibility workflow by @btrautmann in https://github.com/Betterment/alchemist/pull/123
+
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.9.0...v0.10.0
+
 # 0.9.0
 
 ## What's Changed
