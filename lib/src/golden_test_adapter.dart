@@ -389,6 +389,15 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
       resolvedTheme = resolvedTheme.applyObscuredFontFamily();
     }
 
+    if (goldenTestTheme != null) {
+      resolvedTheme = resolvedTheme.copyWith(
+        extensions: [
+          ...resolvedTheme.extensions.values,
+          goldenTestTheme!,
+        ],
+      );
+    }
+
     return resolvedTheme.stripTextPackages();
   }
 
@@ -396,12 +405,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return _LocalizationWrapper(
       child: Theme(
-        data: _resolveThemeOf(context).copyWith(
-          extensions: [
-            ...Theme.of(context).extensions.values,
-            if (goldenTestTheme != null) goldenTestTheme!,
-          ],
-        ),
+        data: _resolveThemeOf(context),
         child: _NavigatorWrapper(
           child: child,
         ),
