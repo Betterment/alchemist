@@ -113,6 +113,7 @@ class GoldenTestGroup extends StatelessWidget {
     }
 
     final testTheme = Theme.of(context).extension<GoldenTestTheme>() ??
+        AlchemistConfig.current().goldenTestTheme ??
         GoldenTestTheme.standard();
 
     return GoldenTestScenarioConstraints(
