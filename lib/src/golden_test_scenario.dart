@@ -23,29 +23,28 @@ WidgetBuilder _build(Widget build) => (context) => build;
 class GoldenTestScenario extends StatelessWidget {
   /// {@macro golden_test_scenario}
   GoldenTestScenario({
-    super.key,
     required this.name,
     required Widget child,
-    this.constraints,
     super.key,
+    this.constraints,
   }) : builder = _build(child);
 
   /// Creates a [GoldenTestScenario] with a [builder] function that allows
   /// access to the [BuildContext] of the widget.
   const GoldenTestScenario.builder({
-    super.key,
     required this.name,
     required this.builder,
+    super.key,
     this.constraints,
   });
 
   /// Creates a [GoldenTestScenario] with a custom [textScaleFactor] that
   /// applies a default scale of text to its child.
   GoldenTestScenario.withTextScaleFactor({
-    super.key,
     required this.name,
     required double textScaleFactor,
     required Widget child,
+    super.key,
     this.constraints,
   }) : builder = _build(
           _CustomTextScaleFactor(

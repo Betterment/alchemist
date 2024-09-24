@@ -46,7 +46,6 @@ class GoldenTestGroup extends StatelessWidget {
   const GoldenTestGroup({
     required this.children,
     super.key,
-    super.key,
     this.columns,
     this.columnWidthBuilder,
     this.scenarioConstraints,
