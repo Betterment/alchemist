@@ -115,8 +115,8 @@ abstract class GoldenTestAdapter {
   /// they already exist. Otherwise, the flag is ignored and the function is
   /// executed as usual.
   Future<T> withForceUpdateGoldenFiles<T>({
-    bool forceUpdate = false,
     required MatchesGoldenFileInvocation<T> callback,
+    bool forceUpdate = false,
   });
 
   /// The function to use for `setUp` calls. By default, this is Flutter's
@@ -157,7 +157,6 @@ abstract class GoldenTestAdapter {
   /// max width is unbounded, a default width value will be used as initial
   /// surface size. The same applies to the max height.
   Future<void> pumpGoldenTest({
-    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -167,6 +166,7 @@ abstract class GoldenTestAdapter {
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
+    Key? rootKey,
   });
 
   /// Generates an image of the widget at the given [finder] with all text
@@ -193,8 +193,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
   @override
   Future<T> withForceUpdateGoldenFiles<T>({
-    bool forceUpdate = false,
     required MatchesGoldenFileInvocation<T> callback,
+    bool forceUpdate = false,
   }) async {
     if (!forceUpdate) {
       return await callback();
@@ -220,7 +220,6 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
   @override
   Future<void> pumpGoldenTest({
-    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -230,6 +229,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
+    Key? rootKey,
   }) async {
     tester.view.devicePixelRatio = 1.0;
     tester.platformDispatcher.textScaleFactorTestValue = textScaleFactor;
@@ -250,7 +250,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
               child: Builder(
                 builder: (context) {
                   return ColoredBox(
-                    color: Theme.of(context).colorScheme.background,
+                    color: Theme.of(context).colorScheme.surface,
                     child: OverflowBox(
                       alignment: Alignment.topLeft,
                       minWidth: constraints.minWidth,
@@ -317,12 +317,12 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 class FlutterGoldenTestWrapper extends StatelessWidget {
   /// {@macro _flutter_golden_test_wrapper}
   const FlutterGoldenTestWrapper({
-    Key? key,
+    required this.child,
+    super.key,
     this.globalConfigTheme,
     this.variantConfigTheme,
     this.obscureFont = false,
-    required this.child,
-  }) : super(key: key);
+  });
 
   /// The theme provided by the global [AlchemistConfig], if any.
   ///
