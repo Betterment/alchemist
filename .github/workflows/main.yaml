@@ -2,8 +2,11 @@ name: alchemist
 
 on: [pull_request]
 
+env:
+  FLUTTER_VERSION: 3.16.0
+
 jobs:
-  build:
+  analyze:
     runs-on: ubuntu-latest
 
     steps:
@@ -11,7 +14,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
 
@@ -24,12 +27,44 @@ jobs:
       - name: Analyze project source
         uses: invertase/github-action-dart-analyzer@v1
 
-      - name: Run tests
-        run: flutter test --no-pub --coverage --test-randomize-ordering-seed=random
-
       - uses: codecov/codecov-action@v2
         with:
           files: coverage/lcov.info
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.16.9', '3.19.6', '3.22.3', '3.24.3']
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter packages get
+
+      - name: Disable animations
+        run: flutter config --no-cli-animations
+
+      - name: Run tests
+        run: |
+          flutter test --no-pub --coverage --test-randomize-ordering-seed=random
+
+      - name: Upload failures
+        if: failure()
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: "golden_failures_${{ matrix.flutter-version }}"
+          path: |
+            **/failures/**/*.png
+    
+
 
   pana:
     runs-on: ubuntu-latest
@@ -39,7 +74,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0'
+          flutter-version: '3.16.0'
           channel: 'stable'
           cache: true
 

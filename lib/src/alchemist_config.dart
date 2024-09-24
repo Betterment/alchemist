@@ -67,11 +67,13 @@ class AlchemistConfig extends Equatable {
   /// {@macro alchemist_config}
   const AlchemistConfig({
     bool? forceUpdateGoldenFiles,
+    GoldenTestTheme? goldenTestTheme,
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
   })  : _forceUpdateGoldenFiles = forceUpdateGoldenFiles,
         _theme = theme,
+        _goldenTestTheme = goldenTestTheme,
         _platformGoldensConfig = platformGoldensConfig,
         _ciGoldensConfig = ciGoldensConfig;
 
@@ -181,6 +183,13 @@ class AlchemistConfig extends Equatable {
   ThemeData? get theme => _theme;
   final ThemeData? _theme;
 
+  /// The [GoldenTestTheme] to use when generating golden tests.
+  ///
+  /// If no [GoldenTestTheme] is provided, the default
+  /// [GoldenTestTheme.standard] will be used.
+  GoldenTestTheme? get goldenTestTheme => _goldenTestTheme;
+  final GoldenTestTheme? _goldenTestTheme;
+
   /// The configuration for human-readable golden tests running in non-CI
   /// environments.
   ///
@@ -202,12 +211,14 @@ class AlchemistConfig extends Equatable {
   AlchemistConfig copyWith({
     bool? forceUpdateGoldenFiles,
     ThemeData? theme,
+    GoldenTestTheme? goldenTestTheme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
   }) {
     return AlchemistConfig(
       forceUpdateGoldenFiles: forceUpdateGoldenFiles ?? _forceUpdateGoldenFiles,
       theme: theme ?? _theme,
+      goldenTestTheme: goldenTestTheme ?? _goldenTestTheme,
       platformGoldensConfig: platformGoldensConfig ?? _platformGoldensConfig,
       ciGoldensConfig: ciGoldensConfig ?? _ciGoldensConfig,
     );
@@ -224,6 +235,7 @@ class AlchemistConfig extends Equatable {
     return copyWith(
       forceUpdateGoldenFiles: other?._forceUpdateGoldenFiles,
       theme: other?._theme,
+      goldenTestTheme: other?._goldenTestTheme,
       platformGoldensConfig:
           platformGoldensConfig.merge(other?._platformGoldensConfig),
       ciGoldensConfig: ciGoldensConfig.merge(other?._ciGoldensConfig),
@@ -234,6 +246,7 @@ class AlchemistConfig extends Equatable {
   List<Object?> get props => [
         forceUpdateGoldenFiles,
         theme,
+        goldenTestTheme,
         platformGoldensConfig,
         ciGoldensConfig,
       ];

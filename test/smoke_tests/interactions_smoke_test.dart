@@ -13,7 +13,24 @@ void main() {
           ),
           GoldenTestScenario(
             name: 'scenario_button',
-            child: ElevatedButton(
+            child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  const Color(0xFF2196F3),
+                ),
+                foregroundColor: MaterialStateProperty.all(
+                  const Color(0xFFFFFFFF),
+                ),
+                shadowColor: MaterialStateProperty.all(
+                  const Color(0xFFFF0000),
+                ),
+                surfaceTintColor: MaterialStateProperty.all(
+                  const Color(0xFF00FF00),
+                ),
+                overlayColor: MaterialStateProperty.all(
+                  const Color(0xFF0000FF),
+                ),
+              ),
               onPressed: () {},
               onLongPress: () {},
               child: const Text('button'),
@@ -32,14 +49,14 @@ void main() {
     goldenTest(
       'succeeds while pressed',
       fileName: 'interactions_smoke_test_pressed',
-      whilePerforming: press(find.byType(ElevatedButton)),
+      whilePerforming: press(find.byType(TextButton)),
       builder: buildSmokeTestGroup,
     );
 
     goldenTest(
       'succeeds while long pressed',
       fileName: 'interactions_smoke_test_long_pressed',
-      whilePerforming: longPress(find.byType(ElevatedButton)),
+      whilePerforming: longPress(find.byType(TextButton)),
       builder: buildSmokeTestGroup,
     );
   });

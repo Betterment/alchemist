@@ -67,4 +67,4 @@ Since all the necessary setup has been completed in the steps above, no changes 
 flutter test # Other arguments...
 ```
 
-Note that it's important **not** to pass the `--update-goldens` flag to the `test` command. This will cause all golden files to be regenerated, which means all tests will by always definition pass.
+Note that it's important **not** to pass the `--update-goldens` flag to the `test` command. This will cause all golden files to be regenerated, which means all tests will by definition always pass.

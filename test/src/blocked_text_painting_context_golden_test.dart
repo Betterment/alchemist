@@ -51,6 +51,7 @@ void main() {
         key: key,
         debugShowCheckedModeBanner: false,
         home: const Scaffold(
+          backgroundColor: Color(0x0f000000),
           body: Padding(
             padding: EdgeInsets.all(8),
             child: Column(

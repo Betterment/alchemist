@@ -1,3 +1,7 @@
+# Alchemist
+
+**/failures/**/*.png
+
 # Miscellaneous
 *.class
 *.log

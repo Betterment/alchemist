@@ -46,6 +46,7 @@ class GoldenTestGroup extends StatelessWidget {
   const GoldenTestGroup({
     required this.children,
     super.key,
+    super.key,
     this.columns,
     this.columnWidthBuilder,
     this.scenarioConstraints,
@@ -112,15 +113,17 @@ class GoldenTestGroup extends StatelessWidget {
       }
     }
 
+    final testTheme = Theme.of(context).extension<GoldenTestTheme>() ??
+        AlchemistConfig.current().goldenTestTheme ??
+        GoldenTestTheme.standard();
+
     return GoldenTestScenarioConstraints(
       constraints: scenarioConstraints,
       child: Table(
         defaultColumnWidth: const IntrinsicColumnWidth(),
         columnWidths: columnWidths,
         border: TableBorder.symmetric(
-          inside: BorderSide(
-            color: Colors.black.withOpacity(0.3),
-          ),
+          inside: BorderSide(color: testTheme.borderColor),
         ),
         children: [
           for (int i = 0; i < _effectiveRows; i++)

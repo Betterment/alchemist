@@ -265,6 +265,7 @@ void main() {
             obscureFont: false,
             globalConfigTheme: null,
             variantConfigTheme: null,
+            goldenTestTheme: null,
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
@@ -286,6 +287,7 @@ void main() {
             obscureFont: false,
             globalConfigTheme: null,
             variantConfigTheme: null,
+            goldenTestTheme: null,
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
@@ -305,6 +307,7 @@ void main() {
           obscureFont: false,
           globalConfigTheme: null,
           variantConfigTheme: null,
+          goldenTestTheme: null,
           pumpBeforeTest: onlyPumpAndSettle,
           pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
@@ -324,6 +327,7 @@ void main() {
             obscureFont: true,
             globalConfigTheme: globalConfigTheme,
             variantConfigTheme: variantConfigTheme,
+            goldenTestTheme: null,
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
             widget: buildGroup(),
@@ -365,6 +369,7 @@ void main() {
           obscureFont: false,
           globalConfigTheme: null,
           variantConfigTheme: null,
+          goldenTestTheme: null,
           pumpBeforeTest: (_) async => pumpBeforeTestCalled = true,
           pumpWidget: onlyPumpWidget,
           widget: buildGroup(),
@@ -382,6 +387,7 @@ void main() {
           obscureFont: false,
           globalConfigTheme: null,
           variantConfigTheme: null,
+          goldenTestTheme: null,
           pumpBeforeTest: onlyPumpAndSettle,
           pumpWidget: (tester, widget) async {
             await onlyPumpWidget(tester, widget);
@@ -644,10 +650,10 @@ void main() {
       );
 
       testWidgets(
-        'has its text packages stripped',
+        'has alchemist text packages stripped',
         (tester) async {
           const fontFamilyName = 'fontFamilyName';
-          const providedFontFamily = 'packages/test_package/$fontFamilyName';
+          const providedFontFamily = 'packages/alchemist/$fontFamilyName';
 
           await tester.pumpWidget(
             Theme(

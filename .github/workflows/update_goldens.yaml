@@ -1,0 +1,87 @@
+name: Update Goldens
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to generate goldens from'
+        required: true
+      flutter_version:
+        description: 'Flutter version to use'
+        required: true
+        default: '3.16.0'
+permissions:
+  contents: write
+
+jobs:
+  update_goldens:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Validate branch input
+        run: |
+          BRANCH_PATTERN="^[a-zA-Z0-9/_.-]+$"
+
+          # Input string (branch name) to be validated
+          BRANCH_NAME=${{ inputs.branch}}
+
+          echo "Checking branch name: $BRANCH_NAME"
+
+          # Validate branch name against the regex pattern
+          if [[ $BRANCH_NAME =~ $BRANCH_PATTERN ]]; then
+              echo "Branch name is valid."
+              exit 0
+          else
+              echo "Branch name is invalid."
+              exit 1
+          fi
+
+      - name: Validate Flutter version input
+        run: |
+          VERSION_PATTERN="^[0-9]+\.[0-9]+\.[0-9]+$"
+
+          # Input string (branch name) to be validated
+          VERSION_INPUT=${{ inputs.flutter_version}}
+
+          echo "Checking version input: $VERSION_INPUT"
+
+          # Validate branch name against the regex pattern
+          if [[ $VERSION_INPUT =~ $VERSION_PATTERN ]]; then
+              echo "Version input is valid."
+              exit 0
+          else
+              echo "Version input is invalid."
+              exit 1
+          fi
+
+      - name: Ensure branch is not main
+        if: ${{ github.event.inputs.branch == 'main' || github.event.inputs.branch == 'origin/main'}}
+        run: exit 1
+
+      - name: Checkout branch
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ github.event.inputs.flutter_version }}
+          channel: 'stable'
+          cache: true
+
+      - name: Disable animations
+        run: flutter config --no-cli-animations
+
+      - name: Update Goldens
+        run: |
+          flutter test --update-goldens
+        continue-on-error: true
+
+      - name: Commit Changes
+        id: commit_changes
+        uses: stefanzweifel/git-auto-commit-action@12f68633e45c72459cd040c868605f2471c7f63b # v5.0.0
+        with:
+          commit_message: "chore: Updating Goldens"
+          commit_user_name: github-actions[bot]
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
