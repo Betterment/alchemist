@@ -40,7 +40,8 @@ void main() {
     });
 
     group('constraints', () {
-      testWidgets('when null defaults to inherited constraints', (tester) async {
+      testWidgets('when null defaults to inherited constraints',
+          (tester) async {
         const constraints = BoxConstraints(maxWidth: 400);
         final subject = buildSubject();
 
@@ -54,7 +55,8 @@ void main() {
         final findConstraints = find.ancestor(
           of: find.text('child'),
           matching: find.byWidgetPredicate(
-            (widget) => widget is ConstrainedBox && widget.constraints == constraints,
+            (widget) =>
+                widget is ConstrainedBox && widget.constraints == constraints,
           ),
         );
 
@@ -70,14 +72,16 @@ void main() {
         final findConstraints = find.ancestor(
           of: find.text('child'),
           matching: find.byWidgetPredicate(
-            (widget) => widget is ConstrainedBox && widget.constraints == constraints,
+            (widget) =>
+                widget is ConstrainedBox && widget.constraints == constraints,
           ),
         );
 
         expect(findConstraints, findsOneWidget);
       });
 
-      testWidgets('takes precedence over inherited constraints', (tester) async {
+      testWidgets('takes precedence over inherited constraints',
+          (tester) async {
         const constraints = BoxConstraints(maxWidth: 400);
         final subject = buildSubject(constraints: constraints);
 
@@ -91,7 +95,8 @@ void main() {
         final findConstraints = find.ancestor(
           of: find.text('child'),
           matching: find.byWidgetPredicate(
-            (widget) => widget is ConstrainedBox && widget.constraints == constraints,
+            (widget) =>
+                widget is ConstrainedBox && widget.constraints == constraints,
           ),
         );
 
