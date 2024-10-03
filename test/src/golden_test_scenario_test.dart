@@ -40,8 +40,7 @@ void main() {
     });
 
     group('constraints', () {
-      testWidgets('when null defaults to inherited constraints',
-          (tester) async {
+      testWidgets('when null defaults to inherited constraints', (tester) async {
         const constraints = BoxConstraints(maxWidth: 400);
         final subject = buildSubject();
 
@@ -55,8 +54,7 @@ void main() {
         final findConstraints = find.ancestor(
           of: find.text('child'),
           matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is ConstrainedBox && widget.constraints == constraints,
+            (widget) => widget is ConstrainedBox && widget.constraints == constraints,
           ),
         );
 
@@ -72,16 +70,14 @@ void main() {
         final findConstraints = find.ancestor(
           of: find.text('child'),
           matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is ConstrainedBox && widget.constraints == constraints,
+            (widget) => widget is ConstrainedBox && widget.constraints == constraints,
           ),
         );
 
         expect(findConstraints, findsOneWidget);
       });
 
-      testWidgets('takes precedence over inherited constraints',
-          (tester) async {
+      testWidgets('takes precedence over inherited constraints', (tester) async {
         const constraints = BoxConstraints(maxWidth: 400);
         final subject = buildSubject(constraints: constraints);
 
@@ -95,8 +91,7 @@ void main() {
         final findConstraints = find.ancestor(
           of: find.text('child'),
           matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is ConstrainedBox && widget.constraints == constraints,
+            (widget) => widget is ConstrainedBox && widget.constraints == constraints,
           ),
         );
 
@@ -128,10 +123,11 @@ void main() {
     });
 
     testWidgets(
-      '.withTextScaleFactor sets correct default text scale factor',
+      '.withTextScaleFactor sets correct default textScaler',
       (tester) async {
+        const textScaler = TextScaler.linear(2);
         final subject = GoldenTestScenario.withTextScaleFactor(
-          textScaleFactor: 2,
+          textScaler: textScaler,
           name: 'name',
           child: const Text('child'),
         );
@@ -153,7 +149,7 @@ void main() {
           isA<MediaQueryData>().having(
             (m) => m.textScaler,
             'textScaler',
-            const TextScaler.linear(2),
+            textScaler,
           ),
         );
       },
