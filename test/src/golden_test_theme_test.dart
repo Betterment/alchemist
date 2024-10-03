@@ -65,6 +65,7 @@ void main() {
               goldenTestTheme: GoldenTestTheme(
                 backgroundColor: Colors.green,
                 borderColor: const Color(0xFF000000),
+                padding: EdgeInsets.zero,
               ),
             );
 

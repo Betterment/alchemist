@@ -1,4 +1,5 @@
 import 'package:alchemist/src/golden_test_group.dart';
+import 'package:alchemist/src/golden_test_scenario.dart';
 import 'package:flutter/material.dart';
 
 /// {@template golden_test_theme}
@@ -12,6 +13,7 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
   GoldenTestTheme({
     required this.backgroundColor,
     required this.borderColor,
+    this.padding = EdgeInsets.zero,
   });
 
   /// The standard theme for golden tests, used when no other theme is provided.
@@ -30,14 +32,19 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
   /// The border color used to separate scenarios in a [GoldenTestGroup].
   final Color borderColor;
 
+  /// The padding that is used to wrap a [GoldenTestScenario]
+  final EdgeInsetsGeometry padding;
+
   @override
   ThemeExtension<GoldenTestTheme> copyWith({
     Color? backgroundColor,
     Color? borderColor,
+    EdgeInsetsGeometry? padding,
   }) {
     return GoldenTestTheme(
       backgroundColor: backgroundColor ?? this.backgroundColor,
       borderColor: borderColor ?? this.borderColor,
+      padding: padding ?? this.padding,
     );
   }
 
@@ -53,6 +60,7 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t) ??
           backgroundColor,
       borderColor: Color.lerp(borderColor, other.borderColor, t) ?? borderColor,
+      padding: padding,
     );
   }
 }
