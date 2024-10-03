@@ -19,6 +19,7 @@ set goldenTestAdapter(GoldenTestAdapter value) => _goldenTestAdapter = value;
 /// {@template golden_test_runner}
 /// A utility class for running an individual golden test.
 /// {@endtemplate}
+// ignore: one_member_abstracts
 abstract class GoldenTestRunner {
   /// {@macro golden_test_runner}
   const GoldenTestRunner();
@@ -109,8 +110,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       try {
         await goldenTestAdapter.withForceUpdateGoldenFiles(
           forceUpdate: forceUpdate,
-          callback:
-              goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
+          callback: goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
         );
         await cleanup?.call();
       } on TestFailure {

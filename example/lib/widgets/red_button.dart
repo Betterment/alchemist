@@ -22,7 +22,7 @@ class RedButton extends StatelessWidget {
       return ElevatedButton.icon(
         style: style,
         onPressed: onPressed,
-        icon: icon!,
+        icon: icon,
         label: child,
       );
     } else {
