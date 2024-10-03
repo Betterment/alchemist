@@ -70,13 +70,16 @@ class GoldenTestScenario extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final testTheme = Theme.of(context).extension<GoldenTestTheme>() ??
+        AlchemistConfig.current().goldenTestTheme ??
+        GoldenTestTheme.standard();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           name,
-          style: const TextStyle(fontSize: 18),
+          style: testTheme.nameTextStyle,
           textHeightBehavior: const TextHeightBehavior(
             applyHeightToFirstAscent: false,
           ),

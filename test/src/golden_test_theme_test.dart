@@ -65,6 +65,10 @@ void main() {
               goldenTestTheme: GoldenTestTheme(
                 backgroundColor: Colors.green,
                 borderColor: const Color(0xFF000000),
+                nameTextStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                ),
               ),
             );
 
@@ -117,6 +121,10 @@ void main() {
               goldenTestTheme: GoldenTestTheme(
                 backgroundColor: const Color(0xFF000000),
                 borderColor: Colors.green,
+                nameTextStyle: const TextStyle(
+                  color: Color(0xFFFFFFFF),
+                  fontSize: 18,
+                ),
               ),
               pumpBeforeTest: onlyPumpAndSettle,
               pumpWidget: onlyPumpWidget,
