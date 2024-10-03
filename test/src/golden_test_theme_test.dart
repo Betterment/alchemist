@@ -143,6 +143,70 @@ void main() {
           });
         });
       });
+      group('nameTextStyle', () {
+        group('when no override is provided', () {
+          testWidgets('it renders as default', (tester) async {
+            const adapter = FlutterGoldenTestAdapter();
+
+            await adapter.pumpGoldenTest(
+              tester: tester,
+              textScaleFactor: 1,
+              constraints: const BoxConstraints(),
+              obscureFont: true,
+              globalConfigTheme: null,
+              variantConfigTheme: null,
+              goldenTestTheme: null,
+              pumpBeforeTest: onlyPumpAndSettle,
+              pumpWidget: onlyPumpWidget,
+              widget: GoldenTestScenario(
+                name: 'Scenario name',
+                child: const Text('some text'),
+              ),
+            );
+
+            final box = find.text('Scenario name');
+            expect(
+              tester.widget<Text>(box).style,
+              GoldenTestTheme.standard().nameTextStyle,
+            );
+          });
+        });
+
+        group('when an override is provided', () {
+          testWidgets('it renders as the provided color', (tester) async {
+            const adapter = FlutterGoldenTestAdapter();
+            const nameTextStyle = TextStyle(
+              color: Color.fromARGB(255, 248, 0, 0),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            );
+            await adapter.pumpGoldenTest(
+              tester: tester,
+              textScaleFactor: 1,
+              constraints: const BoxConstraints(),
+              obscureFont: true,
+              globalConfigTheme: null,
+              variantConfigTheme: null,
+              goldenTestTheme: GoldenTestTheme(
+                backgroundColor: const Color(0xFF000000),
+                borderColor: Colors.green,
+                nameTextStyle: nameTextStyle,
+              ),
+              pumpBeforeTest: onlyPumpAndSettle,
+              pumpWidget: onlyPumpWidget,
+              widget: GoldenTestScenario(
+                name: 'Scenario name',
+                child: const Text('some text'),
+              ),
+            );
+            final box = find.text('Scenario name');
+            expect(
+              tester.widget<Text>(box).style,
+              nameTextStyle,
+            );
+          });
+        });
+      });
     });
   });
 }

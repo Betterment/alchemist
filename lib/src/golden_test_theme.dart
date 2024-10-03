@@ -58,10 +58,12 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
       return this;
     }
     return GoldenTestTheme(
-      backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t) ?? backgroundColor,
+      backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t) ??
+          backgroundColor,
       borderColor: Color.lerp(borderColor, other.borderColor, t) ?? borderColor,
       nameTextStyle: nameTextStyle.copyWith(
-        color: Color.lerp(nameTextStyle.color, other.nameTextStyle.color, t) ?? nameTextStyle.color,
+        color: Color.lerp(nameTextStyle.color, other.nameTextStyle.color, t) ??
+            nameTextStyle.color,
       ),
     );
   }
