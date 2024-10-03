@@ -110,7 +110,8 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       try {
         await goldenTestAdapter.withForceUpdateGoldenFiles(
           forceUpdate: forceUpdate,
-          callback: goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
+          callback:
+              goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
         );
         await cleanup?.call();
       } on TestFailure {
