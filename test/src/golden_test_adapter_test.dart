@@ -339,7 +339,7 @@ void main() {
             EdgeInsets.zero,
           );
         });
-        testWidgets('custom padding on `GoldenTetTheme`', (tester) async {
+        testWidgets('custom padding on `GoldenTestTheme`', (tester) async {
           await adapter.pumpGoldenTest(
             tester: tester,
             textScaleFactor: 2,

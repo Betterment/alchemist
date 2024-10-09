@@ -32,7 +32,9 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
   /// The border color used to separate scenarios in a [GoldenTestGroup].
   final Color borderColor;
 
-  /// The padding that is used to wrap a [GoldenTestScenario]
+  /// The padding that is used to wrap around:
+  /// - the whole image
+  /// - each individual [GoldenTestScenario]
   final EdgeInsetsGeometry padding;
 
   @override
@@ -60,7 +62,7 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t) ??
           backgroundColor,
       borderColor: Color.lerp(borderColor, other.borderColor, t) ?? borderColor,
-      padding: padding,
+      padding: EdgeInsetsGeometry.lerp(padding, other.padding, t) ?? padding,
     );
   }
 }
