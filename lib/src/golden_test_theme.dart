@@ -1,4 +1,5 @@
 import 'package:alchemist/src/golden_test_group.dart';
+import 'package:alchemist/src/golden_test_scenario.dart';
 import 'package:flutter/material.dart';
 
 /// {@template golden_test_theme}
@@ -12,6 +13,7 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
   GoldenTestTheme({
     required this.backgroundColor,
     required this.borderColor,
+    required this.nameTextStyle,
   });
 
   /// The standard theme for golden tests, used when no other theme is provided.
@@ -21,6 +23,7 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
       // change out from under us, which would cause golden tests to fail.
       backgroundColor: const Color(0xFF2b54a1),
       borderColor: const Color(0xFF3d394a),
+      nameTextStyle: const TextStyle(fontSize: 18),
     );
   }
 
@@ -30,14 +33,19 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
   /// The border color used to separate scenarios in a [GoldenTestGroup].
   final Color borderColor;
 
+  /// The text style that is used to show the name in a [GoldenTestScenario]
+  final TextStyle nameTextStyle;
+
   @override
   ThemeExtension<GoldenTestTheme> copyWith({
     Color? backgroundColor,
     Color? borderColor,
+    TextStyle? nameTextStyle,
   }) {
     return GoldenTestTheme(
       backgroundColor: backgroundColor ?? this.backgroundColor,
       borderColor: borderColor ?? this.borderColor,
+      nameTextStyle: nameTextStyle ?? this.nameTextStyle,
     );
   }
 
@@ -53,6 +61,10 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t) ??
           backgroundColor,
       borderColor: Color.lerp(borderColor, other.borderColor, t) ?? borderColor,
+      nameTextStyle: nameTextStyle.copyWith(
+        color: Color.lerp(nameTextStyle.color, other.nameTextStyle.color, t) ??
+            nameTextStyle.color,
+      ),
     );
   }
 }
