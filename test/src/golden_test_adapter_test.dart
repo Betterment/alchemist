@@ -334,8 +334,13 @@ void main() {
 
           final box = find.byType(Padding);
 
+          expect(box, findsNWidgets(2));
           expect(
-            tester.widget<Padding>(box).padding,
+            tester.widget<Padding>(box.at(0)).padding,
+            EdgeInsets.zero,
+          );
+          expect(
+            tester.widget<Padding>(box.at(1)).padding,
             EdgeInsets.zero,
           );
         });
@@ -362,8 +367,13 @@ void main() {
 
           final box = find.byType(Padding);
 
+          expect(box, findsNWidgets(2));
           expect(
-            tester.widget<Padding>(box).padding,
+            tester.widget<Padding>(box.at(0)).padding,
+            const EdgeInsets.all(16),
+          );
+          expect(
+            tester.widget<Padding>(box.at(1)).padding,
             const EdgeInsets.all(16),
           );
         });
