@@ -4,6 +4,7 @@ import 'package:alchemist/src/blocked_text_image.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_group.dart';
 import 'package:alchemist/src/golden_test_scenario.dart';
+import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/pumps.dart';
 import 'package:alchemist/src/utilities.dart';
 import 'package:flutter/cupertino.dart';
@@ -314,6 +315,68 @@ void main() {
         );
 
         expect(tester.platformDispatcher.textScaleFactor, 2.0);
+      });
+
+      group('padding', () {
+        testWidgets('default padding for `GoldenTestTheme`', (tester) async {
+          await adapter.pumpGoldenTest(
+            tester: tester,
+            textScaleFactor: 2,
+            constraints: const BoxConstraints(),
+            obscureFont: false,
+            globalConfigTheme: null,
+            variantConfigTheme: null,
+            goldenTestTheme: GoldenTestTheme.standard(),
+            pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
+            widget: buildGroup(),
+          );
+
+          final box = find.byType(Padding);
+
+          expect(box, findsNWidgets(2));
+          expect(
+            tester.widget<Padding>(box.at(0)).padding,
+            EdgeInsets.zero,
+          );
+          expect(
+            tester.widget<Padding>(box.at(1)).padding,
+            EdgeInsets.zero,
+          );
+        });
+        testWidgets('custom padding on `GoldenTestTheme`', (tester) async {
+          await adapter.pumpGoldenTest(
+            tester: tester,
+            textScaleFactor: 2,
+            constraints: const BoxConstraints(),
+            obscureFont: false,
+            globalConfigTheme: null,
+            variantConfigTheme: null,
+            goldenTestTheme: GoldenTestTheme(
+              backgroundColor: Colors.white,
+              borderColor: Colors.black,
+              padding: const EdgeInsets.all(16),
+              nameTextStyle: const TextStyle(
+                color: Colors.black,
+              ),
+            ),
+            pumpBeforeTest: onlyPumpAndSettle,
+            pumpWidget: onlyPumpWidget,
+            widget: buildGroup(),
+          );
+
+          final box = find.byType(Padding);
+
+          expect(box, findsNWidgets(2));
+          expect(
+            tester.widget<Padding>(box.at(0)).padding,
+            const EdgeInsets.all(16),
+          );
+          expect(
+            tester.widget<Padding>(box.at(1)).padding,
+            const EdgeInsets.all(16),
+          );
+        });
       });
 
       testWidgets(
