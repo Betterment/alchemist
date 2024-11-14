@@ -13,6 +13,7 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
   GoldenTestTheme({
     required this.backgroundColor,
     required this.borderColor,
+    required this.nameTextStyle,
     this.padding = EdgeInsets.zero,
   });
 
@@ -23,6 +24,7 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
       // change out from under us, which would cause golden tests to fail.
       backgroundColor: const Color(0xFF2b54a1),
       borderColor: const Color(0xFF3d394a),
+      nameTextStyle: const TextStyle(fontSize: 18),
     );
   }
 
@@ -37,16 +39,21 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
   /// - each individual [GoldenTestScenario]
   final EdgeInsetsGeometry padding;
 
+  /// The text style that is used to show the name in a [GoldenTestScenario]
+  final TextStyle nameTextStyle;
+
   @override
   ThemeExtension<GoldenTestTheme> copyWith({
     Color? backgroundColor,
     Color? borderColor,
     EdgeInsetsGeometry? padding,
+    TextStyle? nameTextStyle,
   }) {
     return GoldenTestTheme(
       backgroundColor: backgroundColor ?? this.backgroundColor,
       borderColor: borderColor ?? this.borderColor,
       padding: padding ?? this.padding,
+      nameTextStyle: nameTextStyle ?? this.nameTextStyle,
     );
   }
 
@@ -63,6 +70,10 @@ class GoldenTestTheme extends ThemeExtension<GoldenTestTheme> {
           backgroundColor,
       borderColor: Color.lerp(borderColor, other.borderColor, t) ?? borderColor,
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t) ?? padding,
+      nameTextStyle: nameTextStyle.copyWith(
+        color: Color.lerp(nameTextStyle.color, other.nameTextStyle.color, t) ??
+            nameTextStyle.color,
+      ),
     );
   }
 }

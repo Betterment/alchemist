@@ -144,6 +144,11 @@ void main() {
       final goldenTestTheme = GoldenTestTheme(
         backgroundColor: Colors.blueGrey,
         borderColor: Colors.orange,
+        nameTextStyle: const TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: ui.FontWeight.bold,
+        ),
       );
       const ciRenderShadows = true;
       final config = AlchemistConfig(

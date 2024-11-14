@@ -448,7 +448,7 @@ By default, Alchemist will simply pump the widget being tested using `tester.pum
 
 The `GoldenTestScenario.withTextScaleFactor` constructor allows a custom text scale factor value to be provided for a single scenario. This can be used to test text rendering at different sizes.
 
-To set a default scale factor for all scenarios within a test, the `goldenTest` function allows a default `textScaleFactor` to be provided, which defaults to `1.0`.
+To set a default scale factor for all scenarios within a test, the `goldenTest` function allows a default `textScaler` to be provided, which defaults to `TextScaler.linear(1.0)`.
 
 ### Resources
 

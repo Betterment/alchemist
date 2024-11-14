@@ -351,6 +351,9 @@ void main() {
               backgroundColor: Colors.white,
               borderColor: Colors.black,
               padding: const EdgeInsets.all(16),
+              nameTextStyle: const TextStyle(
+                color: Colors.black,
+              ),
             ),
             pumpBeforeTest: onlyPumpAndSettle,
             pumpWidget: onlyPumpWidget,
