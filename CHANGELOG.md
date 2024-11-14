@@ -1,3 +1,15 @@
+# 0.11.0
+
+## What's Changed
+* fix!: use textScaler instead of a double by @vanlooverenkoen in https://github.com/Betterment/alchemist/pull/131
+* feat!: Added nameTextStyle by @vanlooverenkoen in https://github.com/Betterment/alchemist/pull/132
+* fix: added configurable padding by @vanlooverenkoen in https://github.com/Betterment/alchemist/pull/133
+
+## New Contributors
+* @vanlooverenkoen made their first contribution in https://github.com/Betterment/alchemist/pull/131
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.10.0...v0.11.0
+
 # 0.10.0
 
 ## What's Changed
@@ -5,6 +17,9 @@
 * fix: Could not override GoldenTestTheme by @Brainyoo in https://github.com/Betterment/alchemist/pull/127
 * ci: channel compatibility workflow by @btrautmann in https://github.com/Betterment/alchemist/pull/123
 
+## :warning: Breaking Changes
+
+In https://github.com/Betterment/alchemist/pull/123 a `Padding` `Widget` was removed that impacted the outputted golden files. However, this `Padding` was made configurable in https://github.com/Betterment/alchemist/pull/133 so you can upgrade directly to `0.11.0` and set a `Padding` value of `const EdgeInsets.all(8)` to preserve the original padding value.
 
 **Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.9.0...v0.10.0
 
