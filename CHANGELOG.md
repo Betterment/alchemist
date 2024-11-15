@@ -5,6 +5,10 @@
 * feat!: Added nameTextStyle by @vanlooverenkoen in https://github.com/Betterment/alchemist/pull/132
 * fix: added configurable padding by @vanlooverenkoen in https://github.com/Betterment/alchemist/pull/133
 
+## :warning: Breaking Changes
+
+https://github.com/Betterment/alchemist/pull/131 and https://github.com/Betterment/alchemist/pull/132 change the APIs of `GoldenTestScenario.withTextScaleFactor` and `GoldenTestTheme` respectively. If you are using these APIs, you will need to update your code to match the new API.
+
 ## New Contributors
 * @vanlooverenkoen made their first contribution in https://github.com/Betterment/alchemist/pull/131
 
