@@ -40,7 +40,10 @@ Future<void> onlyPumpAndSettle(WidgetTester tester) => tester.pumpAndSettle();
 /// is generated.
 ///
 /// See [PumpAction] for more details.
-Future<void> precacheImages(WidgetTester tester) async {
+Future<void> precacheImages(
+  WidgetTester tester, {
+  bool hasPumpAndSettle = true,
+}) async {
   await tester.runAsync(() async {
     final images = <Future<void>>[];
     for (final element in find.byType(Image).evaluate()) {
@@ -63,7 +66,9 @@ Future<void> precacheImages(WidgetTester tester) async {
     }
     await Future.wait(images);
   });
-  await tester.pumpAndSettle();
+  if (hasPumpAndSettle) {
+    await tester.pumpAndSettle();
+  }
 }
 
 /// A custom [PumpWidget] that pumps the widget tree before golden
