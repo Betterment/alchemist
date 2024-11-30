@@ -67,11 +67,13 @@ class AlchemistConfig extends Equatable {
   /// {@macro alchemist_config}
   const AlchemistConfig({
     bool? forceUpdateGoldenFiles,
+    bool? renderName,
     GoldenTestTheme? goldenTestTheme,
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
   })  : _forceUpdateGoldenFiles = forceUpdateGoldenFiles,
+        _renderName = renderName,
         _theme = theme,
         _goldenTestTheme = goldenTestTheme,
         _platformGoldensConfig = platformGoldensConfig,
@@ -176,6 +178,13 @@ class AlchemistConfig extends Equatable {
   /// `--update-goldens` flag is passed when running `flutter test`.
   bool get forceUpdateGoldenFiles => _forceUpdateGoldenFiles ?? false;
   final bool? _forceUpdateGoldenFiles;
+
+  /// Whether to render the name of the test scenario on top of the image.
+  ///
+  /// If set to `false`, the name will not be rendered. This can be useful when
+  /// Alchemist is used to create screenshots for a store page.
+  bool get renderName => _renderName ?? true;
+  final bool? _renderName;
 
   /// The [ThemeData] to use when generating golden tests.
   ///
