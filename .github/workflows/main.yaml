@@ -12,10 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Determine Flutter version
+        id: flutter_version
+        run: |
+          # Grab the Flutter version from the .fvmrc file
+          FLUTTER_VERSION=$(grep '"flutter"' .fvmrc | grep -o '[0-9][0-9.]*')
+          echo "flutter_version=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
+
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: 'stable'
+          flutter-version: ${{ steps.flutter_version.outputs.flutter_version }}
           cache: true
 
       - name: Install Dependencies
@@ -72,10 +78,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Determine Flutter version
+        id: flutter_version
+        run: |
+          # Grab the Flutter version from the .fvmrc file
+          FLUTTER_VERSION=$(grep '"flutter"' .fvmrc | grep -o '[0-9][0-9.]*')
+          echo "flutter_version=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
+
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
-          channel: 'stable'
+          flutter-version: ${{ steps.flutter_version.outputs.flutter_version }}
           cache: true
 
       - name: Install Dependencies

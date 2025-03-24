@@ -15,19 +15,19 @@ void main() {
             name: 'scenario_button',
             child: TextButton(
               style: const ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(
+                backgroundColor: MaterialStatePropertyAll(
                   Color(0xFF2196F3),
                 ),
-                foregroundColor: WidgetStatePropertyAll(
+                foregroundColor: MaterialStatePropertyAll(
                   Color(0xFFFFFFFF),
                 ),
-                shadowColor: WidgetStatePropertyAll(
+                shadowColor: MaterialStatePropertyAll(
                   Color(0xFFFF0000),
                 ),
-                surfaceTintColor: WidgetStatePropertyAll(
+                surfaceTintColor: MaterialStatePropertyAll(
                   Color(0xFF00FF00),
                 ),
-                overlayColor: WidgetStatePropertyAll(
+                overlayColor: MaterialStatePropertyAll(
                   Color(0xFF0000FF),
                 ),
               ),
