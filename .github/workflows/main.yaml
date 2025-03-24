@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.16.9', '3.19.6', '3.22.3', '3.24.3']
+        flutter-version: ['3.16.9', '3.19.6', '3.22.3', '3.24.3', '3.29.2']
     steps:
       - uses: actions/checkout@v3
 

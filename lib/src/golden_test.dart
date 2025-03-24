@@ -134,6 +134,7 @@ Future<void> loadFonts() async {
 Future<void> goldenTest(
   String description, {
   required String fileName,
+  required ValueGetter<Widget> builder,
   bool skip = false,
   List<String> tags = const ['golden'],
   double textScaleFactor = 1.0,
@@ -141,7 +142,6 @@ Future<void> goldenTest(
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   PumpWidget pumpWidget = onlyPumpWidget,
   Interaction? whilePerforming,
-  required ValueGetter<Widget> builder,
 }) async {
   if (skip) return;
 

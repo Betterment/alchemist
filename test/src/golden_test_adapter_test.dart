@@ -88,7 +88,7 @@ void main() {
         try {
           goldenFileExpectationFn(1, 2);
           fail('expected matchesGoldenFile to be invoked');
-        } catch (e) {
+        } on TestFailure catch (e) {
           expect(
             e,
             isA<TestFailure>().having(
@@ -532,8 +532,7 @@ void main() {
       testWidgets(
         'does not override inherited locale or localizations',
         (tester) async {
-          // ignore: prefer_const_constructors
-          final locale = Locale('en', 'US');
+          const locale = Locale('en', 'US');
 
           await tester.pumpWidget(
             Localizations(

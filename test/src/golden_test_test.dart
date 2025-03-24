@@ -34,7 +34,6 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
 
   @override
   Future<void> pumpGoldenTest({
-    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -45,6 +44,7 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
+    Key? rootKey,
   }) async {}
 
   @override
@@ -72,8 +72,8 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
 
   @override
   Future<T> withForceUpdateGoldenFiles<T>({
-    bool forceUpdate = false,
     required MatchesGoldenFileInvocation<T> callback,
+    bool forceUpdate = false,
   }) async {
     return callback();
   }
