@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
@@ -10,13 +8,13 @@ void main() {
   group('AlchemistConfig', () {
     test('supports value equality', () {
       expect(
-        AlchemistConfig(forceUpdateGoldenFiles: true),
-        AlchemistConfig(forceUpdateGoldenFiles: true),
+        const AlchemistConfig(forceUpdateGoldenFiles: true),
+        const AlchemistConfig(forceUpdateGoldenFiles: true),
       );
 
       expect(
-        AlchemistConfig(forceUpdateGoldenFiles: false),
-        isNot(AlchemistConfig(forceUpdateGoldenFiles: true)),
+        const AlchemistConfig(forceUpdateGoldenFiles: false),
+        isNot(const AlchemistConfig(forceUpdateGoldenFiles: true)),
       );
     });
 
@@ -90,8 +88,8 @@ void main() {
     group('copyWith', () {
       test('does nothing if no arguments are provided', () {
         expect(
-          AlchemistConfig().copyWith(),
-          equals(AlchemistConfig()),
+          const AlchemistConfig().copyWith(),
+          equals(const AlchemistConfig()),
         );
       });
 
@@ -105,11 +103,11 @@ void main() {
       });
 
       test('replaces the given fields', () {
-        final platformGoldensConfig = PlatformGoldensConfig();
-        final ciGoldensConfig = CiGoldensConfig();
+        const platformGoldensConfig = PlatformGoldensConfig();
+        const ciGoldensConfig = CiGoldensConfig();
 
         expect(
-          AlchemistConfig().copyWith(
+          const AlchemistConfig().copyWith(
             forceUpdateGoldenFiles: true,
             platformGoldensConfig: platformGoldensConfig,
             ciGoldensConfig: ciGoldensConfig,
@@ -137,29 +135,29 @@ void main() {
     group('merge', () {
       test('does nothing if provided config is null', () {
         expect(
-          AlchemistConfig(forceUpdateGoldenFiles: true).merge(null),
-          equals(AlchemistConfig(forceUpdateGoldenFiles: true)),
+          const AlchemistConfig(forceUpdateGoldenFiles: true).merge(null),
+          equals(const AlchemistConfig(forceUpdateGoldenFiles: true)),
         );
       });
 
       test('does nothing if provided config is untouched', () {
         expect(
-          AlchemistConfig(forceUpdateGoldenFiles: true)
-              .merge(AlchemistConfig()),
-          equals(AlchemistConfig(forceUpdateGoldenFiles: true)),
+          const AlchemistConfig(forceUpdateGoldenFiles: true)
+              .merge(const AlchemistConfig()),
+          equals(const AlchemistConfig(forceUpdateGoldenFiles: true)),
         );
       });
 
       test('merges top-level (shallow) fields', () {
         expect(
-          AlchemistConfig(
+          const AlchemistConfig(
             forceUpdateGoldenFiles: true,
           ).merge(
-            AlchemistConfig(
+            const AlchemistConfig(
               forceUpdateGoldenFiles: false,
             ),
           ),
-          equals(AlchemistConfig(forceUpdateGoldenFiles: false)),
+          equals(const AlchemistConfig(forceUpdateGoldenFiles: false)),
         );
       });
 
@@ -167,7 +165,7 @@ void main() {
         final appliedTheme = ThemeData.dark();
 
         expect(
-          AlchemistConfig(
+          const AlchemistConfig(
             forceUpdateGoldenFiles: true,
             platformGoldensConfig: PlatformGoldensConfig(),
             ciGoldensConfig: CiGoldensConfig(),
@@ -209,12 +207,12 @@ void main() {
   group('PlatformGoldensConfig', () {
     test('supports value equality', () {
       expect(
-        PlatformGoldensConfig(),
-        PlatformGoldensConfig(),
+        const PlatformGoldensConfig(),
+        const PlatformGoldensConfig(),
       );
 
       expect(
-        PlatformGoldensConfig(),
+        const PlatformGoldensConfig(),
         isNot(
           PlatformGoldensConfig(
             filePathResolver: (_, __) async => 'foo',
@@ -238,7 +236,7 @@ void main() {
 
       test('returns current operating system', () {
         expect(
-          PlatformGoldensConfig().environmentName,
+          const PlatformGoldensConfig().environmentName,
           nextHostPlatform.operatingSystem,
         );
       });
@@ -271,8 +269,8 @@ void main() {
     group('copyWith', () {
       test('does nothing if no arguments are provided', () {
         expect(
-          PlatformGoldensConfig().copyWith(),
-          equals(PlatformGoldensConfig()),
+          const PlatformGoldensConfig().copyWith(),
+          equals(const PlatformGoldensConfig()),
         );
       });
 
@@ -280,8 +278,8 @@ void main() {
         const enabled = false;
 
         expect(
-          PlatformGoldensConfig(enabled: enabled).copyWith(),
-          equals(PlatformGoldensConfig(enabled: enabled)),
+          const PlatformGoldensConfig(enabled: enabled).copyWith(),
+          equals(const PlatformGoldensConfig(enabled: enabled)),
         );
       });
 
@@ -289,7 +287,7 @@ void main() {
         const enabled = false;
 
         expect(
-          PlatformGoldensConfig().copyWith(enabled: enabled),
+          const PlatformGoldensConfig().copyWith(enabled: enabled),
           isA<PlatformGoldensConfig>()
               .having((c) => c.enabled, 'enabled', enabled),
         );
@@ -299,15 +297,15 @@ void main() {
     group('merge', () {
       test('does nothing if provided config is null', () {
         expect(
-          PlatformGoldensConfig().merge(null),
-          equals(PlatformGoldensConfig()),
+          const PlatformGoldensConfig().merge(null),
+          equals(const PlatformGoldensConfig()),
         );
       });
 
       test('does nothing if provided config is untouched', () {
         expect(
-          PlatformGoldensConfig().merge(PlatformGoldensConfig()),
-          equals(PlatformGoldensConfig()),
+          const PlatformGoldensConfig().merge(const PlatformGoldensConfig()),
+          equals(const PlatformGoldensConfig()),
         );
       });
 
@@ -315,8 +313,8 @@ void main() {
         const appliedEnabled = false;
 
         expect(
-          PlatformGoldensConfig().merge(
-            PlatformGoldensConfig(
+          const PlatformGoldensConfig().merge(
+            const PlatformGoldensConfig(
               enabled: appliedEnabled,
             ),
           ),
@@ -330,12 +328,12 @@ void main() {
   group('CiGoldensConfig', () {
     test('supports value equality', () {
       expect(
-        CiGoldensConfig(),
-        CiGoldensConfig(),
+        const CiGoldensConfig(),
+        const CiGoldensConfig(),
       );
 
       expect(
-        CiGoldensConfig(),
+        const CiGoldensConfig(),
         isNot(
           CiGoldensConfig(
             filePathResolver: (_, __) async => 'foo',
@@ -369,8 +367,8 @@ void main() {
     group('copyWith', () {
       test('does nothing if no arguments are provided', () {
         expect(
-          CiGoldensConfig().copyWith(),
-          equals(CiGoldensConfig()),
+          const CiGoldensConfig().copyWith(),
+          equals(const CiGoldensConfig()),
         );
       });
 
@@ -378,8 +376,8 @@ void main() {
         const enabled = false;
 
         expect(
-          CiGoldensConfig(enabled: enabled).copyWith(),
-          equals(CiGoldensConfig(enabled: enabled)),
+          const CiGoldensConfig(enabled: enabled).copyWith(),
+          equals(const CiGoldensConfig(enabled: enabled)),
         );
       });
 
@@ -387,7 +385,7 @@ void main() {
         const enabled = false;
 
         expect(
-          CiGoldensConfig().copyWith(enabled: enabled),
+          const CiGoldensConfig().copyWith(enabled: enabled),
           isA<CiGoldensConfig>().having((c) => c.enabled, 'enabled', enabled),
         );
       });
@@ -396,15 +394,15 @@ void main() {
     group('merge', () {
       test('does nothing if provided config is null', () {
         expect(
-          CiGoldensConfig().merge(null),
-          equals(CiGoldensConfig()),
+          const CiGoldensConfig().merge(null),
+          equals(const CiGoldensConfig()),
         );
       });
 
       test('does nothing if provided config is untouched', () {
         expect(
-          CiGoldensConfig().merge(CiGoldensConfig()),
-          equals(CiGoldensConfig()),
+          const CiGoldensConfig().merge(const CiGoldensConfig()),
+          equals(const CiGoldensConfig()),
         );
       });
 
@@ -412,8 +410,8 @@ void main() {
         const appliedEnabled = false;
 
         expect(
-          CiGoldensConfig().merge(
-            CiGoldensConfig(
+          const CiGoldensConfig().merge(
+            const CiGoldensConfig(
               enabled: appliedEnabled,
             ),
           ),

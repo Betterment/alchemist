@@ -85,3 +85,6 @@ config/
 **/goldens/macos
 **/goldens/linux
 **/goldens/windows
+
+# FVM Version Cache
+.fvm/

@@ -14,21 +14,21 @@ void main() {
           GoldenTestScenario(
             name: 'scenario_button',
             child: TextButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                  const Color(0xFF2196F3),
+              style: const ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(
+                  Color(0xFF2196F3),
                 ),
-                foregroundColor: MaterialStateProperty.all(
-                  const Color(0xFFFFFFFF),
+                foregroundColor: MaterialStatePropertyAll(
+                  Color(0xFFFFFFFF),
                 ),
-                shadowColor: MaterialStateProperty.all(
-                  const Color(0xFFFF0000),
+                shadowColor: MaterialStatePropertyAll(
+                  Color(0xFFFF0000),
                 ),
-                surfaceTintColor: MaterialStateProperty.all(
-                  const Color(0xFF00FF00),
+                surfaceTintColor: MaterialStatePropertyAll(
+                  Color(0xFF00FF00),
                 ),
-                overlayColor: MaterialStateProperty.all(
-                  const Color(0xFF0000FF),
+                overlayColor: MaterialStatePropertyAll(
+                  Color(0xFF0000FF),
                 ),
               ),
               onPressed: () {},
