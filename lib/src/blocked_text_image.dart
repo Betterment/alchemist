@@ -279,4 +279,12 @@ class BlockedTextCanvasAdapter implements Canvas {
 
   @override
   void restoreToCount(int count) => parent.restoreToCount(count);
+
+  @override
+  void clipRSuperellipse(ui.RSuperellipse rse, {bool doAntiAlias = true}) =>
+      parent.clipRSuperellipse(rse, doAntiAlias: doAntiAlias);
+
+  @override
+  void drawRSuperellipse(ui.RSuperellipse rse, ui.Paint paint) =>
+      parent.drawRSuperellipse(rse, paint);
 }
