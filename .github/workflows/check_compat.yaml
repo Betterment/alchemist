@@ -15,7 +15,21 @@ jobs:
         channel: ['stable', 'beta']
 
     steps:
+      - name: Set branch based on Flutter channel
+        id: set-branch
+        run: |
+          if [[ "${{ matrix.channel }}" == "stable" ]]; then
+            echo "branch=main" >> $GITHUB_OUTPUT
+          elif [[ "${{ matrix.channel }}" == "beta" ]]; then
+            echo "branch=beta" >> $GITHUB_OUTPUT
+          else
+            echo "Unknown Flutter channel: ${{ matrix.channel }}"
+            exit 1
+          fi
+
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          ref: ${{ steps.set-branch.outputs.branch }}
 
       - uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1 # v2.16.0
         with:
