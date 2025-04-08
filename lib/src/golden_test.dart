@@ -70,17 +70,6 @@ Future<void> loadFonts() async {
   }
 }
 
-/// Loads fonts from a font family for use in golden tests.
-Future<void> _loadFontFamily(String family, List<String> fontAssets) async {
-  final bundle = rootBundle;
-  final loader = FontLoader(family);
-  for (final fontAsset in fontAssets) {
-    loader.addFont(bundle.load(fontAsset));
-  }
-
-  await loader.load();
-}
-
 /// Returns the name of the package from which the golden test is being run.
 /// `null` if the package name cannot be determined.
 String? _getPackageName() {
@@ -91,6 +80,17 @@ String? _getPackageName() {
 
   final pubspec = loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
   return pubspec['name'] as String?;
+}
+
+/// Loads fonts from a font family for use in golden tests.
+Future<void> _loadFontFamily(String family, List<String> fontAssets) async {
+  final bundle = rootBundle;
+  final loader = FontLoader(family);
+  for (final fontAsset in fontAssets) {
+    loader.addFont(bundle.load(fontAsset));
+  }
+
+  await loader.load();
 }
 
 /// Performs a Flutter widget test that compares against golden image.
