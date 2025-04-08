@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:alchemist/alchemist.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
+import 'package:yaml/yaml.dart';
 
 /// Default golden test runner which uses the flutter test framework.
 const defaultGoldenTestRunner = FlutterGoldenTestRunner();
@@ -37,26 +39,58 @@ Future<void> _setUpGoldenTests() async {
 @visibleForTesting
 Future<void> loadFonts() async {
   final bundle = rootBundle;
+  final packageName = _getPackageName();
+
   final fontManifestString = await bundle.loadString('FontManifest.json');
   final fontManifest = (json.decode(fontManifestString) as List<dynamic>)
       .map((dynamic x) => x as Map<String, dynamic>);
 
   for (final entry in fontManifest) {
-    final family =
-        (entry['family'] as String).stripFontFamilyAlchemistPackageName();
+    final baseFamily = entry['family'] as String;
+    final family = baseFamily.stripFontFamilyAlchemistPackageName();
 
     final fontAssets = [
       for (final fontAssetEntry in entry['fonts'] as List<dynamic>)
         (fontAssetEntry as Map<String, dynamic>)['asset'] as String,
     ];
 
-    final loader = FontLoader(family);
-    for (final fontAsset in fontAssets) {
-      loader.addFont(bundle.load(fontAsset));
-    }
+    await _loadFontFamily(family, fontAssets);
 
-    await loader.load();
+    // Check if the font is a custom user-specified font.
+    // `MaterialIcons` is a special case, added by specifying
+    // `flutter` -> `uses-material-design: true` in `pubspec.yaml`.
+    final isCustomFont =
+        !baseFamily.startsWith('packages/') && family != 'MaterialIcons';
+
+    // Register same-package custom fonts under an alias.
+    if (isCustomFont && packageName != null) {
+      final aliasFamily = 'packages/$packageName/$baseFamily';
+      await _loadFontFamily(aliasFamily, fontAssets);
+    }
   }
+}
+
+/// Loads fonts from a font family for use in golden tests.
+Future<void> _loadFontFamily(String family, List<String> fontAssets) async {
+  final bundle = rootBundle;
+  final loader = FontLoader(family);
+  for (final fontAsset in fontAssets) {
+    loader.addFont(bundle.load(fontAsset));
+  }
+
+  await loader.load();
+}
+
+/// Returns the name of the package from which the golden test is being run.
+/// `null` if the package name cannot be determined.
+String? _getPackageName() {
+  final pubspecFile = File('pubspec.yaml');
+  if (!pubspecFile.existsSync()) {
+    return null;
+  }
+
+  final pubspec = loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
+  return pubspec['name'] as String?;
 }
 
 /// Performs a Flutter widget test that compares against golden image.
