@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'dart:ui' as ui;
+
 /// Default golden test adapter used to interface with Flutter's testing
 /// framework.
 GoldenTestAdapter defaultGoldenTestAdapter = const FlutterGoldenTestAdapter();
@@ -78,6 +80,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     final mementoDebugDisableShadows = debugDisableShadows;
     debugDisableShadows = !renderShadows;
 
+    late final Future<ui.Image>? imageFuture;
     try {
       await goldenTestAdapter.pumpGoldenTest(
         tester: tester,
@@ -100,12 +103,14 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
 
       final finder = find.byKey(rootKey);
 
-      final toMatch = obscureText
+      imageFuture = obscureText
           ? goldenTestAdapter.getBlockedTextImage(
               finder: finder,
               tester: tester,
             )
-          : finder;
+          : null;
+
+      final toMatch = imageFuture ?? finder;
 
       try {
         await goldenTestAdapter.withForceUpdateGoldenFiles(
@@ -121,10 +126,14 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       }
     } finally {
       debugDisableShadows = mementoDebugDisableShadows;
+      final image = await imageFuture;
 
-      await tester.binding.setSurfaceSize(null);
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
+      addTearDown(() async {
+        await tester.binding.setSurfaceSize(null);
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+        image?.dispose();
+      });
     }
   }
 }
