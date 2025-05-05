@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/interactions.dart';
@@ -5,8 +7,6 @@ import 'package:alchemist/src/pumps.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'dart:ui' as ui;
 
 /// Default golden test adapter used to interface with Flutter's testing
 /// framework.
@@ -80,7 +80,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     final mementoDebugDisableShadows = debugDisableShadows;
     debugDisableShadows = !renderShadows;
 
-    late final Future<ui.Image>? imageFuture;
+    Future<ui.Image>? imageFuture;
     try {
       await goldenTestAdapter.pumpGoldenTest(
         tester: tester,
@@ -103,12 +103,12 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
 
       final finder = find.byKey(rootKey);
 
-      imageFuture = obscureText
-          ? goldenTestAdapter.getBlockedTextImage(
-              finder: finder,
-              tester: tester,
-            )
-          : null;
+      if (obscureText) {
+        imageFuture = goldenTestAdapter.getBlockedTextImage(
+          finder: finder,
+          tester: tester,
+        );
+      }
 
       final toMatch = imageFuture ?? finder;
 
