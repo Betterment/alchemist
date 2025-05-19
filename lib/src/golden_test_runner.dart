@@ -127,12 +127,12 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     } finally {
       debugDisableShadows = mementoDebugDisableShadows;
       final image = await imageFuture;
+      image?.dispose();
 
+      await tester.binding.setSurfaceSize(null);
+      tester.view.resetPhysicalSize();
       addTearDown(() async {
-        await tester.binding.setSurfaceSize(null);
-        tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
-        image?.dispose();
       });
     }
   }
