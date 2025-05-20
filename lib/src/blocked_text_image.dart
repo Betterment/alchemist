@@ -101,6 +101,10 @@ class BlockedTextCanvasAdapter implements Canvas {
       parent.clipRect(rect, clipOp: clipOp, doAntiAlias: doAntiAlias);
 
   @override
+  void clipRSuperellipse(ui.RSuperellipse rsuperellipse, {bool doAntiAlias = true}) =>
+      parent.clipRSuperellipse(rsuperellipse, doAntiAlias: doAntiAlias);
+  
+  @override
   void drawArc(
     ui.Rect rect,
     double startAngle,
@@ -224,6 +228,10 @@ class BlockedTextCanvasAdapter implements Canvas {
   void drawRect(ui.Rect rect, ui.Paint paint) => parent.drawRect(rect, paint);
 
   @override
+  void drawRSuperellipse(ui.RSuperellipse rsuperellipse, ui.Paint paint) =>
+      parent.drawRSuperellipse(rsuperellipse, paint);
+      
+  @override
   void drawShadow(
     ui.Path path,
     ui.Color color,
@@ -279,4 +287,5 @@ class BlockedTextCanvasAdapter implements Canvas {
 
   @override
   void restoreToCount(int count) => parent.restoreToCount(count);
+
 }
