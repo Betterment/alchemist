@@ -44,24 +44,18 @@ extension GoldenTestWidgetTesterExtensions on WidgetTester {
     final elementAmount = finder.evaluate().length;
 
     if (elementAmount == 0) {
-      printToConsole(
-        '''
+      printToConsole('''
 No widgets found that match finder: $finder.
 No gestures will be performed.
 
 If this is intentional, consider not calling this method
-to avoid unnecessary overhead.''',
-      );
+to avoid unnecessary overhead.''');
     }
 
     return [
       for (var i = 0; i < elementAmount; i++)
         await startGesture(
-          getCenter(
-            finder.at(i),
-            warnIfMissed: true,
-            callee: 'pressAll',
-          ),
+          getCenter(finder.at(i), warnIfMissed: true, callee: 'pressAll'),
         ),
     ];
   }
@@ -121,9 +115,7 @@ extension GoldenTestThemeDataExtensions on ThemeData {
   @protected
   ThemeData applyObscuredFontFamily() {
     return copyWith(
-      textTheme: textTheme.apply(
-        fontFamily: obscuredTextFontFamily,
-      ),
+      textTheme: textTheme.apply(fontFamily: obscuredTextFontFamily),
     );
   }
 }

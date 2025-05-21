@@ -6,11 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Widget buildWrapper(Widget child) {
-    return MaterialApp(
-      home: Scaffold(
-        body: child,
-      ),
-    );
+    return MaterialApp(home: Scaffold(body: child));
   }
 
   group('press', () {
@@ -34,10 +30,7 @@ void main() {
     testWidgets('press for custom time pumps correctly', (tester) async {
       await tester.pumpWidget(
         buildWrapper(
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text('button'),
-          ),
+          ElevatedButton(onPressed: () {}, child: const Text('button')),
         ),
       );
       const holdForDuration = Duration(seconds: 3);
@@ -82,9 +75,7 @@ void main() {
           // we're using on our scroll interaction.
           itemCount: 20,
           itemBuilder: (context, index) {
-            return ListTile(
-              title: Text('item $index'),
-            );
+            return ListTile(title: Text('item $index'));
           },
         ),
       ),

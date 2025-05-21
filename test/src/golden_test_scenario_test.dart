@@ -40,8 +40,9 @@ void main() {
     });
 
     group('constraints', () {
-      testWidgets('when null defaults to inherited constraints',
-          (tester) async {
+      testWidgets('when null defaults to inherited constraints', (
+        tester,
+      ) async {
         const constraints = BoxConstraints(maxWidth: 400);
         final subject = buildSubject();
 
@@ -80,8 +81,9 @@ void main() {
         expect(findConstraints, findsOneWidget);
       });
 
-      testWidgets('takes precedence over inherited constraints',
-          (tester) async {
+      testWidgets('takes precedence over inherited constraints', (
+        tester,
+      ) async {
         const constraints = BoxConstraints(maxWidth: 400);
         final subject = buildSubject(constraints: constraints);
 
@@ -115,49 +117,36 @@ void main() {
         },
       );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: subject,
-          ),
-        ),
-      );
+      await tester.pumpWidget(MaterialApp(home: Scaffold(body: subject)));
 
       expect(providedContext, isNotNull);
       expect(providedContext, isA<BuildContext>());
     });
 
-    testWidgets(
-      '.withTextScaleFactor sets correct default textScaler',
-      (tester) async {
-        const textScaler = TextScaler.linear(2);
-        final subject = GoldenTestScenario.withTextScaleFactor(
-          textScaler: textScaler,
-          name: 'name',
-          child: const Text('child'),
-        );
+    testWidgets('.withTextScaleFactor sets correct default textScaler', (
+      tester,
+    ) async {
+      const textScaler = TextScaler.linear(2);
+      final subject = GoldenTestScenario.withTextScaleFactor(
+        textScaler: textScaler,
+        name: 'name',
+        child: const Text('child'),
+      );
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: subject,
-            ),
-          ),
-        );
+      await tester.pumpWidget(MaterialApp(home: Scaffold(body: subject)));
 
-        final element = tester.element(find.text('child'));
-        final mediaQuery = MediaQuery.maybeOf(element);
+      final element = tester.element(find.text('child'));
+      final mediaQuery = MediaQuery.maybeOf(element);
 
-        expect(mediaQuery, isNotNull);
-        expect(
-          mediaQuery,
-          isA<MediaQueryData>().having(
-            (m) => m.textScaler,
-            'textScaler',
-            textScaler,
-          ),
-        );
-      },
-    );
+      expect(mediaQuery, isNotNull);
+      expect(
+        mediaQuery,
+        isA<MediaQueryData>().having(
+          (m) => m.textScaler,
+          'textScaler',
+          textScaler,
+        ),
+      );
+    });
   });
 }

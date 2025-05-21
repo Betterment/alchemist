@@ -76,11 +76,7 @@ void main() {
       const doAntiAlias = false;
       subject.clipRect(rect, clipOp: clipOp, doAntiAlias: doAntiAlias);
       verify(
-        () => parent.clipRect(
-          rect,
-          clipOp: clipOp,
-          doAntiAlias: doAntiAlias,
-        ),
+        () => parent.clipRect(rect, clipOp: clipOp, doAntiAlias: doAntiAlias),
       ).called(1);
     });
 
@@ -92,27 +88,15 @@ void main() {
       final paint = ui.Paint();
       subject.drawArc(rect, startAngle, sweepAngle, useCenter, paint);
       verify(
-        () => parent.drawArc(
-          rect,
-          startAngle,
-          sweepAngle,
-          useCenter,
-          paint,
-        ),
+        () => parent.drawArc(rect, startAngle, sweepAngle, useCenter, paint),
       ).called(1);
     });
 
     test('drawAtlas delegates to parent implementation', () {
       final atlas = FakeImage();
-      final transforms = [
-        ui.RSTransform(0, 0, 0, 0),
-      ];
-      const rects = [
-        ui.Rect.zero,
-      ];
-      const colors = [
-        ui.Color.fromRGBO(0, 0, 0, 0.5),
-      ];
+      final transforms = [ui.RSTransform(0, 0, 0, 0)];
+      const rects = [ui.Rect.zero];
+      const colors = [ui.Color.fromRGBO(0, 0, 0, 0.5)];
       const blendMode = ui.BlendMode.clear;
       const cullRect = ui.Rect.zero;
       final paint = ui.Paint();
@@ -288,12 +272,7 @@ void main() {
       const transparentOccluder = false;
       subject.drawShadow(path, color, elevation, transparentOccluder);
       verify(
-        () => parent.drawShadow(
-          path,
-          color,
-          elevation,
-          transparentOccluder,
-        ),
+        () => parent.drawShadow(path, color, elevation, transparentOccluder),
       ).called(1);
     });
 

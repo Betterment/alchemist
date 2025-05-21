@@ -3,7 +3,8 @@ import 'package:alchemist/src/golden_test_scenario_constraints.dart';
 import 'package:flutter/material.dart';
 
 /// An internal [WidgetBuilder] that builds the widget it's given.
-WidgetBuilder _build(Widget build) => (context) => build;
+WidgetBuilder _build(Widget build) =>
+    (context) => build;
 
 /// {@template golden_test_scenario}
 /// A widget that displays its child with a label for use in golden tests.
@@ -47,11 +48,8 @@ class GoldenTestScenario extends StatelessWidget {
     super.key,
     this.constraints,
   }) : builder = _build(
-          _CustomTextScaleFactor(
-            textScaler: textScaler,
-            child: child,
-          ),
-        );
+         _CustomTextScaleFactor(textScaler: textScaler, child: child),
+       );
 
   /// The name of the scenario.
   ///
@@ -70,7 +68,8 @@ class GoldenTestScenario extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final testTheme = Theme.of(context).extension<GoldenTestTheme>() ??
+    final testTheme =
+        Theme.of(context).extension<GoldenTestTheme>() ??
         AlchemistConfig.current().goldenTestTheme ??
         GoldenTestTheme.standard();
     return Padding(
@@ -88,12 +87,11 @@ class GoldenTestScenario extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           ConstrainedBox(
-            constraints: constraints ??
+            constraints:
+                constraints ??
                 GoldenTestScenarioConstraints.maybeOf(context) ??
                 const BoxConstraints(),
-            child: Builder(
-              builder: builder,
-            ),
+            child: Builder(builder: builder),
           ),
         ],
       ),
@@ -107,10 +105,7 @@ class GoldenTestScenario extends StatelessWidget {
 @protected
 class _CustomTextScaleFactor extends StatelessWidget {
   /// {@macro _custom_text_scale_factor}
-  const _CustomTextScaleFactor({
-    required this.textScaler,
-    required this.child,
-  });
+  const _CustomTextScaleFactor({required this.textScaler, required this.child});
 
   /// The TextScaler will be applied to the [child].
   final TextScaler textScaler;
@@ -121,9 +116,7 @@ class _CustomTextScaleFactor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: textScaler,
-      ),
+      data: MediaQuery.of(context).copyWith(textScaler: textScaler),
       child: child,
     );
   }

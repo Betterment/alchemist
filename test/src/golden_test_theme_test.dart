@@ -10,11 +10,7 @@ void main() {
         return const MaterialApp(
           home: Scaffold(
             body: GoldenTestGroup(
-              children: [
-                Text('One'),
-                Text('Two'),
-                Text('Three'),
-              ],
+              children: [Text('One'), Text('Two'), Text('Three')],
             ),
           ),
         );
@@ -200,10 +196,7 @@ void main() {
               ),
             );
             final box = find.text('Scenario name');
-            expect(
-              tester.widget<Text>(box).style,
-              nameTextStyle,
-            );
+            expect(tester.widget<Text>(box).style, nameTextStyle);
           });
         });
       });

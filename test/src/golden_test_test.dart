@@ -48,13 +48,16 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
   }) async {}
 
   @override
-  TestLifecycleFn get setUp => (dynamic Function() body) => body();
+  TestLifecycleFn get setUp =>
+      (dynamic Function() body) => body();
 
   @override
-  TestLifecycleFn get tearDown => (dynamic Function() body) => body();
+  TestLifecycleFn get tearDown =>
+      (dynamic Function() body) => body();
 
   @override
-  TestWidgetsFn get testWidgets => (
+  TestWidgetsFn get testWidgets =>
+      (
         String description,
         Future<void> Function(WidgetTester) callback, {
         bool? skip,
@@ -139,8 +142,9 @@ void main() {
         primaryColor: Colors.red,
       );
       final ciTheme = ThemeData.light().copyWith(primaryColor: Colors.green);
-      final platformTheme =
-          ThemeData.light().copyWith(primaryColor: Colors.yellow);
+      final platformTheme = ThemeData.light().copyWith(
+        primaryColor: Colors.yellow,
+      );
       final goldenTestTheme = GoldenTestTheme(
         backgroundColor: Colors.blueGrey,
         borderColor: Colors.orange,
