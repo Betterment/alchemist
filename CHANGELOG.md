@@ -1,3 +1,13 @@
+# 0.12.0
+
+## What's Changed
+* chore: updates for building against flutter 3.29 by @btrautmann in https://github.com/Betterment/alchemist/pull/145
+* ci: add branch-switching for beta channel by @btrautmann in https://github.com/Betterment/alchemist/pull/146
+* chore: bump min flutter version to 3.32.0 by @btrautmann in https://github.com/Betterment/alchemist/pull/153
+
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.11.0...v0.12.0
+
 # 0.11.0
 
 ## What's Changed
