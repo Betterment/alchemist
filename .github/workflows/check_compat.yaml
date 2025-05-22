@@ -1,10 +1,11 @@
 name: Compatibility Check
 
+# ignore: RiskyTriggers
 on:
-    schedule:
+  schedule:
     # Run daily at 00:00 UTC
-    - cron: '0 0 * * *'
-    workflow_dispatch:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,26 +13,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        channel: ['stable', 'beta']
+        channel: ["stable", "beta"]
 
     steps:
       - name: Set branch based on Flutter channel
         id: set-branch
         run: |
           if [[ "${{ matrix.channel }}" == "stable" ]]; then
-            echo "branch=main" >> $GITHUB_OUTPUT
+            echo "branch=main" >> "$GITHUB_OUTPUT"
           elif [[ "${{ matrix.channel }}" == "beta" ]]; then
-            echo "branch=beta" >> $GITHUB_OUTPUT
+            echo "branch=beta" >> "$GITHUB_OUTPUT"
           else
             echo "Unknown Flutter channel: ${{ matrix.channel }}"
             exit 1
           fi
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ steps.set-branch.outputs.branch }}
 
-      - uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1 # v2.16.0
+      - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
         with:
           channel: ${{ matrix.channel }}
           cache: true
