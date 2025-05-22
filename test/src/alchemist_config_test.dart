@@ -66,24 +66,26 @@ void main() {
       });
     });
 
-    test('runWithConfig runs given function in a zone with provided config',
-        () {
-      const outerConfig = AlchemistConfig(forceUpdateGoldenFiles: false);
-      const innerConfig = AlchemistConfig(forceUpdateGoldenFiles: true);
+    test(
+      'runWithConfig runs given function in a zone with provided config',
+      () {
+        const outerConfig = AlchemistConfig(forceUpdateGoldenFiles: false);
+        const innerConfig = AlchemistConfig(forceUpdateGoldenFiles: true);
 
-      Object? providedConfig;
+        Object? providedConfig;
 
-      runZoned(
-        () => AlchemistConfig.runWithConfig<void>(
-          config: innerConfig,
-          run: () =>
-              providedConfig = Zone.current[AlchemistConfig.currentConfigKey],
-        ),
-        zoneValues: {AlchemistConfig.currentConfigKey: outerConfig},
-      );
+        runZoned(
+          () => AlchemistConfig.runWithConfig<void>(
+            config: innerConfig,
+            run: () =>
+                providedConfig = Zone.current[AlchemistConfig.currentConfigKey],
+          ),
+          zoneValues: {AlchemistConfig.currentConfigKey: outerConfig},
+        );
 
-      expect(providedConfig, equals(innerConfig));
-    });
+        expect(providedConfig, equals(innerConfig));
+      },
+    );
 
     group('copyWith', () {
       test('does nothing if no arguments are provided', () {
@@ -142,8 +144,9 @@ void main() {
 
       test('does nothing if provided config is untouched', () {
         expect(
-          const AlchemistConfig(forceUpdateGoldenFiles: true)
-              .merge(const AlchemistConfig()),
+          const AlchemistConfig(
+            forceUpdateGoldenFiles: true,
+          ).merge(const AlchemistConfig()),
           equals(const AlchemistConfig(forceUpdateGoldenFiles: true)),
         );
       });
@@ -152,11 +155,7 @@ void main() {
         expect(
           const AlchemistConfig(
             forceUpdateGoldenFiles: true,
-          ).merge(
-            const AlchemistConfig(
-              forceUpdateGoldenFiles: false,
-            ),
-          ),
+          ).merge(const AlchemistConfig(forceUpdateGoldenFiles: false)),
           equals(const AlchemistConfig(forceUpdateGoldenFiles: false)),
         );
       });
@@ -171,12 +170,8 @@ void main() {
             ciGoldensConfig: CiGoldensConfig(),
           ).merge(
             AlchemistConfig(
-              platformGoldensConfig: PlatformGoldensConfig(
-                theme: appliedTheme,
-              ),
-              ciGoldensConfig: CiGoldensConfig(
-                theme: appliedTheme,
-              ),
+              platformGoldensConfig: PlatformGoldensConfig(theme: appliedTheme),
+              ciGoldensConfig: CiGoldensConfig(theme: appliedTheme),
             ),
           ),
           isA<AlchemistConfig>()
@@ -206,18 +201,11 @@ void main() {
 
   group('PlatformGoldensConfig', () {
     test('supports value equality', () {
-      expect(
-        const PlatformGoldensConfig(),
-        const PlatformGoldensConfig(),
-      );
+      expect(const PlatformGoldensConfig(), const PlatformGoldensConfig());
 
       expect(
         const PlatformGoldensConfig(),
-        isNot(
-          PlatformGoldensConfig(
-            filePathResolver: (_, __) async => 'foo',
-          ),
-        ),
+        isNot(PlatformGoldensConfig(filePathResolver: (_, __) async => 'foo')),
       );
     });
 
@@ -250,10 +238,7 @@ void main() {
       const defaultValue = PlatformGoldensConfig();
 
       test('for renderShadows', () {
-        expect(
-          defaultValue.renderShadows,
-          isTrue,
-        );
+        expect(defaultValue.renderShadows, isTrue);
       });
 
       group('for default filePathResolver', () {
@@ -288,8 +273,11 @@ void main() {
 
         expect(
           const PlatformGoldensConfig().copyWith(enabled: enabled),
-          isA<PlatformGoldensConfig>()
-              .having((c) => c.enabled, 'enabled', enabled),
+          isA<PlatformGoldensConfig>().having(
+            (c) => c.enabled,
+            'enabled',
+            enabled,
+          ),
         );
       });
     });
@@ -314,12 +302,13 @@ void main() {
 
         expect(
           const PlatformGoldensConfig().merge(
-            const PlatformGoldensConfig(
-              enabled: appliedEnabled,
-            ),
+            const PlatformGoldensConfig(enabled: appliedEnabled),
           ),
-          isA<PlatformGoldensConfig>()
-              .having((c) => c.enabled, 'enabled', appliedEnabled),
+          isA<PlatformGoldensConfig>().having(
+            (c) => c.enabled,
+            'enabled',
+            appliedEnabled,
+          ),
         );
       });
     });
@@ -327,18 +316,11 @@ void main() {
 
   group('CiGoldensConfig', () {
     test('supports value equality', () {
-      expect(
-        const CiGoldensConfig(),
-        const CiGoldensConfig(),
-      );
+      expect(const CiGoldensConfig(), const CiGoldensConfig());
 
       expect(
         const CiGoldensConfig(),
-        isNot(
-          CiGoldensConfig(
-            filePathResolver: (_, __) async => 'foo',
-          ),
-        ),
+        isNot(CiGoldensConfig(filePathResolver: (_, __) async => 'foo')),
       );
     });
 
@@ -346,10 +328,7 @@ void main() {
       const defaultValue = CiGoldensConfig();
 
       test('for renderShadows', () {
-        expect(
-          defaultValue.renderShadows,
-          isFalse,
-        );
+        expect(defaultValue.renderShadows, isFalse);
       });
 
       test('for filePathResolver', () {
@@ -411,12 +390,13 @@ void main() {
 
         expect(
           const CiGoldensConfig().merge(
-            const CiGoldensConfig(
-              enabled: appliedEnabled,
-            ),
+            const CiGoldensConfig(enabled: appliedEnabled),
           ),
-          isA<CiGoldensConfig>()
-              .having((c) => c.enabled, 'enabled', appliedEnabled),
+          isA<CiGoldensConfig>().having(
+            (c) => c.enabled,
+            'enabled',
+            appliedEnabled,
+          ),
         );
       });
     });

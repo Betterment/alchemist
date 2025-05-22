@@ -10,16 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Determine Flutter version
         id: flutter_version
         run: |
           # Grab the Flutter version from the .fvmrc file
           FLUTTER_VERSION=$(grep '"flutter"' .fvmrc | grep -o '[0-9][0-9.]*')
-          echo "flutter_version=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
         with:
           flutter-version: ${{ steps.flutter_version.outputs.flutter_version }}
           cache: true
@@ -31,9 +31,9 @@ jobs:
         run: dart format --set-exit-if-changed .
 
       - name: Analyze project source
-        uses: invertase/github-action-dart-analyzer@v1
+        uses: invertase/github-action-dart-analyzer@e981b01a458d0bab71ee5da182e5b26687b7101b # v3.0.0
 
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@c2fcb216de2b0348de0100baa3ea2cad9f100a01 # v5.1.0
         with:
           files: coverage/lcov.info
 
@@ -42,14 +42,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.16.9', '3.19.6', '3.22.3', '3.24.3', '3.29.2']
+        flutter-version: ["3.32.0"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          channel: 'stable'
+          channel: "stable"
           cache: true
 
       - name: Install Dependencies
@@ -69,23 +69,21 @@ jobs:
           name: "golden_failures_${{ matrix.flutter-version }}"
           path: |
             **/failures/**/*.png
-    
-
 
   pana:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Determine Flutter version
         id: flutter_version
         run: |
           # Grab the Flutter version from the .fvmrc file
           FLUTTER_VERSION=$(grep '"flutter"' .fvmrc | grep -o '[0-9][0-9.]*')
-          echo "flutter_version=$FLUTTER_VERSION" >> $GITHUB_OUTPUT
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
         with:
           flutter-version: ${{ steps.flutter_version.outputs.flutter_version }}
           cache: true

@@ -7,15 +7,9 @@ void main() {
     goldenTest(
       'succeeds with an unconstrained widget',
       fileName: 'unconstrained_smoke_test',
-      constraints: const BoxConstraints(
-        maxWidth: 3000,
-        maxHeight: 3000,
-      ),
-      builder: () => const SizedBox.expand(
-        child: ColoredBox(
-          color: Colors.red,
-        ),
-      ),
+      constraints: const BoxConstraints(maxWidth: 3000, maxHeight: 3000),
+      builder: () =>
+          const SizedBox.expand(child: ColoredBox(color: Colors.red)),
     );
 
     goldenTest(
@@ -24,9 +18,7 @@ void main() {
       builder: () => const SizedBox(
         width: 3000,
         height: 3000,
-        child: ColoredBox(
-          color: Colors.red,
-        ),
+        child: ColoredBox(color: Colors.red),
       ),
     );
   });

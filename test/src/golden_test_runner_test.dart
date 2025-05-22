@@ -129,8 +129,7 @@ void main() {
       }
     });
 
-    testWidgets(
-        'renderShadows sets debugDisableShadows correctly '
+    testWidgets('renderShadows sets debugDisableShadows correctly '
         'and resets it after the test has run', (tester) async {
       late final bool debugDisableShadowsDuringTestRun;
 

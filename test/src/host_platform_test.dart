@@ -24,20 +24,11 @@ void main() {
         'returns current host platform',
         () {
           if (Platform.isMacOS) {
-            expect(
-              HostPlatform.current(),
-              HostPlatform.macOS,
-            );
+            expect(HostPlatform.current(), HostPlatform.macOS);
           } else if (Platform.isLinux) {
-            expect(
-              HostPlatform.current(),
-              HostPlatform.linux,
-            );
+            expect(HostPlatform.current(), HostPlatform.linux);
           } else if (Platform.isWindows) {
-            expect(
-              HostPlatform.current(),
-              HostPlatform.windows,
-            );
+            expect(HostPlatform.current(), HostPlatform.windows);
           }
         },
         skip: !Platform.isMacOS && !Platform.isLinux && !Platform.isWindows,
@@ -45,10 +36,7 @@ void main() {
     });
 
     test('has correct string representation', () {
-      expect(
-        HostPlatform.macOS.toString(),
-        'HostPlatform(macOS)',
-      );
+      expect(HostPlatform.macOS.toString(), 'HostPlatform(macOS)');
     });
 
     group('compareTo', () {

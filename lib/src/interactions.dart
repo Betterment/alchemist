@@ -12,31 +12,29 @@ typedef Interaction = Future<AsyncCallback?> Function(WidgetTester);
 Interaction press(
   Finder finder, {
   Duration? holdFor = const Duration(milliseconds: 300),
-}) =>
-    (WidgetTester tester) async {
-      final gestures = await tester.pressAll(finder);
-      await tester.pump(kPressTimeout);
-      await tester.pump(holdFor);
-      return gestures.releaseAll;
-    };
+}) => (WidgetTester tester) async {
+  final gestures = await tester.pressAll(finder);
+  await tester.pump(kPressTimeout);
+  await tester.pump(holdFor);
+  return gestures.releaseAll;
+};
 
 /// Long-presses all widgets matching [finder].
 Interaction longPress(Finder finder) => (WidgetTester tester) async {
-      final gestures = await tester.pressAll(finder);
-      await tester.pump(kLongPressTimeout);
-      return gestures.releaseAll;
-    };
+  final gestures = await tester.pressAll(finder);
+  await tester.pump(kLongPressTimeout);
+  return gestures.releaseAll;
+};
 
 /// Scrolls all widgets matching `finder`.
 Interaction scroll(
   Finder finder, {
   required Offset offset,
   double speed = kMinFlingVelocity,
-}) =>
-    (WidgetTester tester) async {
-      final elements = finder.evaluate();
-      for (final element in elements) {
-        await tester.fling(find.byWidget(element.widget), offset, speed);
-      }
-      return;
-    };
+}) => (WidgetTester tester) async {
+  final elements = finder.evaluate();
+  for (final element in elements) {
+    await tester.fling(find.byWidget(element.widget), offset, speed);
+  }
+  return;
+};

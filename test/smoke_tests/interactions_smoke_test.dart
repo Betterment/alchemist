@@ -7,29 +7,16 @@ void main() {
     GoldenTestGroup buildSmokeTestGroup() {
       return GoldenTestGroup(
         children: [
-          GoldenTestScenario(
-            name: 'scenario_text',
-            child: const Text('text'),
-          ),
+          GoldenTestScenario(name: 'scenario_text', child: const Text('text')),
           GoldenTestScenario(
             name: 'scenario_button',
             child: TextButton(
               style: const ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                  Color(0xFF2196F3),
-                ),
-                foregroundColor: MaterialStatePropertyAll(
-                  Color(0xFFFFFFFF),
-                ),
-                shadowColor: MaterialStatePropertyAll(
-                  Color(0xFFFF0000),
-                ),
-                surfaceTintColor: MaterialStatePropertyAll(
-                  Color(0xFF00FF00),
-                ),
-                overlayColor: MaterialStatePropertyAll(
-                  Color(0xFF0000FF),
-                ),
+                backgroundColor: WidgetStatePropertyAll(Color(0xFF2196F3)),
+                foregroundColor: WidgetStatePropertyAll(Color(0xFFFFFFFF)),
+                shadowColor: WidgetStatePropertyAll(Color(0xFFFF0000)),
+                surfaceTintColor: WidgetStatePropertyAll(Color(0xFF00FF00)),
+                overlayColor: WidgetStatePropertyAll(Color(0xFF0000FF)),
               ),
               onPressed: () {},
               onLongPress: () {},

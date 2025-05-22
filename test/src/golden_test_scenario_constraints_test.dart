@@ -34,29 +34,27 @@ void main() {
     });
 
     group('maybeOf', () {
-      testWidgets(
-        'returns the constraints from the nearest widget',
-        (tester) async {
-          late BoxConstraints? constraints;
-          await tester.pumpWidget(
-            GoldenTestScenarioConstraints(
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: GoldenTestScenarioConstraints(
-                constraints: const BoxConstraints(minWidth: 200),
-                child: Builder(
-                  builder: (context) {
-                    constraints =
-                        GoldenTestScenarioConstraints.maybeOf(context);
-                    return const SizedBox();
-                  },
-                ),
+      testWidgets('returns the constraints from the nearest widget', (
+        tester,
+      ) async {
+        late BoxConstraints? constraints;
+        await tester.pumpWidget(
+          GoldenTestScenarioConstraints(
+            constraints: const BoxConstraints(maxHeight: 200),
+            child: GoldenTestScenarioConstraints(
+              constraints: const BoxConstraints(minWidth: 200),
+              child: Builder(
+                builder: (context) {
+                  constraints = GoldenTestScenarioConstraints.maybeOf(context);
+                  return const SizedBox();
+                },
               ),
             ),
-          );
+          ),
+        );
 
-          expect(constraints, equals(const BoxConstraints(minWidth: 200)));
-        },
-      );
+        expect(constraints, equals(const BoxConstraints(minWidth: 200)));
+      });
     });
   });
 }

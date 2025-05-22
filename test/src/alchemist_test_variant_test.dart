@@ -58,10 +58,7 @@ void main() {
 
       test('setUp sets current value', () async {
         final value = MockCiGoldensConfig();
-        await expectLater(
-          variant.setUp(value),
-          completes,
-        );
+        await expectLater(variant.setUp(value), completes);
         expect(variant.currentConfig, value);
       });
 

@@ -10,9 +10,7 @@ void main() {
       builder: () => SizedBox(
         width: 200,
         height: 200,
-        child: ErrorWidget(
-          FlutterError('This is an error message.'),
-        ),
+        child: ErrorWidget(FlutterError('This is an error message.')),
       ),
     );
   });
