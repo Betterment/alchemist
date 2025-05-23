@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/interactions.dart';
@@ -78,6 +80,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     final mementoDebugDisableShadows = debugDisableShadows;
     debugDisableShadows = !renderShadows;
 
+    Future<ui.Image>? imageFuture;
     try {
       await goldenTestAdapter.pumpGoldenTest(
         tester: tester,
@@ -100,12 +103,14 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
 
       final finder = find.byKey(rootKey);
 
-      final toMatch = obscureText
-          ? goldenTestAdapter.getBlockedTextImage(
-              finder: finder,
-              tester: tester,
-            )
-          : finder;
+      if (obscureText) {
+        imageFuture = goldenTestAdapter.getBlockedTextImage(
+          finder: finder,
+          tester: tester,
+        );
+      }
+
+      final toMatch = imageFuture ?? finder;
 
       try {
         await goldenTestAdapter.withForceUpdateGoldenFiles(
@@ -121,10 +126,14 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       }
     } finally {
       debugDisableShadows = mementoDebugDisableShadows;
+      final image = await imageFuture;
+      image?.dispose();
 
       await tester.binding.setSurfaceSize(null);
       tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
+      addTearDown(() async {
+        tester.view.resetDevicePixelRatio();
+      });
     }
   }
 }
