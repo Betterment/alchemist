@@ -129,31 +129,8 @@ extension GoldenTestTextStyleExtensions on TextStyle {
   /// use in golden tests.
   @protected
   TextStyle stripAlchemistPackage() {
-    return TextStyle(
-      inherit: inherit,
-      color: color,
-      backgroundColor: backgroundColor,
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      letterSpacing: letterSpacing,
-      wordSpacing: wordSpacing,
-      textBaseline: textBaseline,
-      height: height,
-      leadingDistribution: leadingDistribution,
-      locale: locale,
-      foreground: foreground,
-      background: background,
-      shadows: shadows,
-      fontFeatures: fontFeatures,
-      decoration: decoration,
-      decorationColor: decorationColor,
-      decorationStyle: decorationStyle,
-      decorationThickness: decorationThickness,
-      debugLabel: debugLabel,
+    return copyWith(
       fontFamily: fontFamily?.stripFontFamilyAlchemistPackageName(),
-      fontFamilyFallback: fontFamilyFallback,
-      overflow: overflow,
     );
   }
 }
