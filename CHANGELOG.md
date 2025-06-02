@@ -1,3 +1,15 @@
+# 0.12.1
+
+## What's Changed
+* fix: Fix memory leaks by @ValentinVignal in https://github.com/Betterment/alchemist/pull/150
+* fix: fontVariations is missing by @FranRiadigos in https://github.com/Betterment/alchemist/pull/156
+
+## New Contributors
+* @ValentinVignal made their first contribution in https://github.com/Betterment/alchemist/pull/150
+* @FranRiadigos made their first contribution in https://github.com/Betterment/alchemist/pull/156
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.12.0...v0.12.1
+
 # 0.12.0
 
 ## What's Changed
