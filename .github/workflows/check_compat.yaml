@@ -55,14 +55,22 @@ jobs:
           path: |
             **/failures/**/*.png
 
+      - name: Create job URL
+        if: failure()
+        id: create-job-url
+        run: |
+          echo "job_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+
       - name: Notify failure
         if: failure()
-        uses: slackapi/slack-github-action@37ebaef184d7626c5f204ab8d3baff4262dd30f0 #v1.27.0
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
+          webhook-type: webhook-trigger
+          webhook: ${{ secrets.MOBILE_OSS_SLACK_WEBHOOK }}
           payload: |
-            {
-              "message": "Heads up! Alchemist smoke tests failed on the ${{ matrix.channel }} channel. Check them out and determine root cause.",
-              "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.MOBILE_OSS_SLACK_WEBHOOK }}
+            text: "Alchemist smoke tests failed on the ${{ matrix.channel }} channel. Check them out and determine root cause: ${{ steps.create-job-url.outputs.job_url }}"
+            blocks:
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "Alchemist smoke tests failed on the `${{ matrix.channel }}` channel. Check them out and determine root cause. <${{ steps.create-job-url.outputs.job_url }}|Job URL>"
