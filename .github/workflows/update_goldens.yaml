@@ -81,8 +81,8 @@ jobs:
 
       - name: Commit Changes
         id: commit_changes
-        uses: stefanzweifel/git-auto-commit-action@12f68633e45c72459cd040c868605f2471c7f63b # v5.0.0
-        with:
-          commit_message: "chore: Updating Goldens"
-          commit_user_name: github-actions[bot]
-          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git diff-index --quiet HEAD || git commit -m "chore: Updating Goldens"
