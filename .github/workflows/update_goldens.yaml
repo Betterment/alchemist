@@ -81,9 +81,11 @@ jobs:
 
       - name: Commit Changes
         id: commit_changes
+        env:
+          BRANCH_NAME: ${{ github.event.inputs.branch }}
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git diff-index --quiet HEAD || git commit -m "chore: Updating Goldens"
-          git push origin HEAD:"${{ github.event.inputs.branch }}"
+          git push origin HEAD:"$BRANCH_NAME"
