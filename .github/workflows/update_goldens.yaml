@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: "Branch to generate goldens from"
+        description: "Branch to generate goldens on"
         required: true
       flutter_version:
         description: "Flutter version to use"
