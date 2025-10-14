@@ -6,6 +6,17 @@ on:
     # Run daily at 00:00 UTC
     - cron: "0 0 * * *"
   workflow_dispatch:
+    inputs:
+      alert_failures:
+        description: "Whether to alert failures to Slack"
+        required: false
+        default: true
+        type: boolean
+      version_override:
+        description: "Override the Flutter version to test against"
+        required: false
+        default: ""
+        type: string
 
 jobs:
   build:
@@ -22,8 +33,15 @@ jobs:
           ref: bt/update-goldens
 
       - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
+        if: ${{ github.event.inputs.version_override != '' }}
         with:
           channel: ${{ matrix.channel }}
+          cache: true
+
+      - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
+        if: ${{ github.event.inputs.version_override != '' }}
+        with:
+          flutter-version: ${{ github.event.inputs.version_override }}
           cache: true
 
       - name: Install Dependencies
@@ -51,7 +69,7 @@ jobs:
           echo "job_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
 
       - name: Notify failure
-        if: failure()
+        if: failure() && inputs.alert_failures
         uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
           webhook-type: webhook-trigger
