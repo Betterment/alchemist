@@ -1,3 +1,21 @@
+# 0.13.0
+
+## What's Changed
+* ci: use mobile messaging app for Slack notifs by @btrautmann in https://github.com/Betterment/alchemist/pull/158
+* chore: use `git commit` instead of `git-auto-commit` action by @btrautmann in https://github.com/Betterment/alchemist/pull/163
+* fix: push changes in update goldens workflow by @btrautmann in https://github.com/Betterment/alchemist/pull/166
+* fix: Anti-aliasing cross-platform issue by @w3ggy in https://github.com/Betterment/alchemist/pull/165
+* chore: ensure tests are compatible with all supported Flutter versions (and beta) by @btrautmann in https://github.com/Betterment/alchemist/pull/167
+
+## :warning: Breaking Changes
+
+https://github.com/Betterment/alchemist/pull/165 disabled anti-aliasing on `BlockedTextPaintingContext` which may change goldens output.
+
+## New Contributors
+* @w3ggy made their first contribution in https://github.com/Betterment/alchemist/pull/165
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.12.1...v0.13.0
+
 # 0.12.1
 
 ## What's Changed
