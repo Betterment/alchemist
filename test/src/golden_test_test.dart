@@ -34,7 +34,6 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
 
   @override
   Future<void> pumpGoldenTest({
-    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -45,16 +44,20 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
+    Key? rootKey,
   }) async {}
 
   @override
-  TestLifecycleFn get setUp => (dynamic Function() body) => body();
+  TestLifecycleFn get setUp =>
+      (dynamic Function() body) => body();
 
   @override
-  TestLifecycleFn get tearDown => (dynamic Function() body) => body();
+  TestLifecycleFn get tearDown =>
+      (dynamic Function() body) => body();
 
   @override
-  TestWidgetsFn get testWidgets => (
+  TestWidgetsFn get testWidgets =>
+      (
         String description,
         Future<void> Function(WidgetTester) callback, {
         bool? skip,
@@ -72,8 +75,8 @@ class FakeGoldenTestAdapter extends Mock implements GoldenTestAdapter {
 
   @override
   Future<T> withForceUpdateGoldenFiles<T>({
-    bool forceUpdate = false,
     required MatchesGoldenFileInvocation<T> callback,
+    bool forceUpdate = false,
   }) async {
     return callback();
   }
@@ -139,8 +142,9 @@ void main() {
         primaryColor: Colors.red,
       );
       final ciTheme = ThemeData.light().copyWith(primaryColor: Colors.green);
-      final platformTheme =
-          ThemeData.light().copyWith(primaryColor: Colors.yellow);
+      final platformTheme = ThemeData.light().copyWith(
+        primaryColor: Colors.yellow,
+      );
       final goldenTestTheme = GoldenTestTheme(
         backgroundColor: Colors.blueGrey,
         borderColor: Colors.orange,

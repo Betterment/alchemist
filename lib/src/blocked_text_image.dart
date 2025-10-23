@@ -24,10 +24,7 @@ class BlockedTextPaintingContext extends PaintingContext {
   }
 
   @override
-  PaintingContext createChildContext(
-    ContainerLayer childLayer,
-    Rect bounds,
-  ) {
+  PaintingContext createChildContext(ContainerLayer childLayer, Rect bounds) {
     return BlockedTextPaintingContext(
       containerLayer: childLayer,
       estimatedBounds: bounds,
@@ -38,7 +35,8 @@ class BlockedTextPaintingContext extends PaintingContext {
   void paintChild(RenderObject child, Offset offset) {
     if (child is RenderParagraph) {
       final paint = Paint()
-        ..color = child.text.style?.color ?? const Color(0xFF000000);
+        ..color = child.text.style?.color ?? const Color(0xFF000000)
+        ..isAntiAlias = false;
       canvas.drawRect(offset & child.size, paint);
     } else {
       return child.paint(this, offset);
@@ -97,8 +95,7 @@ class BlockedTextCanvasAdapter implements Canvas {
     ui.Rect rect, {
     ui.ClipOp clipOp = ui.ClipOp.intersect,
     bool doAntiAlias = true,
-  }) =>
-      parent.clipRect(rect, clipOp: clipOp, doAntiAlias: doAntiAlias);
+  }) => parent.clipRect(rect, clipOp: clipOp, doAntiAlias: doAntiAlias);
 
   @override
   void drawArc(
@@ -107,8 +104,7 @@ class BlockedTextCanvasAdapter implements Canvas {
     double sweepAngle,
     bool useCenter,
     ui.Paint paint,
-  ) =>
-      parent.drawArc(rect, startAngle, sweepAngle, useCenter, paint);
+  ) => parent.drawArc(rect, startAngle, sweepAngle, useCenter, paint);
 
   @override
   void drawAtlas(
@@ -119,16 +115,15 @@ class BlockedTextCanvasAdapter implements Canvas {
     ui.BlendMode? blendMode,
     ui.Rect? cullRect,
     ui.Paint paint,
-  ) =>
-      parent.drawAtlas(
-        atlas,
-        transforms,
-        rects,
-        colors,
-        blendMode,
-        cullRect,
-        paint,
-      );
+  ) => parent.drawAtlas(
+    atlas,
+    transforms,
+    rects,
+    colors,
+    blendMode,
+    cullRect,
+    paint,
+  );
 
   @override
   void drawCircle(ui.Offset c, double radius, ui.Paint paint) =>
@@ -152,8 +147,7 @@ class BlockedTextCanvasAdapter implements Canvas {
     ui.Rect center,
     ui.Rect dst,
     ui.Paint paint,
-  ) =>
-      parent.drawImageNine(image, center, dst, paint);
+  ) => parent.drawImageNine(image, center, dst, paint);
 
   @override
   void drawImageRect(
@@ -161,8 +155,7 @@ class BlockedTextCanvasAdapter implements Canvas {
     ui.Rect src,
     ui.Rect dst,
     ui.Paint paint,
-  ) =>
-      parent.drawImageRect(image, src, dst, paint);
+  ) => parent.drawImageRect(image, src, dst, paint);
 
   @override
   void drawLine(ui.Offset p1, ui.Offset p2, ui.Paint paint) =>
@@ -185,8 +178,7 @@ class BlockedTextCanvasAdapter implements Canvas {
     ui.PointMode pointMode,
     List<ui.Offset> points,
     ui.Paint paint,
-  ) =>
-      parent.drawPoints(pointMode, points, paint);
+  ) => parent.drawPoints(pointMode, points, paint);
 
   @override
   void drawRRect(ui.RRect rrect, ui.Paint paint) =>
@@ -201,24 +193,22 @@ class BlockedTextCanvasAdapter implements Canvas {
     ui.BlendMode? blendMode,
     ui.Rect? cullRect,
     ui.Paint paint,
-  ) =>
-      parent.drawRawAtlas(
-        atlas,
-        rstTransforms,
-        rects,
-        colors,
-        blendMode,
-        cullRect,
-        paint,
-      );
+  ) => parent.drawRawAtlas(
+    atlas,
+    rstTransforms,
+    rects,
+    colors,
+    blendMode,
+    cullRect,
+    paint,
+  );
 
   @override
   void drawRawPoints(
     ui.PointMode pointMode,
     Float32List points,
     ui.Paint paint,
-  ) =>
-      parent.drawRawPoints(pointMode, points, paint);
+  ) => parent.drawRawPoints(pointMode, points, paint);
 
   @override
   void drawRect(ui.Rect rect, ui.Paint paint) => parent.drawRect(rect, paint);
@@ -229,16 +219,14 @@ class BlockedTextCanvasAdapter implements Canvas {
     ui.Color color,
     double elevation,
     bool transparentOccluder,
-  ) =>
-      parent.drawShadow(path, color, elevation, transparentOccluder);
+  ) => parent.drawShadow(path, color, elevation, transparentOccluder);
 
   @override
   void drawVertices(
     ui.Vertices vertices,
     ui.BlendMode blendMode,
     ui.Paint paint,
-  ) =>
-      parent.drawVertices(vertices, blendMode, paint);
+  ) => parent.drawVertices(vertices, blendMode, paint);
 
   @override
   int getSaveCount() => parent.getSaveCount();
@@ -279,4 +267,12 @@ class BlockedTextCanvasAdapter implements Canvas {
 
   @override
   void restoreToCount(int count) => parent.restoreToCount(count);
+
+  @override
+  void clipRSuperellipse(ui.RSuperellipse rse, {bool doAntiAlias = true}) =>
+      parent.clipRSuperellipse(rse, doAntiAlias: doAntiAlias);
+
+  @override
+  void drawRSuperellipse(ui.RSuperellipse rse, ui.Paint paint) =>
+      parent.drawRSuperellipse(rse, paint);
 }

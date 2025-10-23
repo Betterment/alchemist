@@ -52,11 +52,6 @@ class _CustomExampleRenderBox extends RenderBox {
 
   @override
   Size computeDryLayout(BoxConstraints constraints) {
-    return constraints.constrain(
-      Size(
-        200,
-        constraints.maxHeight,
-      ),
-    );
+    return constraints.constrain(Size(200, constraints.maxHeight));
   }
 }

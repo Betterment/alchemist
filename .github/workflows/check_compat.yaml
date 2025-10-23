@@ -1,23 +1,31 @@
 name: Compatibility Check
 
+# ignore: RiskyTriggers
 on:
-    schedule:
+  schedule:
     # Run daily at 00:00 UTC
-    - cron: '0 0 * * *'
-    workflow_dispatch:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: "Override the Flutter version to test against"
+        required: false
+        default: ""
+        type: string
 
 jobs:
-  build:
+  build_with_matrix:
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.version_override == '' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        channel: ['stable', 'beta']
+        channel: ["stable", "beta"]
 
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1 # v2.16.0
+      - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
         with:
           channel: ${{ matrix.channel }}
           cache: true
@@ -40,14 +48,72 @@ jobs:
           path: |
             **/failures/**/*.png
 
+      - name: Create job URL
+        if: failure()
+        id: create-job-url
+        run: |
+          echo "job_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+
       - name: Notify failure
         if: failure()
-        uses: slackapi/slack-github-action@37ebaef184d7626c5f204ab8d3baff4262dd30f0 #v1.27.0
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
+          webhook-type: webhook-trigger
+          webhook: ${{ secrets.MOBILE_OSS_SLACK_WEBHOOK }}
           payload: |
-            {
-              "message": "Heads up! Alchemist smoke tests failed on the ${{ matrix.channel }} channel. Check them out and determine root cause.",
-              "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
+            text: "Alchemist smoke tests failed on the ${{ matrix.channel }} channel. Check them out and determine root cause: ${{ steps.create-job-url.outputs.job_url }}"
+            blocks:
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "Alchemist smoke tests failed on the `${{ matrix.channel }}` channel. Check them out and determine root cause. <${{ steps.create-job-url.outputs.job_url }}|Job URL>"
+
+  build_with_override:
+    if: ${{ github.event.inputs.version_override != '' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate version format
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.MOBILE_OSS_SLACK_WEBHOOK }}
+          VERSION: ${{ github.event.inputs.version_override }}
+        run: |
+          # Validate semver format including pre-release versions like 3.37.0-0.1.pre
+          # This regex matches standard semver including pre-release and build metadata
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z\-\.]+)?(\+[0-9A-Za-z\-\.]+)?$'; then
+            echo "Error: Invalid version format. Version must be a valid semver string (e.g., 3.37.0 or 3.37.0-0.1.pre)"
+            echo "Provided version: $VERSION"
+            exit 1
+          fi
+          echo "✓ Version format validated: $VERSION"
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
+        with:
+          flutter-version: ${{ github.event.inputs.version_override }}
+          channel: any
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter packages get
+
+      - name: Disable animations
+        run: flutter config --no-cli-animations
+
+      - name: Run tests
+        run: |
+          flutter test --no-pub --coverage --test-randomize-ordering-seed=random
+
+      - name: Upload failures
+        if: failure()
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: "golden_failures_${{ github.event.inputs.version_override }}"
+          path: |
+            **/failures/**/*.png
+
+      - name: Create job URL
+        if: failure()
+        id: create-job-url
+        run: |
+          echo "job_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"

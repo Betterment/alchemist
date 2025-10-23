@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/interactions.dart';
@@ -19,6 +21,7 @@ set goldenTestAdapter(GoldenTestAdapter value) => _goldenTestAdapter = value;
 /// {@template golden_test_runner}
 /// A utility class for running an individual golden test.
 /// {@endtemplate}
+// ignore: one_member_abstracts
 abstract class GoldenTestRunner {
   /// {@macro golden_test_runner}
   const GoldenTestRunner();
@@ -77,6 +80,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     final mementoDebugDisableShadows = debugDisableShadows;
     debugDisableShadows = !renderShadows;
 
+    Future<ui.Image>? imageFuture;
     try {
       await goldenTestAdapter.pumpGoldenTest(
         tester: tester,
@@ -99,18 +103,22 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
 
       final finder = find.byKey(rootKey);
 
-      final toMatch = obscureText
-          ? goldenTestAdapter.getBlockedTextImage(
-              finder: finder,
-              tester: tester,
-            )
-          : finder;
+      if (obscureText) {
+        imageFuture = goldenTestAdapter.getBlockedTextImage(
+          finder: finder,
+          tester: tester,
+        );
+      }
+
+      final toMatch = imageFuture ?? finder;
 
       try {
         await goldenTestAdapter.withForceUpdateGoldenFiles(
           forceUpdate: forceUpdate,
-          callback:
-              goldenTestAdapter.goldenFileExpectation(toMatch, goldenPath),
+          callback: goldenTestAdapter.goldenFileExpectation(
+            toMatch,
+            goldenPath,
+          ),
         );
         await cleanup?.call();
       } on TestFailure {
@@ -118,10 +126,14 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
       }
     } finally {
       debugDisableShadows = mementoDebugDisableShadows;
+      final image = await imageFuture;
+      image?.dispose();
 
       await tester.binding.setSurfaceSize(null);
       tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
+      addTearDown(() async {
+        tester.view.resetDevicePixelRatio();
+      });
     }
   }
 }

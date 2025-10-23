@@ -10,30 +10,26 @@ class MockWidgetTester extends Mock implements WidgetTester {}
 
 Future<bool> _isCached(ImageProvider<Object> image, Finder findImage) async {
   final cacheStatus = await image.obtainCacheStatus(
-    configuration: createLocalImageConfiguration(
-      findImage.evaluate().first,
-    ),
+    configuration: createLocalImageConfiguration(findImage.evaluate().first),
   );
   return cacheStatus?.keepAlive ?? false;
 }
 
 extension on CommonFinders {
   Finder fadeInImage(ImageProvider<Object> image) => byWidgetPredicate(
-        (widget) => widget is FadeInImage && widget.image == image,
-      );
+    (widget) => widget is FadeInImage && widget.image == image,
+  );
 
-  Finder decorationImage(ImageProvider<Object> image) => byWidgetPredicate(
-        (widget) {
-          if (widget is DecoratedBox) {
-            final decoration = widget.decoration;
-            if (decoration is BoxDecoration &&
-                decoration.image?.image == image) {
-              return true;
-            }
+  Finder decorationImage(ImageProvider<Object> image) =>
+      byWidgetPredicate((widget) {
+        if (widget is DecoratedBox) {
+          final decoration = widget.decoration;
+          if (decoration is BoxDecoration && decoration.image?.image == image) {
+            return true;
           }
-          return false;
-        },
-      );
+        }
+        return false;
+      });
 }
 
 void main() {
@@ -99,15 +95,9 @@ void main() {
               bundle: FakeTestAssetBundle(),
               child: Column(
                 children: [
-                  const Image(
-                    image: networkImage,
-                  ),
-                  const Image(
-                    image: assetImage,
-                  ),
-                  Image(
-                    image: memoryImage,
-                  ),
+                  const Image(image: networkImage),
+                  const Image(image: assetImage),
+                  Image(image: memoryImage),
                 ],
               ),
             ),
@@ -180,23 +170,17 @@ void main() {
                 children: [
                   const DecoratedBox(
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: networkImage,
-                      ),
+                      image: DecorationImage(image: networkImage),
                     ),
                   ),
                   const DecoratedBox(
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: assetImage,
-                      ),
+                      image: DecorationImage(image: assetImage),
                     ),
                   ),
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: memoryImage,
-                      ),
+                      image: DecorationImage(image: memoryImage),
                     ),
                   ),
                 ],

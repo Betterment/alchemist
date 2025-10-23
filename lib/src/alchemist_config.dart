@@ -7,10 +7,8 @@ import 'package:flutter/material.dart';
 /// A function that returns the path of a golden test file for a given test's
 /// [fileName]. This function's return value should include the `.png`
 /// extension.
-typedef FilePathResolver = FutureOr<String> Function(
-  String fileName,
-  String environmentName,
-);
+typedef FilePathResolver =
+    FutureOr<String> Function(String fileName, String environmentName);
 
 /// {@template alchemist_config}
 /// A configuration object that contains settings used by Alchemist for
@@ -163,12 +161,7 @@ class AlchemistConfig extends Equatable {
     required AlchemistConfig config,
     required T Function() run,
   }) {
-    return runZoned<T>(
-      run,
-      zoneValues: {
-        currentConfigKey: config,
-      },
-    );
+    return runZoned<T>(run, zoneValues: {currentConfigKey: config});
   }
 
   /// Whether to force the golden tests to update the golden file.
@@ -245,20 +238,21 @@ class AlchemistConfig extends Equatable {
       forceUpdateGoldenFiles: other?._forceUpdateGoldenFiles,
       theme: other?._theme,
       goldenTestTheme: other?._goldenTestTheme,
-      platformGoldensConfig:
-          platformGoldensConfig.merge(other?._platformGoldensConfig),
+      platformGoldensConfig: platformGoldensConfig.merge(
+        other?._platformGoldensConfig,
+      ),
       ciGoldensConfig: ciGoldensConfig.merge(other?._ciGoldensConfig),
     );
   }
 
   @override
   List<Object?> get props => [
-        forceUpdateGoldenFiles,
-        theme,
-        goldenTestTheme,
-        platformGoldensConfig,
-        ciGoldensConfig,
-      ];
+    forceUpdateGoldenFiles,
+    theme,
+    goldenTestTheme,
+    platformGoldensConfig,
+    ciGoldensConfig,
+  ];
 }
 
 /// {@template goldens_config}
@@ -304,8 +298,8 @@ abstract class GoldensConfig extends Equatable {
     required this.renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
-  })  : _filePathResolver = filePathResolver,
-        _theme = theme;
+  }) : _filePathResolver = filePathResolver,
+       _theme = theme;
 
   /// Whether or not the golden tests should run.
   final bool enabled;
@@ -375,12 +369,12 @@ abstract class GoldensConfig extends Equatable {
 
   @override
   List<Object?> get props => [
-        obscureText,
-        enabled,
-        filePathResolver,
-        theme,
-        renderShadows,
-      ];
+    obscureText,
+    enabled,
+    filePathResolver,
+    theme,
+    renderShadows,
+  ];
 }
 
 /// {@template platform_goldens_config}
@@ -466,10 +460,7 @@ class PlatformGoldensConfig extends GoldensConfig {
   }
 
   @override
-  List<Object?> get props => [
-        ...super.props,
-        platforms,
-      ];
+  List<Object?> get props => [...super.props, platforms];
 }
 
 /// {@template ci_goldens_config}

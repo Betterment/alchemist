@@ -10,11 +10,7 @@ void main() {
         return const MaterialApp(
           home: Scaffold(
             body: GoldenTestGroup(
-              children: [
-                Text('One'),
-                Text('Two'),
-                Text('Three'),
-              ],
+              children: [Text('One'), Text('Two'), Text('Three')],
             ),
           ),
         );
@@ -95,14 +91,14 @@ void main() {
               widget: const Text('Hello'),
             );
 
-            final box = find.ancestor(
-              of: find.byType(Text),
-              matching: find.byType(ColoredBox),
-            );
+            final box = find.byWidgetPredicate((widget) {
+              return widget is ColoredBox &&
+                  widget.color == const Color(0xFF2b54a1);
+            });
 
             expect(
-              tester.widget<ColoredBox>(box).color,
-              const Color(0xFF2b54a1),
+              find.ancestor(of: find.byType(Text), matching: box),
+              findsOneWidget,
             );
           });
         });
@@ -131,14 +127,14 @@ void main() {
               widget: const Text('Hello'),
             );
 
-            final box = find.ancestor(
-              of: find.byType(Text),
-              matching: find.byType(ColoredBox),
-            );
+            final box = find.byWidgetPredicate((widget) {
+              return widget is ColoredBox &&
+                  widget.color == const Color(0xFF000000);
+            });
 
             expect(
-              tester.widget<ColoredBox>(box).color,
-              const Color(0xFF000000),
+              find.ancestor(of: find.byType(Text), matching: box),
+              findsOneWidget,
             );
           });
         });
@@ -200,10 +196,7 @@ void main() {
               ),
             );
             final box = find.text('Scenario name');
-            expect(
-              tester.widget<Text>(box).style,
-              nameTextStyle,
-            );
+            expect(tester.widget<Text>(box).style, nameTextStyle);
           });
         });
       });

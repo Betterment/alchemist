@@ -12,17 +12,16 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   final runningOnCi = Platform.environment.containsKey('GITHUB_ACTIONS');
 
   // Grab the flutter version from the current environment.
-  final versionResult = await Process.run(
-    'flutter',
-    ['--version', '--machine'],
-  );
+  final versionResult = await Process.run('flutter', [
+    '--version',
+    '--machine',
+  ]);
 
   if (versionResult.exitCode != 0) {
-    throw const ProcessException(
-      'flutter',
-      ['--version', '--machine'],
-      'Failed to get flutter version',
-    );
+    throw const ProcessException('flutter', [
+      '--version',
+      '--machine',
+    ], 'Failed to get flutter version');
   }
 
   final versionJson = versionResult.stdout.toString().trim();
@@ -39,12 +38,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 
   final parsedVersion = Version.parse(version);
   final subDirectories = Directory(
-    path.join(
-      Directory.current.path,
-      'test',
-      'smoke_tests',
-      'goldens',
-    ),
+    path.join(Directory.current.path, 'test', 'smoke_tests', 'goldens'),
   ).listSync().whereType<Directory>().toList();
 
   final candidates = subDirectories.where((dir) {
@@ -113,16 +107,10 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
       ),
       ciGoldensConfig: AlchemistConfig.current()
           .ciGoldensConfig //
-          .copyWith(
-            filePathResolver: filePathResolver,
-            enabled: runningOnCi,
-          ),
+          .copyWith(filePathResolver: filePathResolver, enabled: runningOnCi),
       platformGoldensConfig: AlchemistConfig.current()
           .platformGoldensConfig //
-          .copyWith(
-            filePathResolver: filePathResolver,
-            enabled: !runningOnCi,
-          ),
+          .copyWith(filePathResolver: filePathResolver, enabled: !runningOnCi),
     ),
     run: testMain,
   );

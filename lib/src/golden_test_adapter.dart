@@ -9,16 +9,17 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The function signature of Flutter test's `testWidgets` function.
-typedef TestWidgetsFn = FutureOr<void> Function(
-  String description,
-  Future<void> Function(WidgetTester) callback, {
-  bool? skip,
-  Timeout? timeout,
-  bool semanticsEnabled,
-  TestVariant<Object?> variant,
-  dynamic tags,
-  int? retry,
-});
+typedef TestWidgetsFn =
+    FutureOr<void> Function(
+      String description,
+      Future<void> Function(WidgetTester) callback, {
+      bool? skip,
+      Timeout? timeout,
+      bool semanticsEnabled,
+      TestVariant<Object?> variant,
+      dynamic tags,
+      int? retry,
+    });
 
 /// The signature of the `tearDown` and `setUp` test functions.
 typedef TestLifecycleFn = void Function(ValueGetter<dynamic>);
@@ -30,15 +31,13 @@ typedef MatchesGoldenFileInvocation<T> = FutureOr<T> Function();
 
 /// A function which returns a [MatchesGoldenFileInvocation] to compare two
 /// golden finders or images.
-typedef GoldenFileExpectation = MatchesGoldenFileInvocation<void> Function(
-  Object,
-  Object,
-);
+typedef GoldenFileExpectation =
+    MatchesGoldenFileInvocation<void> Function(Object, Object);
 
 /// Default golden file expectation function.
 // ignore: prefer_function_declarations_over_variables
-GoldenFileExpectation defaultGoldenFileExpectation =
-    (Object a, Object b) => () => expectLater(a, matchesGoldenFile(b));
+GoldenFileExpectation defaultGoldenFileExpectation = (Object a, Object b) =>
+    () => expectLater(a, matchesGoldenFile(b));
 GoldenFileExpectation _goldenFileExpectationFn = defaultGoldenFileExpectation;
 
 /// {@template golden_file_expectation}
@@ -76,19 +75,17 @@ set tearDownFn(TestLifecycleFn value) => _tearDownFn = value;
 
 /// A builder function which returns a blocked text painting context, given the
 /// [OffsetLayer] layer and [Rect] bounds.
-typedef BlockedTextPaintingContextBuilder = BlockedTextPaintingContext Function(
-  OffsetLayer layer,
-  Rect bounds,
-);
+typedef BlockedTextPaintingContextBuilder =
+    BlockedTextPaintingContext Function(OffsetLayer layer, Rect bounds);
 
 /// Default blocked text painting context builder which returns a real instance
 /// of [BlockedTextPaintingContext].
 // ignore: prefer_function_declarations_over_variables
-BlockedTextPaintingContextBuilder defaultPaintingContextBuilder = (
-  OffsetLayer layer,
-  Rect bounds,
-) =>
-    BlockedTextPaintingContext(containerLayer: layer, estimatedBounds: bounds);
+BlockedTextPaintingContextBuilder defaultPaintingContextBuilder =
+    (OffsetLayer layer, Rect bounds) => BlockedTextPaintingContext(
+      containerLayer: layer,
+      estimatedBounds: bounds,
+    );
 BlockedTextPaintingContextBuilder _paintingContextBuilder =
     defaultPaintingContextBuilder;
 
@@ -115,8 +112,8 @@ abstract class GoldenTestAdapter {
   /// they already exist. Otherwise, the flag is ignored and the function is
   /// executed as usual.
   Future<T> withForceUpdateGoldenFiles<T>({
-    bool forceUpdate = false,
     required MatchesGoldenFileInvocation<T> callback,
+    bool forceUpdate = false,
   });
 
   /// The function to use for `setUp` calls. By default, this is Flutter's
@@ -157,7 +154,6 @@ abstract class GoldenTestAdapter {
   /// max width is unbounded, a default width value will be used as initial
   /// surface size. The same applies to the max height.
   Future<void> pumpGoldenTest({
-    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -168,6 +164,7 @@ abstract class GoldenTestAdapter {
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
+    Key? rootKey,
   });
 
   /// Generates an image of the widget at the given [finder] with all text
@@ -194,8 +191,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
   @override
   Future<T> withForceUpdateGoldenFiles<T>({
-    bool forceUpdate = false,
     required MatchesGoldenFileInvocation<T> callback,
+    bool forceUpdate = false,
   }) async {
     if (!forceUpdate) {
       return await callback();
@@ -221,7 +218,6 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 
   @override
   Future<void> pumpGoldenTest({
-    Key? rootKey,
     required WidgetTester tester,
     required double textScaleFactor,
     required BoxConstraints constraints,
@@ -232,6 +228,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     required PumpAction pumpBeforeTest,
     required PumpWidget pumpWidget,
     required Widget widget,
+    Key? rootKey,
   }) async {
     tester.view.devicePixelRatio = 1.0;
     tester.platformDispatcher.textScaleFactorTestValue = textScaleFactor;
@@ -322,12 +319,12 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
 class FlutterGoldenTestWrapper extends StatelessWidget {
   /// {@macro _flutter_golden_test_wrapper}
   const FlutterGoldenTestWrapper({
+    required this.child,
     super.key,
     this.globalConfigTheme,
     this.variantConfigTheme,
     this.goldenTestTheme,
     this.obscureFont = false,
-    required this.child,
   });
 
   /// The theme provided by the global [AlchemistConfig], if any.
@@ -380,7 +377,8 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
         context.findAncestorWidgetOfExactType<Theme>() != null;
     final inheritedTheme = hasInheritedTheme ? Theme.of(context) : null;
 
-    var resolvedTheme = variantConfigTheme ??
+    var resolvedTheme =
+        variantConfigTheme ??
         inheritedTheme ??
         globalConfigTheme ??
         ThemeData.fallback();
@@ -391,10 +389,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
 
     if (goldenTestTheme != null) {
       resolvedTheme = resolvedTheme.copyWith(
-        extensions: [
-          ...resolvedTheme.extensions.values,
-          goldenTestTheme!,
-        ],
+        extensions: [...resolvedTheme.extensions.values, goldenTestTheme!],
       );
     }
 
@@ -406,9 +401,7 @@ class FlutterGoldenTestWrapper extends StatelessWidget {
     return _LocalizationWrapper(
       child: Theme(
         data: _resolveThemeOf(context),
-        child: _NavigatorWrapper(
-          child: child,
-        ),
+        child: _NavigatorWrapper(child: child),
       ),
     );
   }
@@ -422,10 +415,14 @@ class _LocalizationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.maybeLocaleOf(context);
-    final widgetsLocalizations =
-        Localizations.of<WidgetsLocalizations>(context, WidgetsLocalizations);
-    final materialLocalizations =
-        Localizations.of<MaterialLocalizations>(context, MaterialLocalizations);
+    final widgetsLocalizations = Localizations.of<WidgetsLocalizations>(
+      context,
+      WidgetsLocalizations,
+    );
+    final materialLocalizations = Localizations.of<MaterialLocalizations>(
+      context,
+      MaterialLocalizations,
+    );
     final cupertinoLocalizations = Localizations.of<CupertinoLocalizations>(
       context,
       CupertinoLocalizations,
@@ -462,9 +459,7 @@ class _NavigatorWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Navigator(
       onGenerateInitialRoutes: (_, __) => [
-        MaterialPageRoute<void>(
-          builder: (context) => child,
-        ),
+        MaterialPageRoute<void>(builder: (context) => child),
       ],
     );
   }

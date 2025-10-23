@@ -101,6 +101,7 @@ void main() {
 
     testWidgets('throws when matcher fails', (tester) async {
       FutureOr<void> matcherInvocation() {
+        // Simulate a test failure.
         // ignore: only_throw_errors
         throw TestFailure('simulated failure');
       }
@@ -123,13 +124,12 @@ void main() {
           widget: const SizedBox(),
         );
         fail('Expected goldenTestRunner.run to throw TestFailure');
-      } catch (e) {
+      } on TestFailure catch (e) {
         expect(e, isA<TestFailure>());
       }
     });
 
-    testWidgets(
-        'renderShadows sets debugDisableShadows correctly '
+    testWidgets('renderShadows sets debugDisableShadows correctly '
         'and resets it after the test has run', (tester) async {
       late final bool debugDisableShadowsDuringTestRun;
 

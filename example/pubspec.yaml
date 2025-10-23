@@ -17,6 +17,7 @@ dev_dependencies:
     path: ../
   flutter_test:
     sdk: flutter
+  leak_tracker_flutter_testing: any
   very_good_analysis: ^3.1.0
 
 flutter:

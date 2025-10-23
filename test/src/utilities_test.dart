@@ -14,26 +14,15 @@ void main() {
 
   group('GoldenTestWidgetTesterExtensions', () {
     group('pressAll', () {
-      Widget buildBoilerplate({
-        required Widget child,
-      }) {
-        return MaterialApp(
-          home: Scaffold(
-            body: child,
-          ),
-        );
+      Widget buildBoilerplate({required Widget child}) {
+        return MaterialApp(home: Scaffold(body: child));
       }
 
-      testWidgets(
-          'print warning message '
+      testWidgets('print warning message '
           'when no widget matches the given finder', (tester) async {
         final printLogs = <String>[];
 
-        await tester.pumpWidget(
-          buildBoilerplate(
-            child: const Text('target'),
-          ),
-        );
+        await tester.pumpWidget(buildBoilerplate(child: const Text('target')));
 
         await runZoned(
           () async {
@@ -46,99 +35,91 @@ void main() {
           ),
         );
 
-        expect(
-          printLogs,
-          [
-            '''
+        expect(printLogs, [
+          '''
 No widgets found that match finder: Found 0 widgets with text "does not exist": [].
 No gestures will be performed.
 
 If this is intentional, consider not calling this method
 to avoid unnecessary overhead.''',
-          ],
-        );
+        ]);
       });
 
-      testWidgets(
-        'keeps button pressed while calling provided function '
-        'and releases it afterwards',
-        (tester) async {
-          final pointerDownEvents = <PointerDownEvent>[];
-          final pointerUpEvents = <PointerUpEvent>[];
+      testWidgets('keeps button pressed while calling provided function '
+          'and releases it afterwards', (tester) async {
+        final pointerDownEvents = <PointerDownEvent>[];
+        final pointerUpEvents = <PointerUpEvent>[];
 
-          await tester.pumpWidget(
-            buildBoilerplate(
-              child: Listener(
-                behavior: HitTestBehavior.translucent,
-                onPointerDown: pointerDownEvents.add,
-                onPointerUp: pointerUpEvents.add,
-                child: const Text('target'),
-              ),
+        await tester.pumpWidget(
+          buildBoilerplate(
+            child: Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: pointerDownEvents.add,
+              onPointerUp: pointerUpEvents.add,
+              child: const Text('target'),
             ),
-          );
+          ),
+        );
 
-          final gestures = await tester.pressAll(find.text('target'));
-          expect(pointerDownEvents.length, 1);
-          expect(pointerUpEvents.length, 0);
+        final gestures = await tester.pressAll(find.text('target'));
+        expect(pointerDownEvents.length, 1);
+        expect(pointerUpEvents.length, 0);
 
-          for (final gesture in gestures) {
-            await gesture.up();
-          }
+        for (final gesture in gestures) {
+          await gesture.up();
+        }
 
-          expect(pointerDownEvents.length, 1);
-          expect(pointerUpEvents.length, 1);
-        },
-      );
+        expect(pointerDownEvents.length, 1);
+        expect(pointerUpEvents.length, 1);
+      });
     });
   });
 
   group('GoldenTestThemeDataExtensions', () {
-    test('stripTextPackages remove package prefix from all textTheme styles',
-        () {
-      const fontFamilyBefore = 'packages/alchemist/dir1/dir2';
-      const fontFamilyAfter = 'dir1/dir2';
+    test(
+      'stripTextPackages remove package prefix from all textTheme styles',
+      () {
+        const fontFamilyBefore = 'packages/alchemist/dir1/dir2';
+        const fontFamilyAfter = 'dir1/dir2';
 
-      final base = ThemeData();
-      final themeBefore = base.copyWith(
-        textTheme: base.textTheme.apply(
-          fontFamily: fontFamilyBefore,
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          extendedTextStyle: TextStyle(
-            fontFamily: fontFamilyBefore,
+        final base = ThemeData();
+        final themeBefore = base.copyWith(
+          textTheme: base.textTheme.apply(fontFamily: fontFamilyBefore),
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            extendedTextStyle: TextStyle(fontFamily: fontFamilyBefore),
           ),
-        ),
-      );
-      final themeAfter = themeBefore.stripTextPackages();
+        );
+        final themeAfter = themeBefore.stripTextPackages();
 
-      final allStylesAfter = [
-        themeAfter.textTheme.displayLarge,
-        themeAfter.textTheme.displayMedium,
-        themeAfter.textTheme.displaySmall,
-        themeAfter.textTheme.headlineMedium,
-        themeAfter.textTheme.headlineSmall,
-        themeAfter.textTheme.titleLarge,
-        themeAfter.textTheme.titleMedium,
-        themeAfter.textTheme.titleSmall,
-        themeAfter.textTheme.bodyLarge,
-        themeAfter.textTheme.bodyMedium,
-        themeAfter.textTheme.bodySmall,
-        themeAfter.textTheme.labelLarge,
-        themeAfter.textTheme.labelSmall,
-        themeAfter.floatingActionButtonTheme.extendedTextStyle,
-      ];
+        final allStylesAfter = [
+          themeAfter.textTheme.displayLarge,
+          themeAfter.textTheme.displayMedium,
+          themeAfter.textTheme.displaySmall,
+          themeAfter.textTheme.headlineMedium,
+          themeAfter.textTheme.headlineSmall,
+          themeAfter.textTheme.titleLarge,
+          themeAfter.textTheme.titleMedium,
+          themeAfter.textTheme.titleSmall,
+          themeAfter.textTheme.bodyLarge,
+          themeAfter.textTheme.bodyMedium,
+          themeAfter.textTheme.bodySmall,
+          themeAfter.textTheme.labelLarge,
+          themeAfter.textTheme.labelSmall,
+          themeAfter.floatingActionButtonTheme.extendedTextStyle,
+        ];
 
-      expect(
-        allStylesAfter,
-        everyElement(
-          isA<TextStyle>().having(
-            (style) => style.fontFamily,
-            'fontFamily',
-            fontFamilyAfter,
+        expect(
+          allStylesAfter,
+          everyElement(
+            isA<TextStyle>().having(
+              (style) => style.fontFamily,
+              'fontFamily',
+              fontFamilyAfter,
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   });
 
   group('GoldenTestTextStyleExtensions', () {
@@ -163,18 +144,12 @@ to avoid unnecessary overhead.''',
   group('TestAssetBundle', () {
     setUp(() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMessageHandler(
-        'flutter/assets',
-        (message) async => message,
-      );
+          .setMockMessageHandler('flutter/assets', (message) async => message);
     });
 
     tearDown(() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMessageHandler(
-        'flutter/assets',
-        null,
-      );
+          .setMockMessageHandler('flutter/assets', null);
     });
 
     test('load method attempts to load asset from root bundle', () async {
@@ -196,10 +171,7 @@ to avoid unnecessary overhead.''',
     test('loadString method attempts to load asset from root bundle', () async {
       const key = 'some/path/asset.png';
 
-      expect(
-        TestAssetBundle().loadString(key),
-        completion(equals(key)),
-      );
+      expect(TestAssetBundle().loadString(key), completion(equals(key)));
     });
   });
 
@@ -215,7 +187,8 @@ to avoid unnecessary overhead.''',
       gesture2 = MockTestGesture();
       gesture3 = MockTestGesture();
 
-      gestures = [gesture1, gesture2, gesture3]..forEach((gesture) {
+      gestures = [gesture1, gesture2, gesture3]
+        ..forEach((gesture) {
           when(() => gesture.up()).thenAnswer((_) async {});
         });
     });

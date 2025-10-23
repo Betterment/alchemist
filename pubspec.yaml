@@ -1,13 +1,13 @@
 name: alchemist
 description: A support package that aims to make golden testing in Flutter
   easier and more streamlined.
-version: 0.11.0
+version: 0.13.0
 homepage: https://github.com/Betterment/alchemist
 repository: https://github.com/Betterment/alchemist
 
 environment:
-  sdk: ">=3.2.0 <4.0.0"
-  flutter: ">=3.16.0"
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.32.0"
 
 dependencies:
   equatable: ^2.0.3
@@ -23,7 +23,7 @@ dev_dependencies:
   path: ^1.8.3
   test: ^1.21.1
   version: ^3.0.2
-  very_good_analysis: ^3.1.0
+  very_good_analysis: ^5.1.0
 
 flutter:
   uses-material-design: true

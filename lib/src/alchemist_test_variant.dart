@@ -13,8 +13,8 @@ class AlchemistTestVariant extends TestVariant<GoldensConfig> {
   AlchemistTestVariant({
     required AlchemistConfig config,
     required HostPlatform currentPlatform,
-  })  : _config = config,
-        _currentPlatform = currentPlatform;
+  }) : _config = config,
+       _currentPlatform = currentPlatform;
 
   final AlchemistConfig _config;
   final HostPlatform _currentPlatform;
@@ -42,15 +42,13 @@ class AlchemistTestVariant extends TestVariant<GoldensConfig> {
   @override
   Iterable<GoldensConfig> get values {
     final platformConfig = _config.platformGoldensConfig;
-    final runPlatformTest = platformConfig.enabled &&
+    final runPlatformTest =
+        platformConfig.enabled &&
         platformConfig.platforms.contains(_currentPlatform);
 
     final ciConfig = _config.ciGoldensConfig;
     final runCiTest = ciConfig.enabled;
 
-    return {
-      if (runPlatformTest) platformConfig,
-      if (runCiTest) ciConfig,
-    };
+    return {if (runPlatformTest) platformConfig, if (runCiTest) ciConfig};
   }
 }

@@ -11,14 +11,8 @@ class _SmokeTest extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        CompositedTransformTarget(
-          link: _link,
-          child: const FlutterLogo(),
-        ),
-        CompositedTransformFollower(
-          link: _link,
-          child: const Text('label'),
-        ),
+        CompositedTransformTarget(link: _link, child: const FlutterLogo()),
+        CompositedTransformFollower(link: _link, child: const Text('label')),
       ],
     );
   }
