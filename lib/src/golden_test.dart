@@ -11,6 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
+final Set<String> _loadedFontFamilies = {};
+
 /// Default golden test runner which uses the flutter test framework.
 const defaultGoldenTestRunner = FlutterGoldenTestRunner();
 GoldenTestRunner _goldenTestRunner = defaultGoldenTestRunner;
@@ -43,6 +45,11 @@ Future<void> loadFonts() async {
   for (final entry in fontManifest) {
     final family = (entry['family'] as String)
         .stripFontFamilyAlchemistPackageName();
+
+    // Skip if font family is already loaded
+    if (_loadedFontFamilies.contains(family)) {
+      continue;
+    }
 
     final fontAssets = [
       for (final fontAssetEntry in entry['fonts'] as List<dynamic>)
