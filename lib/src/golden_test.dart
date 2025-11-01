@@ -62,6 +62,7 @@ Future<void> loadFonts() async {
     }
 
     await loader.load();
+    _loadedFontFamilies.add(family);
   }
 }
 
