@@ -130,6 +130,17 @@ Future<void> loadFonts() async {
 /// built-in interaction receives a finder indicating all of the widgets
 /// that should be interacted with.
 ///
+/// The [testWrapper] is needed to wrap the test zone to another during the test
+/// For example, when you need to use `runWithClock` inside goldens
+/// ```dart
+/// goldenTest(
+///   ...
+///   wrapper: (callback) async => withClock<void>(
+///     Clock.fixed(DateTime(2025, 12, 10)),
+///     callback,
+///   )
+/// ```
+///
 /// **Note**: If a built-in [whilePerforming] interaction is provided, the
 /// widget tree is **always** pumped at least once before the assertion phase
 /// of the test.
@@ -149,6 +160,7 @@ Future<void> goldenTest(
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
   PumpWidget pumpWidget = onlyPumpWidget,
   Interaction? whilePerforming,
+  Future<void> Function(Future<void> Function() callback)? testWrapper,
 }) async {
   if (skip) return;
 
@@ -173,10 +185,11 @@ Future<void> goldenTest(
   await goldenTestAdapter.testWidgets(
     description,
     (tester) async {
-      final variantConfig = variant.currentConfig;
-      await goldenTestRunner.run(
-        tester: tester,
-        goldenPath: await variantConfig.filePathResolver(
+      Future<void> callback() async {
+        final variantConfig = variant.currentConfig;
+        await goldenTestRunner.run(
+          tester: tester,
+          goldenPath: await variantConfig.filePathResolver(
           fileName,
           variantConfig.environmentName,
         ),
@@ -192,7 +205,15 @@ Future<void> goldenTest(
         pumpBeforeTest: pumpBeforeTest,
         pumpWidget: pumpWidget,
         whilePerforming: whilePerforming,
-      );
+        );
+      }
+
+      if (testWrapper != null) {
+        await testWrapper(callback);
+      } else {
+        await callback();
+      }
+
     },
     tags: tags,
     variant: variant,
