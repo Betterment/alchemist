@@ -36,6 +36,16 @@ void main() {
               (c) => c.ciGoldensConfig,
               'ciGoldensConfig',
               equals(const CiGoldensConfig()),
+            )
+            .having(
+              (c) => c.metadataEnabled,
+              'metadataEnabled',
+              isFalse,
+            )
+            .having(
+              (c) => c.semanticsEnabled,
+              'semanticsEnabled',
+              isFalse,
             ),
       );
     });
@@ -132,6 +142,50 @@ void main() {
               ),
         );
       });
+
+      test('replaces metadataEnabled', () {
+        expect(
+          const AlchemistConfig().copyWith(metadataEnabled: true),
+          isA<AlchemistConfig>().having(
+            (c) => c.metadataEnabled,
+            'metadataEnabled',
+            isTrue,
+          ),
+        );
+      });
+
+      test('preserves metadataEnabled when not replaced', () {
+        expect(
+          const AlchemistConfig(metadataEnabled: true).copyWith(),
+          isA<AlchemistConfig>().having(
+            (c) => c.metadataEnabled,
+            'metadataEnabled',
+            isTrue,
+          ),
+        );
+      });
+
+      test('replaces semanticsEnabled', () {
+        expect(
+          const AlchemistConfig().copyWith(semanticsEnabled: true),
+          isA<AlchemistConfig>().having(
+            (c) => c.semanticsEnabled,
+            'semanticsEnabled',
+            isTrue,
+          ),
+        );
+      });
+
+      test('preserves semanticsEnabled when not replaced', () {
+        expect(
+          const AlchemistConfig(semanticsEnabled: true).copyWith(),
+          isA<AlchemistConfig>().having(
+            (c) => c.semanticsEnabled,
+            'semanticsEnabled',
+            isTrue,
+          ),
+        );
+      });
     });
 
     group('merge', () {
@@ -194,6 +248,58 @@ void main() {
                     .having((c) => c.enabled, 'enabled', isTrue)
                     .having((c) => c.theme, 'theme', same(appliedTheme)),
               ),
+        );
+      });
+
+      test('merges metadataEnabled', () {
+        expect(
+          const AlchemistConfig(metadataEnabled: false).merge(
+            const AlchemistConfig(metadataEnabled: true),
+          ),
+          isA<AlchemistConfig>().having(
+            (c) => c.metadataEnabled,
+            'metadataEnabled',
+            isTrue,
+          ),
+        );
+      });
+
+      test('preserves metadataEnabled when merge has no value', () {
+        expect(
+          const AlchemistConfig(metadataEnabled: true).merge(
+            const AlchemistConfig(),
+          ),
+          isA<AlchemistConfig>().having(
+            (c) => c.metadataEnabled,
+            'metadataEnabled',
+            isTrue,
+          ),
+        );
+      });
+
+      test('merges semanticsEnabled', () {
+        expect(
+          const AlchemistConfig(semanticsEnabled: false).merge(
+            const AlchemistConfig(semanticsEnabled: true),
+          ),
+          isA<AlchemistConfig>().having(
+            (c) => c.semanticsEnabled,
+            'semanticsEnabled',
+            isTrue,
+          ),
+        );
+      });
+
+      test('preserves semanticsEnabled when merge has no value', () {
+        expect(
+          const AlchemistConfig(semanticsEnabled: true).merge(
+            const AlchemistConfig(),
+          ),
+          isA<AlchemistConfig>().having(
+            (c) => c.semanticsEnabled,
+            'semanticsEnabled',
+            isTrue,
+          ),
         );
       });
     });

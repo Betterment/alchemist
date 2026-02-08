@@ -1,11 +1,14 @@
 import 'dart:ui' as ui;
 
+import 'package:alchemist/src/golden_metadata.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
+import 'package:alchemist/src/golden_test_scenario.dart';
 import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/interactions.dart';
 import 'package:alchemist/src/pumps.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Default golden test adapter used to interface with Flutter's testing
@@ -37,6 +40,8 @@ abstract class GoldenTestRunner {
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
+    bool metadataEnabled = false,
+    bool semanticsEnabled = false,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
     PumpAction pumpBeforeTest = onlyPumpAndSettle,
@@ -64,6 +69,8 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     bool forceUpdate = false,
     bool obscureText = false,
     bool renderShadows = false,
+    bool metadataEnabled = false,
+    bool semanticsEnabled = false,
     double textScaleFactor = 1.0,
     BoxConstraints constraints = const BoxConstraints(),
     PumpAction pumpBeforeTest = onlyPumpAndSettle,
@@ -95,6 +102,24 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
         pumpWidget: pumpWidget,
         widget: widget,
       );
+
+      // Capture metadata BEFORE interactions (bounds + resting-state semantics)
+      if (metadataEnabled) {
+        SemanticsHandle? semanticsHandle;
+        if (semanticsEnabled) {
+          semanticsHandle = tester.ensureSemantics();
+          await tester.pump();
+        }
+
+        final metadata = _captureMetadata(
+          tester,
+          goldenPath,
+          captureSemantics: semanticsEnabled,
+        );
+        await metadata.writeToFile();
+
+        semanticsHandle?.dispose();
+      }
 
       AsyncCallback? cleanup;
       if (whilePerforming != null) {
@@ -135,5 +160,73 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
         tester.view.resetDevicePixelRatio();
       });
     }
+  }
+
+  GoldenMetadata _captureMetadata(
+    WidgetTester tester,
+    Object goldenPath, {
+    bool captureSemantics = false,
+  }) {
+    final metadata = GoldenMetadata(goldenPath: goldenPath);
+    final scenarioFinder = find.byType(GoldenTestScenario);
+
+    // Capture image size from the root render box
+    final rootKey = FlutterGoldenTestAdapter.rootKey;
+    final rootFinder = find.byKey(rootKey);
+    if (rootFinder.evaluate().isNotEmpty) {
+      final rootRect = tester.getRect(rootFinder);
+      metadata.imageSize = rootRect.size;
+    }
+
+    for (var i = 0; i < scenarioFinder.evaluate().length; i++) {
+      final finder = scenarioFinder.at(i);
+      final scenario = tester.widget<GoldenTestScenario>(finder);
+      final bounds = tester.getRect(finder);
+
+      List<SemanticsNodeData>? semantics;
+      if (captureSemantics) {
+        semantics = _collectSemantics(tester, finder, scenario.name);
+      }
+
+      metadata.addScenario(
+        name: scenario.name,
+        bounds: bounds,
+        semantics: semantics,
+      );
+    }
+
+    return metadata;
+  }
+
+  List<SemanticsNodeData> _collectSemantics(
+    WidgetTester tester,
+    Finder scenarioFinder,
+    String scenarioName,
+  ) {
+    final rootNode = tester.getSemantics(scenarioFinder);
+    final results = <SemanticsNodeData>[];
+
+    bool walk(SemanticsNode node) {
+      final data = node.getSemanticsData();
+      final label = data.label;
+      final value = data.value;
+      final hint = data.hint;
+      final tooltip = data.tooltip;
+
+      final hasContent =
+          label.isNotEmpty ||
+          value.isNotEmpty ||
+          hint.isNotEmpty ||
+          tooltip.isNotEmpty;
+      if (hasContent && label != scenarioName) {
+        results.add(SemanticsNodeData.fromSemanticsData(data));
+      }
+
+      node.visitChildren(walk);
+      return true;
+    }
+
+    walk(rootNode);
+    return results;
   }
 }
