@@ -69,11 +69,15 @@ class AlchemistConfig extends Equatable {
     ThemeData? theme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
+    bool? metadataEnabled,
+    bool? semanticsEnabled,
   }) : _forceUpdateGoldenFiles = forceUpdateGoldenFiles,
        _theme = theme,
        _goldenTestTheme = goldenTestTheme,
        _platformGoldensConfig = platformGoldensConfig,
-       _ciGoldensConfig = ciGoldensConfig;
+       _ciGoldensConfig = ciGoldensConfig,
+       _metadataEnabled = metadataEnabled,
+       _semanticsEnabled = semanticsEnabled;
 
   /// The instance of the [AlchemistConfig] in the current zone used by the
   /// `alchemist` package.
@@ -200,6 +204,20 @@ class AlchemistConfig extends Equatable {
       _ciGoldensConfig ?? const CiGoldensConfig();
   final CiGoldensConfig? _ciGoldensConfig;
 
+  /// Whether to generate JSON metadata files alongside golden images.
+  ///
+  /// When enabled, a `.json` file is written next to each golden `.png`
+  /// containing exact pixel bounds for each scenario.
+  bool get metadataEnabled => _metadataEnabled ?? false;
+  final bool? _metadataEnabled;
+
+  /// Whether to include semantics tree data in the metadata output.
+  ///
+  /// Requires [metadataEnabled] to be `true`. When enabled, each scenario's
+  /// metadata includes accessibility tree data (labels, roles, actions).
+  bool get semanticsEnabled => _semanticsEnabled ?? false;
+  final bool? _semanticsEnabled;
+
   /// Creates a copy of this [AlchemistConfig] and replaces the given fields.
   AlchemistConfig copyWith({
     bool? forceUpdateGoldenFiles,
@@ -207,6 +225,8 @@ class AlchemistConfig extends Equatable {
     GoldenTestTheme? goldenTestTheme,
     PlatformGoldensConfig? platformGoldensConfig,
     CiGoldensConfig? ciGoldensConfig,
+    bool? metadataEnabled,
+    bool? semanticsEnabled,
   }) {
     return AlchemistConfig(
       forceUpdateGoldenFiles: forceUpdateGoldenFiles ?? _forceUpdateGoldenFiles,
@@ -214,6 +234,8 @@ class AlchemistConfig extends Equatable {
       goldenTestTheme: goldenTestTheme ?? _goldenTestTheme,
       platformGoldensConfig: platformGoldensConfig ?? _platformGoldensConfig,
       ciGoldensConfig: ciGoldensConfig ?? _ciGoldensConfig,
+      metadataEnabled: metadataEnabled ?? _metadataEnabled,
+      semanticsEnabled: semanticsEnabled ?? _semanticsEnabled,
     );
   }
 
@@ -233,6 +255,8 @@ class AlchemistConfig extends Equatable {
         other?._platformGoldensConfig,
       ),
       ciGoldensConfig: ciGoldensConfig.merge(other?._ciGoldensConfig),
+      metadataEnabled: other?._metadataEnabled,
+      semanticsEnabled: other?._semanticsEnabled,
     );
   }
 
@@ -243,6 +267,8 @@ class AlchemistConfig extends Equatable {
     goldenTestTheme,
     platformGoldensConfig,
     ciGoldensConfig,
+    metadataEnabled,
+    semanticsEnabled,
   ];
 }
 

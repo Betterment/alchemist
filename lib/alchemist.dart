@@ -1,5 +1,6 @@
 export 'src/alchemist_config.dart';
 export 'src/blocked_text_image.dart';
+export 'src/golden_metadata.dart';
 export 'src/golden_test.dart';
 export 'src/golden_test_group.dart';
 export 'src/golden_test_scenario.dart';

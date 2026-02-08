@@ -187,6 +187,8 @@ Future<void> goldenTest(
         forceUpdate: config.forceUpdateGoldenFiles,
         obscureText: variantConfig.obscureText,
         renderShadows: variantConfig.renderShadows,
+        metadataEnabled: config.metadataEnabled,
+        semanticsEnabled: config.semanticsEnabled,
         textScaleFactor: textScaleFactor,
         constraints: constraints,
         pumpBeforeTest: pumpBeforeTest,
