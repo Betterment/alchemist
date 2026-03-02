@@ -289,8 +289,14 @@ abstract class GoldensConfig extends Equatable {
     required this.renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
-  }) : _filePathResolver = filePathResolver,
-       _theme = theme;
+    double? diffThreshold,
+  }) : assert(
+         diffThreshold == null || (diffThreshold >= 0.0 && diffThreshold < 1.0),
+         'diffThreshold must be between 0.0 (inclusive) and 1.0 (exclusive)',
+       ),
+       _filePathResolver = filePathResolver,
+       _theme = theme,
+       _diffThreshold = diffThreshold;
 
   /// Whether or not the golden tests should run.
   final bool enabled;
@@ -345,6 +351,14 @@ abstract class GoldensConfig extends Equatable {
   ThemeData? get theme => _theme;
   final ThemeData? _theme;
 
+  /// The maximum fraction of differing pixels that is still considered a
+  /// passing test. Defaults to 0.0 (no threshold).
+  ///
+  /// A value of 0.001 means up to 0.1% of pixels may differ. When a diff is
+  /// within the threshold but greater than 0, a warning is printed.
+  double get diffThreshold => _diffThreshold ?? 0.0;
+  final double? _diffThreshold;
+
   /// Creates a copy of this [GoldensConfig] and replaces the given fields.
   GoldensConfig copyWith({
     bool? enabled,
@@ -352,6 +366,7 @@ abstract class GoldensConfig extends Equatable {
     bool? renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
+    double? diffThreshold,
   });
 
   /// Creates a copy and merges this [GoldensConfig] with the given config,
@@ -365,6 +380,7 @@ abstract class GoldensConfig extends Equatable {
     filePathResolver,
     theme,
     renderShadows,
+    diffThreshold,
   ];
 }
 
@@ -396,6 +412,7 @@ class PlatformGoldensConfig extends GoldensConfig {
     super.renderShadows = true,
     super.filePathResolver,
     super.theme,
+    super.diffThreshold,
   }) : _platforms = platforms;
 
   @override
@@ -427,6 +444,7 @@ class PlatformGoldensConfig extends GoldensConfig {
     bool? renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
+    double? diffThreshold,
   }) {
     return PlatformGoldensConfig(
       platforms: platforms ?? this.platforms,
@@ -435,6 +453,7 @@ class PlatformGoldensConfig extends GoldensConfig {
       renderShadows: renderShadows ?? this.renderShadows,
       filePathResolver: filePathResolver ?? this.filePathResolver,
       theme: theme ?? this.theme,
+      diffThreshold: diffThreshold ?? _diffThreshold,
     );
   }
 
@@ -447,6 +466,7 @@ class PlatformGoldensConfig extends GoldensConfig {
       renderShadows: other?.renderShadows,
       filePathResolver: other?._filePathResolver,
       theme: other?._theme,
+      diffThreshold: other?._diffThreshold,
     );
   }
 
@@ -480,6 +500,7 @@ class CiGoldensConfig extends GoldensConfig {
     super.renderShadows = false,
     super.filePathResolver,
     super.theme,
+    super.diffThreshold,
   });
 
   @override
@@ -492,6 +513,7 @@ class CiGoldensConfig extends GoldensConfig {
     bool? renderShadows,
     FilePathResolver? filePathResolver,
     ThemeData? theme,
+    double? diffThreshold,
   }) {
     return CiGoldensConfig(
       enabled: enabled ?? this.enabled,
@@ -499,6 +521,7 @@ class CiGoldensConfig extends GoldensConfig {
       renderShadows: renderShadows ?? this.renderShadows,
       filePathResolver: filePathResolver ?? this.filePathResolver,
       theme: theme ?? this.theme,
+      diffThreshold: diffThreshold ?? _diffThreshold,
     );
   }
 
@@ -510,6 +533,7 @@ class CiGoldensConfig extends GoldensConfig {
       renderShadows: other?.renderShadows,
       filePathResolver: other?._filePathResolver,
       theme: other?._theme,
+      diffThreshold: other?._diffThreshold,
     );
   }
 }
