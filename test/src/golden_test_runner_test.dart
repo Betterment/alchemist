@@ -251,7 +251,7 @@ void main() {
     });
 
     testWidgets(
-      'throws AssertionError when diffThreshold > 0 and comparator is not '
+      'throws UnsupportedError when diffThreshold > 0 and comparator is not '
       'LocalFileComparator',
       (tester) async {
         goldenFileComparator = _FakeGoldenFileComparator();
@@ -263,7 +263,7 @@ void main() {
             widget: const SizedBox(),
             diffThreshold: 0.001,
           ),
-          throwsAssertionError,
+          throwsA(isA<UnsupportedError>()),
         );
       },
     );
