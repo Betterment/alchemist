@@ -24,7 +24,10 @@ class AlchemistFileComparator extends LocalFileComparator {
     LocalFileComparator existing,
     double diffThreshold,
   ) {
-    return AlchemistFileComparator(existing.basedir, diffThreshold);
+    return AlchemistFileComparator(
+      existing.basedir.resolve('_alchemist.dart'),
+      diffThreshold,
+    );
   }
 
   /// The maximum fraction of differing pixels that is still considered a
