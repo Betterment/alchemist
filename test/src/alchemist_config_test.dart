@@ -428,10 +428,7 @@ void main() {
       });
 
       test('accepts 0.0 as boundary value', () {
-        expect(
-          () => CiGoldensConfig(diffThreshold: 0.0),
-          returnsNormally,
-        );
+        expect(() => CiGoldensConfig(diffThreshold: 0.0), returnsNormally);
       });
     });
 

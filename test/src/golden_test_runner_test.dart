@@ -192,65 +192,63 @@ void main() {
       },
     );
 
-    testWidgets(
-      'restores original comparator after test throws',
-      (tester) async {
-        final originalComparator = LocalFileComparator(
-          Uri.parse('file:///test/golden_test.dart'),
-        );
-        goldenFileComparator = originalComparator;
+    testWidgets('restores original comparator after test throws', (
+      tester,
+    ) async {
+      final originalComparator = LocalFileComparator(
+        Uri.parse('file:///test/golden_test.dart'),
+      );
+      goldenFileComparator = originalComparator;
 
-        final givenException = Exception('test error');
-        when(
-          () => goldenTestAdapter.withForceUpdateGoldenFiles<void>(
-            callback: any(named: 'callback'),
-          ),
-        ).thenAnswer((_) async => throw givenException);
+      final givenException = Exception('test error');
+      when(
+        () => goldenTestAdapter.withForceUpdateGoldenFiles<void>(
+          callback: any(named: 'callback'),
+        ),
+      ).thenAnswer((_) async => throw givenException);
 
-        await expectLater(
-          goldenTestRunner.run(
-            tester: tester,
-            goldenPath: 'path/to/golden',
-            widget: const SizedBox(),
-            diffThreshold: 0.001,
-          ),
-          throwsA(same(givenException)),
-        );
-
-        expect(goldenFileComparator, same(originalComparator));
-      },
-    );
-
-    testWidgets(
-      'does not change comparator when diffThreshold is 0',
-      (tester) async {
-        final originalComparator = LocalFileComparator(
-          Uri.parse('file:///test/golden_test.dart'),
-        );
-        goldenFileComparator = originalComparator;
-
-        GoldenFileComparator? comparatorDuringTest;
-        when(
-          () => goldenTestAdapter.withForceUpdateGoldenFiles<void>(
-            callback: any(named: 'callback'),
-          ),
-        ).thenAnswer((invocation) async {
-          comparatorDuringTest = goldenFileComparator;
-          await (invocation.namedArguments[#callback]
-                  as MatchesGoldenFileInvocation<void>)
-              .call();
-        });
-
-        await goldenTestRunner.run(
+      await expectLater(
+        goldenTestRunner.run(
           tester: tester,
           goldenPath: 'path/to/golden',
           widget: const SizedBox(),
-          diffThreshold: 0.0,
-        );
+          diffThreshold: 0.001,
+        ),
+        throwsA(same(givenException)),
+      );
 
-        expect(comparatorDuringTest, same(originalComparator));
-      },
-    );
+      expect(goldenFileComparator, same(originalComparator));
+    });
+
+    testWidgets('does not change comparator when diffThreshold is 0', (
+      tester,
+    ) async {
+      final originalComparator = LocalFileComparator(
+        Uri.parse('file:///test/golden_test.dart'),
+      );
+      goldenFileComparator = originalComparator;
+
+      GoldenFileComparator? comparatorDuringTest;
+      when(
+        () => goldenTestAdapter.withForceUpdateGoldenFiles<void>(
+          callback: any(named: 'callback'),
+        ),
+      ).thenAnswer((invocation) async {
+        comparatorDuringTest = goldenFileComparator;
+        await (invocation.namedArguments[#callback]
+                as MatchesGoldenFileInvocation<void>)
+            .call();
+      });
+
+      await goldenTestRunner.run(
+        tester: tester,
+        goldenPath: 'path/to/golden',
+        widget: const SizedBox(),
+        diffThreshold: 0.0,
+      );
+
+      expect(comparatorDuringTest, same(originalComparator));
+    });
 
     testWidgets(
       'throws AssertionError when diffThreshold > 0 and comparator is not '
