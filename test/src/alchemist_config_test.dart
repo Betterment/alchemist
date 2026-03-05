@@ -272,14 +272,14 @@ void main() {
 
       test('asserts when diffThreshold is 1.0', () {
         expect(
-          () => PlatformGoldensConfig(diffThreshold: 1.0),
+          () => PlatformGoldensConfig(diffThreshold: 1),
           throwsA(isA<AssertionError>()),
         );
       });
 
       test('accepts 0.0 as boundary value', () {
         expect(
-          () => PlatformGoldensConfig(diffThreshold: 0.0),
+          () => const PlatformGoldensConfig(diffThreshold: 0),
           returnsNormally,
         );
       });
@@ -422,13 +422,13 @@ void main() {
 
       test('asserts when diffThreshold is 1.0', () {
         expect(
-          () => CiGoldensConfig(diffThreshold: 1.0),
+          () => CiGoldensConfig(diffThreshold: 1),
           throwsA(isA<AssertionError>()),
         );
       });
 
       test('accepts 0.0 as boundary value', () {
-        expect(() => CiGoldensConfig(diffThreshold: 0.0), returnsNormally);
+        expect(() => const CiGoldensConfig(diffThreshold: 0), returnsNormally);
       });
     });
 

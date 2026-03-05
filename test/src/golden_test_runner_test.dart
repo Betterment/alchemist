@@ -185,7 +185,7 @@ void main() {
 
         expect(comparatorDuringTest, isA<AlchemistFileComparator>());
         expect(
-          (comparatorDuringTest as AlchemistFileComparator).diffThreshold,
+          (comparatorDuringTest! as AlchemistFileComparator).diffThreshold,
           0.001,
         );
         expect(goldenFileComparator, same(originalComparator));
@@ -244,7 +244,6 @@ void main() {
         tester: tester,
         goldenPath: 'path/to/golden',
         widget: const SizedBox(),
-        diffThreshold: 0.0,
       );
 
       expect(comparatorDuringTest, same(originalComparator));

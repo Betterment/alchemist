@@ -63,7 +63,7 @@ void main() {
         expect(
           () => AlchemistFileComparator(
             Uri.parse('file:///test/_alchemist.dart'),
-            1.0,
+            1,
           ),
           throwsAssertionError,
         );
@@ -73,7 +73,7 @@ void main() {
         expect(
           () => AlchemistFileComparator(
             Uri.parse('file:///test/_alchemist.dart'),
-            0.0,
+            0,
           ),
           returnsNormally,
         );
@@ -97,8 +97,8 @@ void main() {
     group('compare', () {
       test('passes when underlying comparison passes', () async {
         final comparator = _TestAlchemistFileComparator(
-          diffThreshold: 0.0,
-          result: ComparisonResult(passed: true, diffPercent: 0.0),
+          diffThreshold: 0,
+          result: ComparisonResult(passed: true, diffPercent: 0),
         );
 
         final result = await comparator.compare(
@@ -139,7 +139,7 @@ void main() {
 
       test('fails when diffThreshold is 0 and diff > 0', () async {
         final comparator = _TestAlchemistFileComparator(
-          diffThreshold: 0.0,
+          diffThreshold: 0,
           result: ComparisonResult(passed: false, diffPercent: 0.001),
         );
 
