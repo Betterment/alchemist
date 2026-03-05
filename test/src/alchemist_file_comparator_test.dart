@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:alchemist/src/alchemist_file_comparator.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -91,6 +92,27 @@ void main() {
         );
         expect(comparator.basedir, existing.basedir);
         expect(comparator.diffThreshold, 0.001);
+      });
+    });
+
+    group('compareImageBytes', () {
+      test('returns passed result when images are identical', () async {
+        final comparator = AlchemistFileComparator(
+          Uri.parse('file:///test/_alchemist.dart'),
+          0,
+        );
+
+        final recorder = ui.PictureRecorder();
+        ui.Canvas(
+          recorder,
+        ).drawColor(const ui.Color(0xFFFFFFFF), ui.BlendMode.src);
+        final picture = recorder.endRecording();
+        final image = await picture.toImage(1, 1);
+        final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+        final pngBytes = byteData!.buffer.asUint8List();
+
+        final result = await comparator.compareImageBytes(pngBytes, pngBytes);
+        expect(result.passed, isTrue);
       });
     });
 
