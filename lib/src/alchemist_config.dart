@@ -355,7 +355,7 @@ abstract class GoldensConfig extends Equatable {
   /// passing test. Defaults to 0.0 (no threshold).
   ///
   /// A value of 0.001 means up to 0.1% of pixels may differ. When a diff is
-  /// within the threshold but greater than 0, a warning is printed.
+  /// within the threshold but greater than 0, the test passes.
   double get diffThreshold => _diffThreshold ?? 0.0;
   final double? _diffThreshold;
 

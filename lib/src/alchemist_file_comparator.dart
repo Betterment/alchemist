@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// pixel-diff diffThreshold.
 ///
 /// When [diffThreshold] is greater than 0 and the diff percentage is within
-/// diffThreshold, the test passes and a warning is printed. This is useful for
-/// handling minor cross-platform or cross-architecture rendering differences.
+/// diffThreshold, the test passes. This is useful for handling minor
+/// cross-platform or cross-architecture rendering differences.
 class AlchemistFileComparator extends LocalFileComparator {
   /// Creates an [AlchemistFileComparator] with the given [testUri] and
   /// [diffThreshold].
@@ -34,8 +34,8 @@ class AlchemistFileComparator extends LocalFileComparator {
   /// passing test.
   ///
   /// Must be between 0.0 (inclusive) and 1.0 (exclusive). When the diff
-  /// percentage exceeds 0 but is within this threshold, the test passes and a
-  /// warning is printed. A value of 0.0 means no threshold is applied.
+  /// percentage exceeds 0 but is within this threshold, the test passes.
+  /// A value of 0.0 means no threshold is applied.
   final double diffThreshold;
 
   /// Compares the given [imageBytes] to the [goldenBytes] and returns the
