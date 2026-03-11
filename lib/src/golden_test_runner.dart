@@ -84,25 +84,25 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     debugDisableShadows = !renderShadows;
 
     GoldenFileComparator? originalComparator;
-    if (diffThreshold > 0) {
-      final comparator = goldenFileComparator;
-      if (comparator is LocalFileComparator) {
-        originalComparator = comparator;
-        goldenFileComparator = AlchemistFileComparator.fromExisting(
-          comparator,
-          diffThreshold,
-        );
-      } else {
-        throw UnsupportedError(
-          'diffThreshold is set to $diffThreshold but the current '
-          'GoldenFileComparator (${comparator.runtimeType}) is not a '
-          'LocalFileComparator. diffThreshold is not supported.',
-        );
-      }
-    }
-
     Future<ui.Image>? imageFuture;
     try {
+      if (diffThreshold > 0) {
+        final comparator = goldenFileComparator;
+        if (comparator is LocalFileComparator &&
+            comparator.runtimeType == LocalFileComparator) {
+          originalComparator = comparator;
+          goldenFileComparator = AlchemistFileComparator.fromExisting(
+            comparator,
+            diffThreshold,
+          );
+        } else {
+          throw UnsupportedError(
+            'diffThreshold is set to $diffThreshold but the current '
+            'GoldenFileComparator (${comparator.runtimeType}) is not a '
+            'LocalFileComparator. diffThreshold is not supported.',
+          );
+        }
+      }
       await goldenTestAdapter.pumpGoldenTest(
         tester: tester,
         rootKey: rootKey,
