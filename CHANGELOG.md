@@ -1,6 +1,17 @@
+# 0.14.0
+
+* fix: loading fonts performance issue by @gustavobelo-dev in https://github.com/Betterment/alchemist/pull/170
+* chore: Update CODEOWNERS to remove a samandmoore by @samandmoore in https://github.com/Betterment/alchemist/pull/173
+* feat: Support diffThreshold to handle comparison failures that depend on the image generation environment by @mataku in https://github.com/Betterment/alchemist/pull/176
+
+## New Contributors
+* @gustavobelo-dev made their first contribution in https://github.com/Betterment/alchemist/pull/170
+* @mataku made their first contribution in https://github.com/Betterment/alchemist/pull/176
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.13.0...v0.14.0
+
 # 0.13.0
 
-## What's Changed
 * ci: use mobile messaging app for Slack notifs by @btrautmann in https://github.com/Betterment/alchemist/pull/158
 * chore: use `git commit` instead of `git-auto-commit` action by @btrautmann in https://github.com/Betterment/alchemist/pull/163
 * fix: push changes in update goldens workflow by @btrautmann in https://github.com/Betterment/alchemist/pull/166
@@ -18,7 +29,6 @@ https://github.com/Betterment/alchemist/pull/165 disabled anti-aliasing on `Bloc
 
 # 0.12.1
 
-## What's Changed
 * fix: Fix memory leaks by @ValentinVignal in https://github.com/Betterment/alchemist/pull/150
 * fix: fontVariations is missing by @FranRiadigos in https://github.com/Betterment/alchemist/pull/156
 
@@ -30,7 +40,6 @@ https://github.com/Betterment/alchemist/pull/165 disabled anti-aliasing on `Bloc
 
 # 0.12.0
 
-## What's Changed
 * chore: updates for building against flutter 3.29 by @btrautmann in https://github.com/Betterment/alchemist/pull/145
 * ci: add branch-switching for beta channel by @btrautmann in https://github.com/Betterment/alchemist/pull/146
 * chore: bump min flutter version to 3.32.0 by @btrautmann in https://github.com/Betterment/alchemist/pull/153
@@ -40,7 +49,6 @@ https://github.com/Betterment/alchemist/pull/165 disabled anti-aliasing on `Bloc
 
 # 0.11.0
 
-## What's Changed
 * fix!: use textScaler instead of a double by @vanlooverenkoen in https://github.com/Betterment/alchemist/pull/131
 * feat!: Added nameTextStyle by @vanlooverenkoen in https://github.com/Betterment/alchemist/pull/132
 * fix: added configurable padding by @vanlooverenkoen in https://github.com/Betterment/alchemist/pull/133
@@ -56,7 +64,6 @@ https://github.com/Betterment/alchemist/pull/131 and https://github.com/Betterme
 
 # 0.10.0
 
-## What's Changed
 * feat: break out smoke test goldens into directories based on flutter version by @btrautmann in https://github.com/Betterment/alchemist/pull/126
 * fix: Could not override GoldenTestTheme by @Brainyoo in https://github.com/Betterment/alchemist/pull/127
 * ci: channel compatibility workflow by @btrautmann in https://github.com/Betterment/alchemist/pull/123
@@ -69,7 +76,6 @@ In https://github.com/Betterment/alchemist/pull/123 a `Padding` `Widget` was rem
 
 # 0.9.0
 
-## What's Changed
 * feat: `GoldenTestTheme` by @btrautmann in https://github.com/Betterment/alchemist/pull/124
 
 
@@ -77,7 +83,6 @@ In https://github.com/Betterment/alchemist/pull/123 a `Padding` `Widget` was rem
 
 # 0.8.0
 
-## What's Changed
 * docs: fix readme relative link (Separate local & CI tests) by @FirentisTFW in https://github.com/Betterment/alchemist/pull/100
 * docs: fix a small typo under RECOMMENDED_SETUP_GUIDE.md by @pedromassango in https://github.com/Betterment/alchemist/pull/116
 * fix: loading fonts from other packages by @krispypen in https://github.com/Betterment/alchemist/pull/111
