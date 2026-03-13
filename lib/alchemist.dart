@@ -1,4 +1,5 @@
 export 'src/alchemist_config.dart';
+export 'src/alchemist_file_comparator.dart';
 export 'src/blocked_text_image.dart';
 export 'src/golden_test.dart';
 export 'src/golden_test_group.dart';

@@ -241,6 +241,10 @@ void main() {
         expect(defaultValue.renderShadows, isTrue);
       });
 
+      test('for diffThreshold', () {
+        expect(defaultValue.diffThreshold, 0.0);
+      });
+
       group('for default filePathResolver', () {
         test('generates path correctly', () {
           expect(
@@ -248,6 +252,36 @@ void main() {
             equals('goldens/bar/foo.png'),
           );
         });
+      });
+    });
+
+    group('diffThreshold', () {
+      test('asserts when negative', () {
+        expect(
+          () => PlatformGoldensConfig(diffThreshold: -0.1),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test('asserts when exceeds 1.0', () {
+        expect(
+          () => PlatformGoldensConfig(diffThreshold: 1.1),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test('asserts when diffThreshold is 1.0', () {
+        expect(
+          () => PlatformGoldensConfig(diffThreshold: 1),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test('accepts 0.0 as boundary value', () {
+        expect(
+          () => const PlatformGoldensConfig(diffThreshold: 0),
+          returnsNormally,
+        );
       });
     });
 
@@ -277,6 +311,17 @@ void main() {
             (c) => c.enabled,
             'enabled',
             enabled,
+          ),
+        );
+      });
+
+      test('copies diffThreshold', () {
+        expect(
+          const PlatformGoldensConfig().copyWith(diffThreshold: 0.001),
+          isA<PlatformGoldensConfig>().having(
+            (c) => c.diffThreshold,
+            'diffThreshold',
+            0.001,
           ),
         );
       });
@@ -311,6 +356,19 @@ void main() {
           ),
         );
       });
+
+      test('propagates diffThreshold', () {
+        expect(
+          const PlatformGoldensConfig().merge(
+            const PlatformGoldensConfig(diffThreshold: 0.005),
+          ),
+          isA<PlatformGoldensConfig>().having(
+            (c) => c.diffThreshold,
+            'diffThreshold',
+            0.005,
+          ),
+        );
+      });
     });
   });
 
@@ -331,6 +389,10 @@ void main() {
         expect(defaultValue.renderShadows, isFalse);
       });
 
+      test('for diffThreshold', () {
+        expect(defaultValue.diffThreshold, 0.0);
+      });
+
       test('for filePathResolver', () {
         expect(
           defaultValue.filePathResolver('foo', 'bar'),
@@ -340,6 +402,33 @@ void main() {
 
       test('environmentName is CI', () {
         expect(defaultValue.environmentName, 'CI');
+      });
+    });
+
+    group('diffThreshold', () {
+      test('asserts when negative', () {
+        expect(
+          () => CiGoldensConfig(diffThreshold: -0.1),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test('asserts when exceeds 1.0', () {
+        expect(
+          () => CiGoldensConfig(diffThreshold: 1.1),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test('asserts when diffThreshold is 1.0', () {
+        expect(
+          () => CiGoldensConfig(diffThreshold: 1),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test('accepts 0.0 as boundary value', () {
+        expect(() => const CiGoldensConfig(diffThreshold: 0), returnsNormally);
       });
     });
 
@@ -366,6 +455,17 @@ void main() {
         expect(
           const CiGoldensConfig().copyWith(enabled: enabled),
           isA<CiGoldensConfig>().having((c) => c.enabled, 'enabled', enabled),
+        );
+      });
+
+      test('copies diffThreshold', () {
+        expect(
+          const CiGoldensConfig().copyWith(diffThreshold: 0.002),
+          isA<CiGoldensConfig>().having(
+            (c) => c.diffThreshold,
+            'diffThreshold',
+            0.002,
+          ),
         );
       });
     });
@@ -396,6 +496,19 @@ void main() {
             (c) => c.enabled,
             'enabled',
             appliedEnabled,
+          ),
+        );
+      });
+
+      test('propagates diffThreshold', () {
+        expect(
+          const CiGoldensConfig().merge(
+            const CiGoldensConfig(diffThreshold: 0.003),
+          ),
+          isA<CiGoldensConfig>().having(
+            (c) => c.diffThreshold,
+            'diffThreshold',
+            0.003,
           ),
         );
       });

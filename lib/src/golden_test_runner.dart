@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:alchemist/src/alchemist_file_comparator.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_theme.dart';
 import 'package:alchemist/src/interactions.dart';
@@ -42,6 +43,7 @@ abstract class GoldenTestRunner {
     PumpAction pumpBeforeTest = onlyPumpAndSettle,
     PumpWidget pumpWidget = onlyPumpWidget,
     Interaction? whilePerforming,
+    double diffThreshold = 0.0,
   });
 }
 
@@ -69,6 +71,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     PumpAction pumpBeforeTest = onlyPumpAndSettle,
     PumpWidget pumpWidget = onlyPumpWidget,
     Interaction? whilePerforming,
+    double diffThreshold = 0.0,
   }) async {
     assert(
       goldenPath is String || goldenPath is Uri,
@@ -80,8 +83,26 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     final mementoDebugDisableShadows = debugDisableShadows;
     debugDisableShadows = !renderShadows;
 
+    GoldenFileComparator? originalComparator;
     Future<ui.Image>? imageFuture;
     try {
+      if (diffThreshold > 0) {
+        final comparator = goldenFileComparator;
+        if (comparator is LocalFileComparator &&
+            comparator.runtimeType == LocalFileComparator) {
+          originalComparator = comparator;
+          goldenFileComparator = AlchemistFileComparator.fromExisting(
+            comparator,
+            diffThreshold,
+          );
+        } else {
+          throw UnsupportedError(
+            'diffThreshold is set to $diffThreshold but the current '
+            'GoldenFileComparator (${comparator.runtimeType}) is not a '
+            'LocalFileComparator. diffThreshold is not supported.',
+          );
+        }
+      }
       await goldenTestAdapter.pumpGoldenTest(
         tester: tester,
         rootKey: rootKey,
@@ -125,6 +146,9 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
         rethrow;
       }
     } finally {
+      if (originalComparator != null) {
+        goldenFileComparator = originalComparator;
+      }
       debugDisableShadows = mementoDebugDisableShadows;
       final image = await imageFuture;
       image?.dispose();
