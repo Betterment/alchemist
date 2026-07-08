@@ -1,15 +1,20 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:alchemist/src/alchemist_file_comparator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _TestAlchemistFileComparator extends AlchemistFileComparator {
   _TestAlchemistFileComparator({
     required double diffThreshold,
     required ComparisonResult result,
+    String? environmentName,
   }) : _result = result,
-       super(Uri.parse('file:///test/_alchemist.dart'), diffThreshold);
+       super(
+         Uri.parse('file:///test/_alchemist.dart'),
+         diffThreshold,
+         environmentName: environmentName,
+       );
 
   final ComparisonResult _result;
 
@@ -40,6 +45,23 @@ class _TestAlchemistFileComparator extends AlchemistFileComparator {
 void main() {
   group('AlchemistFileComparator', () {
     group('constructor', () {
+      test('accepts optional environmentName', () {
+        final comparator = AlchemistFileComparator(
+          Uri.parse('file:///test/_alchemist.dart'),
+          0,
+          environmentName: 'macOS',
+        );
+        expect(comparator.environmentName, 'macOS');
+      });
+
+      test('defaults environmentName to null', () {
+        final comparator = AlchemistFileComparator(
+          Uri.parse('file:///test/_alchemist.dart'),
+          0,
+        );
+        expect(comparator.environmentName, isNull);
+      });
+
       test('asserts when diffThreshold is negative', () {
         expect(
           () => AlchemistFileComparator(
@@ -92,6 +114,18 @@ void main() {
         );
         expect(comparator.basedir, existing.basedir);
         expect(comparator.diffThreshold, 0.001);
+      });
+
+      test('forwards environmentName from existing comparator', () {
+        final existing = LocalFileComparator(
+          Uri.parse('file:///some/path/test.dart'),
+        );
+        final comparator = AlchemistFileComparator.fromExisting(
+          existing,
+          0.001,
+          environmentName: 'macOS',
+        );
+        expect(comparator.environmentName, 'macOS');
       });
     });
 
@@ -151,12 +185,10 @@ void main() {
           result: ComparisonResult(passed: false, diffPercent: 0.005),
         );
 
-        final result = await comparator.compare(
-          Uint8List(0),
-          Uri.parse('golden.png'),
+        await expectLater(
+          comparator.compare(Uint8List(0), Uri.parse('golden.png')),
+          throwsA(isA<FlutterError>()),
         );
-
-        expect(result, isFalse);
       });
 
       test('fails when diffThreshold is 0 and diff > 0', () async {
@@ -165,12 +197,60 @@ void main() {
           result: ComparisonResult(passed: false, diffPercent: 0.001),
         );
 
-        final result = await comparator.compare(
-          Uint8List(0),
-          Uri.parse('golden.png'),
+        await expectLater(
+          comparator.compare(Uint8List(0), Uri.parse('golden.png')),
+          throwsA(isA<FlutterError>()),
         );
+      });
+    });
 
-        expect(result, isFalse);
+    group('getFailureFile', () {
+      test(
+        'when environmentName is null, returns default flat failures path',
+        () {
+          final comparator = AlchemistFileComparator(
+            Uri.parse('file:///test/_alchemist.dart'),
+            0,
+          );
+          final golden = Uri.parse('goldens/macos/test.png');
+          final basedir = Uri.parse('file:///project/test');
+
+          final file = comparator.getFailureFile(
+            'masterImage',
+            golden,
+            basedir,
+          );
+
+          expect(file.path, contains('failures/test_masterImage.png'));
+        },
+      );
+
+      test('when environmentName is set, writes to failures/{env}/', () {
+        final comparator = AlchemistFileComparator(
+          Uri.parse('file:///test/_alchemist.dart'),
+          0,
+          environmentName: 'macOS',
+        );
+        final golden = Uri.parse('goldens/macos/test.png');
+        final basedir = Uri.parse('file:///project/test');
+
+        final file = comparator.getFailureFile('masterImage', golden, basedir);
+
+        expect(file.path, contains('failures/macos/test_masterImage.png'));
+      });
+
+      test('when environmentName is CI, writes to failures/ci/', () {
+        final comparator = AlchemistFileComparator(
+          Uri.parse('file:///test/_alchemist.dart'),
+          0,
+          environmentName: 'CI',
+        );
+        final golden = Uri.parse('goldens/ci/test.png');
+        final basedir = Uri.parse('file:///project/test');
+
+        final file = comparator.getFailureFile('masterImage', golden, basedir);
+
+        expect(file.path, contains('failures/ci/test_masterImage.png'));
       });
     });
   });

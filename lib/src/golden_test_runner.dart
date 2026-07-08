@@ -44,6 +44,7 @@ abstract class GoldenTestRunner {
     PumpWidget pumpWidget = onlyPumpWidget,
     Interaction? whilePerforming,
     double diffThreshold = 0.0,
+    String? environmentName,
   });
 }
 
@@ -72,6 +73,7 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     PumpWidget pumpWidget = onlyPumpWidget,
     Interaction? whilePerforming,
     double diffThreshold = 0.0,
+    String? environmentName,
   }) async {
     assert(
       goldenPath is String || goldenPath is Uri,
@@ -86,7 +88,10 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
     GoldenFileComparator? originalComparator;
     Future<ui.Image>? imageFuture;
     try {
-      if (diffThreshold > 0) {
+      final needsEnvAware = environmentName != null;
+      final needsThreshold = diffThreshold > 0;
+
+      if (needsThreshold || needsEnvAware) {
         final comparator = goldenFileComparator;
         if (comparator is LocalFileComparator &&
             comparator.runtimeType == LocalFileComparator) {
@@ -94,8 +99,9 @@ class FlutterGoldenTestRunner extends GoldenTestRunner {
           goldenFileComparator = AlchemistFileComparator.fromExisting(
             comparator,
             diffThreshold,
+            environmentName: environmentName,
           );
-        } else {
+        } else if (needsThreshold) {
           throw UnsupportedError(
             'diffThreshold is set to $diffThreshold but the current '
             'GoldenFileComparator (${comparator.runtimeType}) is not a '
