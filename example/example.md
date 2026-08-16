@@ -20,7 +20,7 @@ This example shows a basic golden test for `ListTile`s that makes use of some of
 
 ```dart
 import 'package:alchemist/alchemist.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
