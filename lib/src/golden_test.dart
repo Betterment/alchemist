@@ -12,6 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
 final Set<String> _loadedFontFamilies = {};
+bool _goldenTestSetUpRegistered = false;
 
 /// Default golden test runner which uses the flutter test framework.
 const defaultGoldenTestRunner = FlutterGoldenTestRunner();
@@ -168,7 +169,10 @@ Future<void> goldenTest(
     currentPlatform: currentPlatform,
   );
 
-  goldenTestAdapter.setUp(_setUpGoldenTests);
+  if (!_goldenTestSetUpRegistered) {
+    _goldenTestSetUpRegistered = true;
+    goldenTestAdapter.setUp(_setUpGoldenTests);
+  }
 
   await goldenTestAdapter.testWidgets(
     description,

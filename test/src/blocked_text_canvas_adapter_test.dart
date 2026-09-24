@@ -24,6 +24,9 @@ void main() {
 
     setUp(() {
       parent = MockCanvas();
+      when(parent.getTransform).thenReturn(
+        Float64List.fromList([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]),
+      );
       subject = BlockedTextCanvasAdapter(parent);
     });
 
@@ -31,6 +34,7 @@ void main() {
       const offset = ui.Offset(20, 40);
       final paragraph = MockParagraph();
       when(() => paragraph.width).thenReturn(200);
+      when(() => paragraph.longestLine).thenReturn(100);
       when(() => paragraph.height).thenReturn(400);
       subject.drawParagraph(paragraph, offset);
       verify(
@@ -51,6 +55,64 @@ void main() {
       verify(
         () => parent.drawRect(
           offset & const ui.Size(400, 400),
+          any(that: isA<ui.Paint>()),
+        ),
+      ).called(1);
+    });
+
+    test('unconstrained paragraphs reserve outward four-pixel cells', () {
+      final paragraph = MockParagraph();
+      when(() => paragraph.width).thenReturn(double.infinity);
+      when(() => paragraph.longestLine).thenReturn(19.49);
+      when(() => paragraph.height).thenReturn(13);
+      subject.drawParagraph(paragraph, const ui.Offset(66, 12));
+      verify(
+        () => parent.drawRect(
+          const ui.Rect.fromLTRB(66, 12, 86, 25),
+          any(that: isA<ui.Paint>()),
+        ),
+      ).called(1);
+    });
+
+    test('constrained paragraphs keep their original width', () {
+      final paragraph = MockParagraph();
+      when(() => paragraph.width).thenReturn(199.4);
+      when(() => paragraph.longestLine).thenReturn(100);
+      when(() => paragraph.height).thenReturn(14);
+      subject.drawParagraph(paragraph, const ui.Offset(20.49, 10));
+      verify(
+        () => parent.drawRect(
+          const ui.Rect.fromLTRB(20, 10, 220, 24),
+          any(that: isA<ui.Paint>()),
+        ),
+      ).called(1);
+    });
+
+    test('finite intrinsic paragraphs reserve outward four-pixel cells', () {
+      final paragraph = MockParagraph();
+      when(() => paragraph.width).thenReturn(37.49);
+      when(() => paragraph.longestLine).thenReturn(37.49);
+      when(() => paragraph.height).thenReturn(13);
+      subject.drawParagraph(paragraph, const ui.Offset(10, 12));
+      verify(
+        () => parent.drawRect(
+          const ui.Rect.fromLTRB(10, 12, 50, 25),
+          any(that: isA<ui.Paint>()),
+        ),
+      ).called(1);
+    });
+
+    test('rotated paragraphs reserve four-pixel cells', () {
+      when(parent.getTransform).thenReturn(
+        Float64List.fromList([0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]),
+      );
+      final paragraph = MockParagraph();
+      when(() => paragraph.width).thenReturn(19.49);
+      when(() => paragraph.height).thenReturn(13);
+      subject.drawParagraph(paragraph, const ui.Offset(66, 12));
+      verify(
+        () => parent.drawRect(
+          const ui.Rect.fromLTRB(66, 12, 86, 25),
           any(that: isA<ui.Paint>()),
         ),
       ).called(1);

@@ -294,7 +294,10 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     while (!renderObject.isRepaintBoundary) {
       renderObject = renderObject.parent!;
     }
-    final layer = renderObject.debugLayer! as OffsetLayer;
+    // Repainting into the existing layer without clearing it also composites
+    // its previously painted (unblocked) children into the golden image.
+    final layer = (renderObject.debugLayer! as OffsetLayer)
+      ..removeAllChildren();
     paintingContextBuilder(
       layer,
       renderObject.paintBounds,
