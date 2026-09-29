@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A function that returns the path of a golden test file for a given test's
 /// [fileName]. This function's return value should include the `.png`

@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:alchemist/src/golden_test_runner.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _TextCustomPainter extends CustomPainter {
