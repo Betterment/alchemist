@@ -1,3 +1,12 @@
+# 0.14.1
+
+* chore(deps): support equatable 3.x by @PeteRyo0517 in https://github.com/Betterment/alchemist/pull/185
+
+## New Contributors
+* @PeteRyo0517 made their first contribution in https://github.com/Betterment/alchemist/pull/185
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.14.0...v0.14.1
+
 # 0.14.0
 
 * fix: loading fonts performance issue by @gustavobelo-dev in https://github.com/Betterment/alchemist/pull/170
