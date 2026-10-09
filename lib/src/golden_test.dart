@@ -193,6 +193,7 @@ Future<void> goldenTest(
         pumpWidget: pumpWidget,
         whilePerforming: whilePerforming,
         diffThreshold: variantConfig.diffThreshold,
+        environmentName: variantConfig.environmentName,
       );
     },
     tags: tags,

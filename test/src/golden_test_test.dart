@@ -117,6 +117,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
+          environmentName: any(named: 'environmentName'),
         ),
       ).thenAnswer((_) async {});
     });
@@ -201,6 +202,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
+          environmentName: any(named: 'environmentName'),
         ),
       ).called(1);
 
@@ -221,6 +223,7 @@ void main() {
           pumpBeforeTest: any(named: 'pumpBeforeTest'),
           pumpWidget: any(named: 'pumpWidget'),
           whilePerforming: any(named: 'whilePerforming'),
+          environmentName: any(named: 'environmentName'),
         ),
       );
     });

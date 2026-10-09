@@ -181,13 +181,13 @@ void main() {
           goldenPath: 'path/to/golden',
           widget: const SizedBox(),
           diffThreshold: 0.001,
+          environmentName: 'macOS',
         );
 
         expect(comparatorDuringTest, isA<AlchemistFileComparator>());
-        expect(
-          (comparatorDuringTest! as AlchemistFileComparator).diffThreshold,
-          0.001,
-        );
+        final wrapped = comparatorDuringTest! as AlchemistFileComparator;
+        expect(wrapped.diffThreshold, 0.001);
+        expect(wrapped.environmentName, 'macOS');
         expect(goldenFileComparator, same(originalComparator));
       },
     );
@@ -213,6 +213,7 @@ void main() {
           goldenPath: 'path/to/golden',
           widget: const SizedBox(),
           diffThreshold: 0.001,
+          environmentName: 'macOS',
         ),
         throwsA(same(givenException)),
       );
@@ -220,9 +221,8 @@ void main() {
       expect(goldenFileComparator, same(originalComparator));
     });
 
-    testWidgets('does not change comparator when diffThreshold is 0', (
-      tester,
-    ) async {
+    testWidgets('does not change comparator when diffThreshold is 0 and '
+        'environmentName is null', (tester) async {
       final originalComparator = LocalFileComparator(
         Uri.parse('file:///test/golden_test.dart'),
       );
@@ -248,6 +248,42 @@ void main() {
 
       expect(comparatorDuringTest, same(originalComparator));
     });
+
+    testWidgets(
+      'installs AlchemistFileComparator when environmentName is provided '
+      'even with diffThreshold 0',
+      (tester) async {
+        final originalComparator = LocalFileComparator(
+          Uri.parse('file:///test/golden_test.dart'),
+        );
+        goldenFileComparator = originalComparator;
+
+        GoldenFileComparator? comparatorDuringTest;
+        when(
+          () => goldenTestAdapter.withForceUpdateGoldenFiles<void>(
+            callback: any(named: 'callback'),
+          ),
+        ).thenAnswer((invocation) async {
+          comparatorDuringTest = goldenFileComparator;
+          await (invocation.namedArguments[#callback]
+                  as MatchesGoldenFileInvocation<void>)
+              .call();
+        });
+
+        await goldenTestRunner.run(
+          tester: tester,
+          goldenPath: 'path/to/golden',
+          widget: const SizedBox(),
+          environmentName: 'CI',
+        );
+
+        expect(comparatorDuringTest, isA<AlchemistFileComparator>());
+        final wrapped = comparatorDuringTest! as AlchemistFileComparator;
+        expect(wrapped.diffThreshold, 0.0);
+        expect(wrapped.environmentName, 'CI');
+        expect(goldenFileComparator, same(originalComparator));
+      },
+    );
 
     testWidgets(
       'throws UnsupportedError when diffThreshold > 0 and comparator is not '
