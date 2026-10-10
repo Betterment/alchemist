@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:alchemist/alchemist.dart' as alchemist;
 import 'package:alchemist/src/blocked_text_image.dart';
 import 'package:alchemist/src/golden_test_adapter.dart';
 import 'package:alchemist/src/golden_test_group.dart';
@@ -78,6 +79,24 @@ void main() {
         goldenFileExpectationFn = customExpectation;
         expect(goldenFileExpectationFn, customExpectation);
         goldenFileExpectationFn = defaultGoldenFileExpectation;
+      });
+
+      test('is overridable through the public library', () {
+        alchemist.MatchesGoldenFileInvocation<void> publicExpectation(
+          Object a,
+          Object b,
+        ) =>
+            () => null;
+
+        alchemist.goldenFileExpectationFn = publicExpectation;
+        expect(goldenFileExpectationFn, publicExpectation);
+        expect(
+          alchemist.goldenFileExpectationFn,
+          isA<alchemist.GoldenFileExpectation>(),
+        );
+        alchemist.goldenFileExpectationFn =
+            alchemist.defaultGoldenFileExpectation;
+        expect(goldenFileExpectationFn, defaultGoldenFileExpectation);
       });
 
       test('original value invokes matchesGoldenFile', () async {
