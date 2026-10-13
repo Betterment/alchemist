@@ -1,4 +1,4 @@
-import 'package:alchemist/src/golden_test_scenario.dart';
+import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/golden_test_scenario_constraints.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,6 +29,19 @@ void main() {
       await tester.pumpWidget(subject);
 
       expect(find.text('name'), findsOneWidget);
+    });
+
+    testWidgets('does not render name as label', (tester) async {
+      await AlchemistConfig.runWithConfig(
+        config: const AlchemistConfig(renderName: false),
+        run: () async {
+          final subject = buildSubject();
+
+          await tester.pumpWidget(subject);
+
+          expect(find.text('name'), findsNothing);
+        },
+      );
     });
 
     testWidgets('renders child', (tester) async {
