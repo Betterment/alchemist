@@ -6,8 +6,8 @@ class ContactListTile extends StatelessWidget {
     required this.onPressed,
     required this.name,
     required this.email,
-  })  : assert(name.length > 0, 'name must be non-empty'),
-        assert(email.length > 0, 'email must be non-empty');
+  }) : assert(name.length > 0, 'name must be non-empty'),
+       assert(email.length > 0, 'email must be non-empty');
 
   final VoidCallback? onPressed;
   final String name;

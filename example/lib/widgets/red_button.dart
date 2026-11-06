@@ -26,11 +26,7 @@ class RedButton extends StatelessWidget {
         label: child,
       );
     } else {
-      return ElevatedButton(
-        style: style,
-        onPressed: onPressed,
-        child: child,
-      );
+      return ElevatedButton(style: style, onPressed: onPressed, child: child);
     }
   }
 }

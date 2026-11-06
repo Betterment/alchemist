@@ -12,17 +12,11 @@ void main() {
         children: [
           GoldenTestScenario(
             name: 'enabled',
-            child: RedButton(
-              onPressed: () {},
-              child: const Text('Red Button'),
-            ),
+            child: RedButton(onPressed: () {}, child: const Text('Red Button')),
           ),
           GoldenTestScenario(
             name: 'disabled',
-            child: const RedButton(
-              onPressed: null,
-              child: Text('Red Button'),
-            ),
+            child: const RedButton(onPressed: null, child: Text('Red Button')),
           ),
           GoldenTestScenario(
             name: 'with icon',

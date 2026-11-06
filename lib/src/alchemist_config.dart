@@ -64,16 +64,12 @@ typedef FilePathResolver =
 class AlchemistConfig extends Equatable {
   /// {@macro alchemist_config}
   const AlchemistConfig({
-    bool? forceUpdateGoldenFiles,
-    GoldenTestTheme? goldenTestTheme,
-    ThemeData? theme,
-    PlatformGoldensConfig? platformGoldensConfig,
-    CiGoldensConfig? ciGoldensConfig,
-  }) : _forceUpdateGoldenFiles = forceUpdateGoldenFiles,
-       _theme = theme,
-       _goldenTestTheme = goldenTestTheme,
-       _platformGoldensConfig = platformGoldensConfig,
-       _ciGoldensConfig = ciGoldensConfig;
+    this._forceUpdateGoldenFiles,
+    this._goldenTestTheme,
+    this._theme,
+    this._platformGoldensConfig,
+    this._ciGoldensConfig,
+  });
 
   /// The instance of the [AlchemistConfig] in the current zone used by the
   /// `alchemist` package.
@@ -287,15 +283,13 @@ abstract class GoldensConfig extends Equatable {
     required this.enabled,
     required this.obscureText,
     required this.renderShadows,
-    FilePathResolver? filePathResolver,
-    ThemeData? theme,
+    this._filePathResolver,
+    this._theme,
     double? diffThreshold,
   }) : assert(
          diffThreshold == null || (diffThreshold >= 0.0 && diffThreshold < 1.0),
          'diffThreshold must be between 0.0 (inclusive) and 1.0 (exclusive)',
        ),
-       _filePathResolver = filePathResolver,
-       _theme = theme,
        _diffThreshold = diffThreshold;
 
   /// Whether or not the golden tests should run.
@@ -406,14 +400,14 @@ abstract class GoldensConfig extends Equatable {
 class PlatformGoldensConfig extends GoldensConfig {
   /// {@macro platform_goldens_config}
   const PlatformGoldensConfig({
-    Set<HostPlatform>? platforms,
+    this._platforms,
     super.enabled = true,
     super.obscureText = false,
     super.renderShadows = true,
     super.filePathResolver,
     super.theme,
     super.diffThreshold,
-  }) : _platforms = platforms;
+  });
 
   @override
   String get environmentName => HostPlatform.current().operatingSystem;

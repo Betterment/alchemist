@@ -233,7 +233,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     tester.view.devicePixelRatio = 1.0;
     tester.platformDispatcher.textScaleFactorTestValue = textScaleFactor;
 
-    goldenTestTheme ??= GoldenTestTheme.standard();
+    final resolvedGoldenTestTheme =
+        goldenTestTheme ?? GoldenTestTheme.standard();
 
     await pumpWidget(
       tester,
@@ -242,7 +243,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
         obscureFont: obscureFont,
         globalConfigTheme: globalConfigTheme,
         variantConfigTheme: variantConfigTheme,
-        goldenTestTheme: goldenTestTheme,
+        goldenTestTheme: resolvedGoldenTestTheme,
         child: DefaultAssetBundle(
           bundle: TestAssetBundle(),
           child: Material(
@@ -252,7 +253,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
               child: Builder(
                 builder: (context) {
                   return ColoredBox(
-                    color: goldenTestTheme!.backgroundColor,
+                    color: resolvedGoldenTestTheme.backgroundColor,
                     child: OverflowBox(
                       alignment: Alignment.topLeft,
                       minWidth: constraints.minWidth,
@@ -262,7 +263,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
                       child: Center(
                         key: childKey,
                         child: Padding(
-                          padding: goldenTestTheme.padding,
+                          padding: resolvedGoldenTestTheme.padding,
                           child: widget,
                         ),
                       ),

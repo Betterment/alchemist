@@ -89,10 +89,7 @@ void main() {
         skip: true, // removes if you want to check loading fonts performance
         builder: () => GoldenTestScenario.builder(
           name: iconEntry.key,
-          builder: (_) => Icon(
-            iconEntry.value,
-            size: 64,
-          ),
+          builder: (_) => Icon(iconEntry.value, size: 64),
         ),
       );
     }
