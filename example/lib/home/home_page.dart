@@ -1,5 +1,5 @@
 import 'package:example/widgets/widgets.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -7,9 +7,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Alchemist Example App'),
-      ),
+      appBar: AppBar(title: const Text('Alchemist Example App')),
       body: const SizedBox.expand(
         child: SingleChildScrollView(
           child: Column(
@@ -20,10 +18,7 @@ class HomePage extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: _ExplanationText(),
               ),
-              _ExampleSection(
-                title: Text('RedButton'),
-                child: _Buttons(),
-              ),
+              _ExampleSection(title: Text('RedButton'), child: _Buttons()),
               _ExampleSection(
                 title: Text('ContactListTile'),
                 child: _ListTiles(),
@@ -37,10 +32,7 @@ class HomePage extends StatelessWidget {
 }
 
 class _ExampleSection extends StatelessWidget {
-  const _ExampleSection({
-    required this.title,
-    required this.child,
-  });
+  const _ExampleSection({required this.title, required this.child});
 
   final Widget title;
   final Widget child;
@@ -60,9 +52,7 @@ class _ExampleSection extends StatelessWidget {
               child: title,
             ),
             ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 128,
-              ),
+              constraints: const BoxConstraints(maxWidth: 128),
               child: const Divider(height: 16),
             ),
             child,
@@ -74,10 +64,7 @@ class _ExampleSection extends StatelessWidget {
 }
 
 class _ExampleScenario extends StatelessWidget {
-  const _ExampleScenario({
-    required this.title,
-    required this.child,
-  });
+  const _ExampleScenario({required this.title, required this.child});
 
   final Widget title;
   final Widget child;
@@ -127,17 +114,11 @@ class _Buttons extends StatelessWidget {
       children: [
         _ExampleScenario(
           title: const Text('Enabled'),
-          child: RedButton(
-            onPressed: () {},
-            child: const Text('Button'),
-          ),
+          child: RedButton(onPressed: () {}, child: const Text('Button')),
         ),
         const _ExampleScenario(
           title: Text('Disabled'),
-          child: RedButton(
-            onPressed: null,
-            child: Text('Button'),
-          ),
+          child: RedButton(onPressed: null, child: Text('Button')),
         ),
         _ExampleScenario(
           title: const Text('With icon'),

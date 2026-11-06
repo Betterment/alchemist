@@ -3,10 +3,10 @@ import 'dart:ui' as ui;
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/utilities.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The function signature of Flutter test's `testWidgets` function.
 typedef TestWidgetsFn =
@@ -233,7 +233,8 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
     tester.view.devicePixelRatio = 1.0;
     tester.platformDispatcher.textScaleFactorTestValue = textScaleFactor;
 
-    goldenTestTheme ??= GoldenTestTheme.standard();
+    final resolvedGoldenTestTheme =
+        goldenTestTheme ?? GoldenTestTheme.standard();
 
     await pumpWidget(
       tester,
@@ -242,7 +243,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
         obscureFont: obscureFont,
         globalConfigTheme: globalConfigTheme,
         variantConfigTheme: variantConfigTheme,
-        goldenTestTheme: goldenTestTheme,
+        goldenTestTheme: resolvedGoldenTestTheme,
         child: DefaultAssetBundle(
           bundle: TestAssetBundle(),
           child: Material(
@@ -252,7 +253,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
               child: Builder(
                 builder: (context) {
                   return ColoredBox(
-                    color: goldenTestTheme!.backgroundColor,
+                    color: resolvedGoldenTestTheme.backgroundColor,
                     child: OverflowBox(
                       alignment: Alignment.topLeft,
                       minWidth: constraints.minWidth,
@@ -262,7 +263,7 @@ class FlutterGoldenTestAdapter extends GoldenTestAdapter {
                       child: Center(
                         key: childKey,
                         child: Padding(
-                          padding: goldenTestTheme.padding,
+                          padding: resolvedGoldenTestTheme.padding,
                           child: widget,
                         ),
                       ),

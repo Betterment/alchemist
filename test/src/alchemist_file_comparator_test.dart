@@ -7,9 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 class _TestAlchemistFileComparator extends AlchemistFileComparator {
   _TestAlchemistFileComparator({
     required double diffThreshold,
-    required ComparisonResult result,
-  }) : _result = result,
-       super(Uri.parse('file:///test/_alchemist.dart'), diffThreshold);
+    required this._result,
+  }) : super(Uri.parse('file:///test/_alchemist.dart'), diffThreshold);
 
   final ComparisonResult _result;
 

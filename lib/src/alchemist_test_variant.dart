@@ -10,11 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 @visibleForTesting
 class AlchemistTestVariant extends TestVariant<GoldensConfig> {
   /// {@macro alchemist_test_variant}
-  AlchemistTestVariant({
-    required AlchemistConfig config,
-    required HostPlatform currentPlatform,
-  }) : _config = config,
-       _currentPlatform = currentPlatform;
+  AlchemistTestVariant({required this._config, required this._currentPlatform});
 
   final AlchemistConfig _config;
   final HostPlatform _currentPlatform;

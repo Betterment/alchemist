@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class RedButton extends StatelessWidget {
   const RedButton({
@@ -26,11 +26,7 @@ class RedButton extends StatelessWidget {
         label: child,
       );
     } else {
-      return ElevatedButton(
-        style: style,
-        onPressed: onPressed,
-        child: child,
-      );
+      return ElevatedButton(style: style, onPressed: onPressed, child: child);
     }
   }
 }
