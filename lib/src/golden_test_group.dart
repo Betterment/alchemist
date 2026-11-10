@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/golden_test_scenario_constraints.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A function that receives the index of a column in a table and returns the
 /// desired column width behavior.

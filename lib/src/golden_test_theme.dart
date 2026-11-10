@@ -1,6 +1,6 @@
 import 'package:alchemist/src/golden_test_group.dart';
 import 'package:alchemist/src/golden_test_scenario.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// {@template golden_test_theme}
 /// A theme that dictates the behavior and appearance of elements created

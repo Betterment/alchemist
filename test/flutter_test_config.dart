@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:alchemist/alchemist.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:path/path.dart' as path;
 import 'package:version/version.dart';
 
@@ -12,10 +12,12 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   final runningOnCi = Platform.environment.containsKey('GITHUB_ACTIONS');
 
   // Grab the flutter version from the current environment.
+  // runInShell: on Windows the SDK is flutter.bat, which Process.run does not
+  // find by name.
   final versionResult = await Process.run('flutter', [
     '--version',
     '--machine',
-  ]);
+  ], runInShell: Platform.isWindows);
 
   if (versionResult.exitCode != 0) {
     throw const ProcessException('flutter', [
@@ -29,11 +31,10 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   final version = flutterData['flutterVersion'] as String;
 
   if (!version.isValidVersion()) {
-    throw ProcessException(
-      'flutter',
-      ['--version', '--machine'],
-      'Invalid flutter version returned by `flutter version`: $version',
-    );
+    throw ProcessException('flutter', [
+      '--version',
+      '--machine',
+    ], 'Invalid flutter version returned by `flutter version`: $version');
   }
 
   final parsedVersion = Version.parse(version);
@@ -107,7 +108,14 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
       ),
       ciGoldensConfig: AlchemistConfig.current()
           .ciGoldensConfig //
-          .copyWith(filePathResolver: filePathResolver, enabled: runningOnCi),
+          .copyWith(
+            filePathResolver: filePathResolver,
+            enabled: runningOnCi,
+            // The same golden differs by up to ~0.1% of pixels between the
+            // macOS, Linux and Windows runners (anti-aliasing of text and
+            // shadows). Anything larger is a real change.
+            diffThreshold: 0.005,
+          ),
       platformGoldensConfig: AlchemistConfig.current()
           .platformGoldensConfig //
           .copyWith(filePathResolver: filePathResolver, enabled: !runningOnCi),

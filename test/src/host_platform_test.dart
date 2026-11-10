@@ -20,19 +20,15 @@ void main() {
 
   group('HostPlatform', () {
     group('.current', () {
-      test(
-        'returns current host platform',
-        () {
-          if (Platform.isMacOS) {
-            expect(HostPlatform.current(), HostPlatform.macOS);
-          } else if (Platform.isLinux) {
-            expect(HostPlatform.current(), HostPlatform.linux);
-          } else if (Platform.isWindows) {
-            expect(HostPlatform.current(), HostPlatform.windows);
-          }
-        },
-        skip: !Platform.isMacOS && !Platform.isLinux && !Platform.isWindows,
-      );
+      test('returns current host platform', () {
+        if (Platform.isMacOS) {
+          expect(HostPlatform.current(), HostPlatform.macOS);
+        } else if (Platform.isLinux) {
+          expect(HostPlatform.current(), HostPlatform.linux);
+        } else if (Platform.isWindows) {
+          expect(HostPlatform.current(), HostPlatform.windows);
+        }
+      }, skip: !Platform.isMacOS && !Platform.isLinux && !Platform.isWindows);
     });
 
     test('has correct string representation', () {

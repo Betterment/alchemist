@@ -5,10 +5,10 @@ import 'package:alchemist/alchemist.dart';
 import 'package:alchemist/src/alchemist_test_variant.dart';
 import 'package:alchemist/src/golden_test_runner.dart';
 import 'package:alchemist/src/utilities.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:meta/meta.dart';
 
 final Set<String> _loadedFontFamilies = {};
@@ -37,7 +37,15 @@ Future<void> _setUpGoldenTests() async {
 @visibleForTesting
 Future<void> loadFonts() async {
   final bundle = rootBundle;
-  final fontManifestString = await bundle.loadString('FontManifest.json');
+  // cache: false. goldenTest calls this in each test body, where flutter_test
+  // runs code in a fake-async zone. A cached future belongs to the zone of
+  // the test that first loaded it, and that zone does not run microtasks
+  // after its test ends. A later test that awaits the cached future never
+  // continues.
+  final fontManifestString = await bundle.loadString(
+    'FontManifest.json',
+    cache: false,
+  );
   final fontManifest = (json.decode(fontManifestString) as List<dynamic>).map(
     (dynamic x) => x as Map<String, dynamic>,
   );
@@ -168,11 +176,14 @@ Future<void> goldenTest(
     currentPlatform: currentPlatform,
   );
 
-  goldenTestAdapter.setUp(_setUpGoldenTests);
-
   await goldenTestAdapter.testWidgets(
     description,
     (tester) async {
+      // In the test body, not a setUp: a setUp per goldenTest call runs
+      // N times before each of N tests (O(N²)), and a setUp registered once
+      // belongs to one group only, so a test of another group run alone
+      // would not load fonts. Loading is a no-op once the fonts are loaded.
+      await _setUpGoldenTests();
       final variantConfig = variant.currentConfig;
       await goldenTestRunner.run(
         tester: tester,

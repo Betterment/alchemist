@@ -1,0 +1,57 @@
+name: Integration
+
+on:
+  push:
+    # ci/** branches run it too: a new workflow cannot be started by hand
+    # before it is on main.
+    branches: [main, 'ci/**']
+  schedule:
+    - cron: '52 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # The package's golden tests in the test runner of each desktop platform.
+  # The same golden files (test/smoke_tests/goldens/<flutter>/ci) must match
+  # on all three: that is the cross-OS check. The jobs share the steps of the
+  # first (YAML anchor).
+  desktop-macos-arm64:
+    name: macOS ARM64
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps: &desktop_steps
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@f97b50830596a30b24ea34c643a3b7dcce349972 # v0.5.15
+      - run: flutter pub get
+      - run: flutter test -r expanded
+      # The golden images that did not match, for a reviewer to compare.
+      - uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        if: failure()
+        with:
+          name: golden-failures-${{ runner.os }}-${{ runner.arch }}
+          path: '**/failures/**/*.png'
+          if-no-files-found: ignore
+
+  desktop-windows-x64:
+    name: Windows x64
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps: *desktop_steps
+
+  desktop-linux-x64:
+    name: Linux x64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps: *desktop_steps

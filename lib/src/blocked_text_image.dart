@@ -37,7 +37,17 @@ class BlockedTextPaintingContext extends PaintingContext {
       final paint = Paint()
         ..color = child.text.style?.color ?? const Color(0xFF000000)
         ..isAntiAlias = false;
-      canvas.drawRect(offset & child.size, paint);
+      final rect = offset & child.size;
+      // Avoid a platform-dependent fractional right edge for widget text.
+      canvas.drawRect(
+        Rect.fromLTRB(
+          rect.left,
+          rect.top,
+          rect.right.ceilToDouble(),
+          rect.bottom,
+        ),
+        paint,
+      );
     } else {
       return child.paint(this, offset);
     }
@@ -70,17 +80,33 @@ class BlockedTextCanvasAdapter implements Canvas {
   /// Draws a rectangle on the canvas where the [paragraph]
   /// would otherwise be rendered
   @override
-  void drawParagraph(ui.Paragraph paragraph, ui.Offset offset) =>
-      parent.drawRect(
-        offset &
-            Size(
-              paragraph.width.isFinite
-                  ? paragraph.width
-                  : paragraph.longestLine,
-              paragraph.height,
-            ),
-        Paint(),
-      );
+  void drawParagraph(ui.Paragraph paragraph, ui.Offset offset) {
+    final width = paragraph.width.isFinite
+        ? paragraph.width
+        : paragraph.longestLine;
+    final transform = parent.getTransform();
+    final rotated = transform[1].abs() > 0.01 || transform[4].abs() > 0.01;
+    // Paragraphs with intrinsic width may report infinity or exactly their
+    // longest line. Both need an outward width cell to mask the same pixels
+    // across operating systems. Keep wider, constrained paragraph masks at
+    // their supplied width; their text may wrap inside that rectangle.
+    final maskWidth =
+        rotated ||
+            !paragraph.width.isFinite ||
+            paragraph.width == paragraph.longestLine
+        ? (width / 4).ceilToDouble() * 4
+        : width;
+    final rect = offset & Size(maskWidth, paragraph.height);
+    parent.drawRect(
+      Rect.fromLTRB(
+        rect.left.roundToDouble(),
+        rect.top,
+        rect.right.roundToDouble(),
+        rect.bottom,
+      ),
+      Paint(),
+    );
+  }
 
   @override
   void clipPath(ui.Path path, {bool doAntiAlias = true}) =>
