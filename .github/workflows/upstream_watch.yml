@@ -1,0 +1,19 @@
+# Daily: do the sources in .github/upstream.yaml have an update? The run
+# fails when one does, and GitHub emails whoever last changed this file.
+# See Upstream watch in the telosnex_ci_tools README.
+name: Upstream watch
+
+on:
+  schedule:
+    - cron: '23 7 * * *'
+  push:
+    branches: [main]
+    paths: [.github/upstream.yaml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  watch:
+    uses: Telosnex/telosnex_ci_tools/.github/workflows/upstream_watch.yml@bba81d85dab7716cc288df9877812dd3299ff11e # v0.5.14
