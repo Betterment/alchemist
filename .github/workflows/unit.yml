@@ -29,8 +29,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@14aa316a575c5c7fd543a924b5c1973c24301ab2 # v0.5.16
-      - uses: Telosnex/telosnex_ci_tools/actions/lint@14aa316a575c5c7fd543a924b5c1973c24301ab2 # v0.5.16
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@a3654aa0e8e1662f88295adaabf25bc33e1a2cae # v0.5.17
+      - uses: Telosnex/telosnex_ci_tools/actions/lint@a3654aa0e8e1662f88295adaabf25bc33e1a2cae # v0.5.17
       - run: flutter pub get
       # Generated files (first line "// GENERATED ...") keep their generator's
       # layout.
