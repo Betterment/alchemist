@@ -1,6 +1,6 @@
 import 'package:alchemist/src/golden_test.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 class TestDropdownButton extends StatelessWidget {
   const TestDropdownButton({super.key});

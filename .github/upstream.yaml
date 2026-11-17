@@ -1,0 +1,10 @@
+# Upstream sources, checked daily by the Upstream watch workflow
+# (telosnex_ci_tools, lib/src/upstream.dart). Set `seen` to skip an update.
+sources:
+  # The repository this one is a fork of. The pin is the last upstream commit
+  # merged here: update it with each merge. Alert once the oldest unmerged
+  # commit is a week old.
+  - name: Betterment/alchemist
+    branch: https://github.com/Betterment/alchemist
+    pin: a462226801e7d77dd0c71ab5293265a1c869e2a3
+    lag_days: 7

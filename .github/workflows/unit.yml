@@ -1,0 +1,43 @@
+name: Unit
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    # ci/** branches run it too: a new workflow cannot be started by hand
+    # before it is on main.
+    branches: [main, 'ci/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unit-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  unit:
+    name: Unit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
+      - uses: Telosnex/telosnex_ci_tools/actions/lint@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
+      - run: flutter pub get
+      # Generated files (first line "// GENERATED ...") keep their generator's
+      # layout.
+      - run: |
+          git ls-files '*.dart' |
+            while read -r f; do head -1 "$f" | grep -qiE '^// *generated' || echo "$f"; done |
+            xargs dart format --output=none --set-exit-if-changed
+      - run: flutter analyze --fatal-infos
+      - run: flutter test -r expanded
+
