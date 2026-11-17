@@ -1,3 +1,16 @@
+# 0.15.0
+
+* feat!: migrate to standalone material_ui and cupertino_ui packages by @Guldem in https://github.com/Betterment/alchemist/pull/190
+
+## :warning: Breaking Changes
+
+https://github.com/Betterment/alchemist/pull/190 migrated alchemist from `package:flutter/material.dart` and `package:flutter/cupertino.dart` to the standalone `material_ui` and `cupertino_ui` packages, and raised the minimum SDK to Dart 3.12 / Flutter 3.44. `AlchemistConfig`, `PlatformGoldensConfig` and `CiGoldensConfig` now expect `ThemeData` from `material_ui`. Projects that still import `package:flutter/material.dart` should stay on 0.14.x until they migrate.
+
+## New Contributors
+* @Guldem made their first contribution in https://github.com/Betterment/alchemist/pull/190
+
+**Full Changelog**: https://github.com/Betterment/alchemist/compare/v0.14.1...v0.15.0
+
 # 0.14.1
 
 * chore(deps): support equatable 3.x by @PeteRyo0517 in https://github.com/Betterment/alchemist/pull/185
