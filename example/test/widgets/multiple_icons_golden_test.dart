@@ -1,6 +1,6 @@
 import 'package:alchemist/alchemist.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('Multiple icons test >', () {
@@ -89,10 +89,7 @@ void main() {
         skip: true, // removes if you want to check loading fonts performance
         builder: () => GoldenTestScenario.builder(
           name: iconEntry.key,
-          builder: (_) => Icon(
-            iconEntry.value,
-            size: 64,
-          ),
+          builder: (_) => Icon(iconEntry.value, size: 64),
         ),
       );
     }

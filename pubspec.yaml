@@ -6,15 +6,17 @@ homepage: https://github.com/Betterment/alchemist
 repository: https://github.com/Betterment/alchemist
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
-  flutter: '>=3.32.0'
+  sdk: ^3.12.0
+  flutter: '>=3.44.0'
 
 dependencies:
+  cupertino_ui: ^1.0.0
   equatable: ">=2.0.3 <4.0.0"
   flutter:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  material_ui: ^1.0.0
   meta: ^1.7.0
 
 dev_dependencies:

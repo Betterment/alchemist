@@ -1,5 +1,5 @@
 import 'package:example/home/home.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AlchemistExampleApp extends StatelessWidget {
   const AlchemistExampleApp({super.key});
@@ -8,9 +8,7 @@ class AlchemistExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: const HomePage(),
     );
   }

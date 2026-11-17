@@ -1,6 +1,6 @@
 import 'package:alchemist/src/golden_test.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 class _SmokeTest extends StatelessWidget {
   _SmokeTest({super.key}) : _link = LayerLink();
