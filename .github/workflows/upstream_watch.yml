@@ -16,4 +16,4 @@ permissions:
 
 jobs:
   watch:
-    uses: Telosnex/telosnex_ci_tools/.github/workflows/upstream_watch.yml@c1c96dee1b426f3617d5e9caf60fd45899bb8a4f # v0.5.20
+    uses: Telosnex/telosnex_ci_tools/.github/workflows/upstream_watch.yml@06c7b3a7929d822adcec028a8baf4d7e960bb324 # v0.5.21
