@@ -57,6 +57,7 @@ Heavily inspired by [Ebay Motor's `golden_toolkit` package][golden_toolkit_pub],
     - [Before tests](#before-tests)
     - [Pumping widgets](#pumping-widgets)
   - [Custom text scale factor](#custom-text-scale-factor)
+  - [Custom golden file expectation](#custom-golden-file-expectation)
 - [Resources](#resources)
 
 ### About platform tests vs. CI tests
@@ -450,6 +451,15 @@ By default, Alchemist will simply pump the widget being tested using `tester.pum
 The `GoldenTestScenario.withTextScaleFactor` constructor allows a custom text scale factor value to be provided for a single scenario. This can be used to test text rendering at different sizes.
 
 To set a default scale factor for all scenarios within a test, the `goldenTest` function allows a default `textScaler` to be provided, which defaults to `TextScaler.linear(1.0)`.
+
+#### Custom golden file expectation
+
+To use another matcher for all golden tests, assign `goldenFileExpectationFn` in your `flutter_test_config.dart`. `actual` is the test's root `Finder`, or the blocked-text image when `obscureText` is enabled:
+
+```dart
+goldenFileExpectationFn = (actual, golden) =>
+    () => expectLater(actual, myMatchesGoldenFile(golden));
+```
 
 ### Resources
 
