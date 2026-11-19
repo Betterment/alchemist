@@ -8,11 +8,12 @@ void main() {
   // fails it.
   group('loadFonts in consecutive widget tests', () {
     for (final name in ['first', 'second', 'third']) {
-      testWidgets(
-        'completes in the $name test',
-        (tester) => loadFonts(),
-        timeout: const Timeout(Duration(seconds: 30)),
-      );
+      testWidgets('completes in the $name test', (tester) async {
+        await loadFonts();
+        // Let engine font-change messages arrive before pumping their relayout.
+        await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+        await tester.pumpAndSettle();
+      }, timeout: const Timeout(Duration(seconds: 30)));
     }
   });
 }

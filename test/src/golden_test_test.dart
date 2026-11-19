@@ -183,6 +183,9 @@ void main() {
         ),
       );
 
+      // Let engine font-change messages arrive before pumping their relayout.
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pumpAndSettle();
       expect(filePathResolverCalled, isTrue);
 
       // Verify [GoldenTestRunner.run] was called for the CI config.
